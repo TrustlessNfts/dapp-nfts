@@ -9,6 +9,7 @@ import { ARTIFACT_CONTRACT } from '@/configs';
 import { formatTimeStamp } from '@/utils/time';
 import { useRouter } from 'next/router';
 import { ROUTE_PATH } from '@/constants/route-path';
+import NFTDisplayBox from '@/components/NFTDisplayBox';
 
 const Inscription = () => {
   const router = useRouter();
@@ -77,7 +78,13 @@ const Inscription = () => {
       <div className="content">
         <div className="left-container">
           {inscription && (
-            <img className='thumbnail' src={inscription.image} alt="thumbnail" />
+            <NFTDisplayBox
+              collectionID={inscription?.collectionAddress}
+              contentClass="thumbnail"
+              src={inscription.image}
+              tokenID={inscription?.tokenId}
+              type={inscription?.contentType}
+            />
           )}
         </div>
         <div className="right-container">
@@ -87,18 +94,7 @@ const Inscription = () => {
                 ? `Artifact #${inscription?.tokenId}`
                 : inscription?.name}
             </p>
-            {/* <p className="subTitle">Inscriptions #number</p> */}
           </div>
-
-          {/* <a className="tag" href={`/collection?contract=${inscription?.collectionAddress}`}>
-            <p className="tag-title">Collection</p>
-            <p className="subTitle">{inscription?.collectionAddress}</p>
-          </a> */}
-          {/* {contract.toLocaleLowerCase() === ARTIFACT_CONTRACT.toLocaleLowerCase() && (
-            <div className="tag">
-              <p className="tag-title"></p>
-            </div>
-          )} */}
 
           <Information>
             <p className="title">Information</p>
