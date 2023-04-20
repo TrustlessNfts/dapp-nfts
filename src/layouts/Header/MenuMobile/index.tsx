@@ -1,5 +1,3 @@
-// import IcAvatarDefault from '@/assets/icons/ic-avatar.svg';
-// import IcMenuClose from '@/assets/icons/ic_close_menu.svg';
 import { MENU_HEADER } from '@/constants/header';
 import { AssetsContext } from '@/contexts/assets-context';
 import { formatBTCPrice, formatEthPrice } from '@/utils/format';
