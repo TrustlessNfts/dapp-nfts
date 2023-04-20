@@ -24,7 +24,7 @@ const Collections = () => {
         <div className="upload_right">
           <Button
             className='create-btn'
-            background={'linear-gradient(90deg, #ff8008 0%, #ffc837 100%)'}
+            background={'linear-gradient(90deg, #9796f0,#fbc7d4)'}
             onClick={() => setShowModal(true)}
           >
             <Text size="medium" color="bg1" className="button-text" fontWeight="medium">

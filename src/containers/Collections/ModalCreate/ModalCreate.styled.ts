@@ -86,12 +86,11 @@ export const WrapInput = styled.div`
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: ${px2rem(20)};
+    padding: ${px2rem(12)} ${px2rem(14)};
     gap: ${px2rem(16)};
     font-weight: 400;
     font-size: ${px2rem(16)};
     line-height: ${px2rem(26)};
-
     border: 1px solid ${({ theme }: { theme: DefaultTheme }) => theme.border3};
 
     :hover {

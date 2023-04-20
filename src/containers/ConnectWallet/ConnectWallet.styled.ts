@@ -41,7 +41,7 @@ export const Wrapper = styled.div`
 `;
 
 export const ConnectWalletButton = styled.button`
-  background: linear-gradient(90deg, #ff8008 0%, #ffc837 100%);
+  background: linear-gradient(90deg, #9796f0,#fbc7d4);
   padding: ${px2rem(15)} ${px2rem(24)};
   /* color: #fff; */
   font-size: ${px2rem(16)};
