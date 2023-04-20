@@ -37,9 +37,7 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
   return (
     <Container>
       <Header height={HEADER_HEIGHT} />
-      <ContentWrapper>
-        {children}
-      </ContentWrapper>
+      <ContentWrapper>{children}</ContentWrapper>
       <Footer height={FO0TER_HEIGHT} />
     </Container>
   );

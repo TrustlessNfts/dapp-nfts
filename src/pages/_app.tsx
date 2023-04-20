@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import type { AppProps } from 'next/app'
+import type { AppProps } from 'next/app';
 import { SEO_TITLE, SEO_DESCRIPTION, SEO_IMAGE } from '@/constants/seo';
 import Web3Provider from '@/components/Web3Provider';
 import { Provider } from 'react-redux';
@@ -22,18 +22,12 @@ export default function App({ Component, pageProps }: AppProps) {
       <Head>
         <title>{title ?? SEO_TITLE}</title>
         <meta property="og:title" content={title ?? SEO_TITLE} />
-        <meta
-          property="og:description"
-          content={description ?? SEO_DESCRIPTION}
-        />
+        <meta property="og:description" content={description ?? SEO_DESCRIPTION} />
         <meta property="og:image" content={image ?? SEO_IMAGE} />
         <meta property="og:type" content="website" />
         <meta property="twitter:title" content={title ?? SEO_TITLE} />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta
-          name="twitter:description"
-          content={description ?? SEO_DESCRIPTION}
-        />
+        <meta name="twitter:description" content={description ?? SEO_DESCRIPTION} />
         <meta name="twitter:image" content={image ?? SEO_IMAGE} />
         <meta
           name="viewport"
@@ -70,5 +64,5 @@ export default function App({ Component, pageProps }: AppProps) {
         </Provider>
       </ClientOnly>
     </>
-  )
+  );
 }
