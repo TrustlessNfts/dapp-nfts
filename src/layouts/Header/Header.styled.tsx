@@ -70,6 +70,12 @@ const Wrapper = styled.div`
     }
   }
 
+  .hideMobile {
+    @media screen and (max-width: 768px) {
+      display: none;
+    }
+  }
+
   .dropdown {
     position: absolute;
     overflow: hidden;
@@ -104,16 +110,43 @@ const Wrapper = styled.div`
       }
     }
   }
+
+  @media screen and (max-width: 1024px) {
+    .rowLink {
+      display: none;
+    }
+
+    .wallet {
+      display: none;
+
+      &.mobile {
+        display: flex;
+      }
+    }
+
+    .rightContainer {
+      .btnMenuMobile {
+        display: flex;
+      }
+    }
+  }
 `;
 
-const StyledLink = styled(Link) <{ active: boolean; activeColor?: string }>`
+const StyledLink = styled(Link)<{ active: boolean; activeColor?: string }>`
   cursor: pointer;
   font-weight: 400;
   font-size: ${px2rem(16)};
   line-height: ${px2rem(28)};
   text-decoration: none !important;
-  color: ${({ theme, active, activeColor }: { theme: DefaultTheme; active: boolean; activeColor?: string }) =>
-    active ? activeColor || theme.white : theme.text2};
+  color: ${({
+    theme,
+    active,
+    activeColor,
+  }: {
+    theme: DefaultTheme;
+    active: boolean;
+    activeColor?: string;
+  }) => (active ? activeColor || theme.white : theme.text2)};
   font-family: 'IBMPlexMono';
   letter-spacing: -0.02em;
 
@@ -129,7 +162,8 @@ const Anchor = styled.a<{ active: boolean }>`
   font-size: ${px2rem(16)};
   line-height: ${px2rem(28)};
   text-decoration: none !important;
-  color: ${({ theme, active }: { theme: DefaultTheme; active: boolean }) => (active ? theme.white : theme.text2)};
+  color: ${({ theme, active }: { theme: DefaultTheme; active: boolean }) =>
+    active ? theme.white : theme.text2};
   font-family: 'IBMPlexMono';
   letter-spacing: -0.02em;
 
@@ -163,7 +197,8 @@ const WalletBalance = styled.div`
     .divider {
       width: 1px;
       height: 16px;
-      background-color: ${({ theme }: { theme: DefaultTheme }) => theme.primary['5b']};
+      background-color: ${({ theme }: { theme: DefaultTheme }) =>
+        theme.primary['5b']};
     }
   }
 
@@ -202,4 +237,11 @@ const ConnectWalletButton = styled(Button)`
   }
 `;
 
-export { ConnectWalletButton, Wrapper, StyledLink, WalletBalance, WalletAdress, Anchor };
+export {
+  ConnectWalletButton,
+  Wrapper,
+  StyledLink,
+  WalletBalance,
+  WalletAdress,
+  Anchor,
+};

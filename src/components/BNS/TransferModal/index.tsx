@@ -1,8 +1,6 @@
 import { Modal } from 'react-bootstrap';
 import { StyledTransferModal } from './TransferModal.styled';
 import IconSVG from '@/components/IconSVG';
-// import IcCloseModal from '@/assets/icons/ic-close.svg';
-import { WrapInput } from '@/containers/collection/ModalEdit/ModalMint.styled';
 import { Formik } from 'formik';
 import Text from '@/components/Text';
 import { useState } from 'react';
@@ -11,6 +9,7 @@ import useContractOperation from '@/hooks/contract-operations/useContractOperati
 import useTransferName from '@/hooks/contract-operations/bns/useTransferName';
 import Button from '@/components/Button';
 import { CDN_URL } from '@/configs';
+import { WrapInput } from '@/components/NFTCard/TransferModal/TransferModal.styled';
 
 type Props = {
   show: boolean;
@@ -60,7 +59,12 @@ const BNSTransferModal = (props: Props) => {
   return (
     <StyledTransferModal show={show} onHide={handleClose} centered>
       <Modal.Header>
-        <IconSVG className="cursor-pointer" onClick={handleClose} src={`${CDN_URL}/icons/ic-close.svg`} maxWidth={'22px'} />
+        <IconSVG
+          className="cursor-pointer"
+          onClick={handleClose}
+          src={`${CDN_URL}/icons/ic-close.svg`}
+          maxWidth={'22px'}
+        />
       </Modal.Header>
       <Modal.Body>
         <h5 className="font-medium mb-24">Transfer Name</h5>
@@ -88,7 +92,9 @@ const BNSTransferModal = (props: Props) => {
                   className="input"
                   placeholder={`Paste TC wallet address here`}
                 />
-                {errors.address && touched.address && <p className="error">{errors.address}</p>}
+                {errors.address && touched.address && (
+                  <p className="error">{errors.address}</p>
+                )}
               </WrapInput>
               {/* <div className="divider"></div>
               <div className="est-fee">

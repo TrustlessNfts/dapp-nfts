@@ -24,6 +24,8 @@ const ContentWrapper = styled.div`
   min-height: calc(100vh - 140px);
   display: flex;
   align-self: center;
+  flex-direction: column;
+  justify-content: center;
   width: 100%;
 
   > div {
@@ -35,9 +37,7 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
   return (
     <Container>
       <Header height={HEADER_HEIGHT} />
-      <ContentWrapper>
-        {children}
-      </ContentWrapper>
+      <ContentWrapper>{children}</ContentWrapper>
       <Footer height={FO0TER_HEIGHT} />
     </Container>
   );

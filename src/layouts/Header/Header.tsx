@@ -8,7 +8,12 @@ import { gsap } from 'gsap';
 import { useContext, useEffect, useRef, useState } from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import Link from 'next/link';
-import { ConnectWalletButton, StyledLink, WalletBalance, Wrapper } from './Header.styled';
+import {
+  ConnectWalletButton,
+  StyledLink,
+  WalletBalance,
+  Wrapper,
+} from './Header.styled';
 import MenuMobile from './MenuMobile';
 import { useSelector } from 'react-redux';
 import { getIsAuthenticatedSelector } from '@/state/user/selector';
@@ -50,9 +55,14 @@ const Header = ({ height }: { height: number }) => {
         <img alt="logo" src={`${CDN_URL}/icons/logo.svg`} />
       </Link>
       <div className="rowLink">
-        {MENU_HEADER.map(item => {
+        {MENU_HEADER.map((item) => {
           return (
-            <StyledLink active={activePath === item.activePath} href={item.route} key={item.id} activeColor="#F9D03F">
+            <StyledLink
+              active={activePath === item.activePath}
+              href={item.route}
+              key={item.id}
+              activeColor="#F9D03F"
+            >
               {item.name}
             </StyledLink>
           );
@@ -76,7 +86,9 @@ const Header = ({ height }: { height: number }) => {
             </div>
           </>
         ) : (
-          <ConnectWalletButton onClick={goToConnectWalletPage}>Connect wallet</ConnectWalletButton>
+          <ConnectWalletButton onClick={goToConnectWalletPage}>
+            Connect wallet
+          </ConnectWalletButton>
         )}
         <button className="btnMenuMobile" onClick={() => setIsOpenMenu(true)}>
           <img src={`${CDN_URL}/icons/ic_hambuger.svg`} />

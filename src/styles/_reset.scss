@@ -160,3 +160,9 @@ input::-webkit-inner-spin-button {
 input[type='number'] {
   -moz-appearance: textfield;
 }
+
+img,
+video,
+iframe {
+  max-width: 100%;
+}
