@@ -24,6 +24,7 @@ import { BLOCK_CHAIN_FILE_LIMIT, ZIP_EXTENSION } from '@/constants/file';
 import { Buffer } from 'buffer';
 import { CDN_URL, TC_WEB_URL } from '@/configs';
 import { showError } from '@/utils/toast';
+import { DappsTabs } from '@/enums/tabs';
 
 interface IFormValue {
   name: string;
@@ -37,7 +38,10 @@ type Props = {
 const ModalCreate = (props: Props) => {
   const { show = false, handleClose } = props;
   const [isProcessing, setIsProcessing] = useState(false);
-  const { run } = useContractOperation<ICreateNFTCollectionParams, DeployContractResponse | null>({
+  const { run } = useContractOperation<
+    ICreateNFTCollectionParams,
+    DeployContractResponse | null
+  >({
     operation: useCreateNFTCollection,
   });
   const [file, setFile] = useState<File | null>(null);
@@ -48,7 +52,9 @@ const ModalCreate = (props: Props) => {
 
   const onSizeError = (): void => {
     showError({
-      message: `File size error, maximum file size is ${MINT_TOOL_MAX_FILE_SIZE * 1000}KB.`
+      message: `File size error, maximum file size is ${
+        MINT_TOOL_MAX_FILE_SIZE * 1000
+      }KB.`,
     });
   };
 
@@ -77,7 +83,11 @@ const ModalCreate = (props: Props) => {
       const chunks = Buffer.from(JSON.stringify(obj));
       const chunksSizeInKb = Buffer.byteLength(chunks) / 1000;
       if (chunksSizeInKb > BLOCK_CHAIN_FILE_LIMIT * 1000) {
-        throw Error(`File size error, maximum file size is ${BLOCK_CHAIN_FILE_LIMIT * 1000}kb.`);
+        throw Error(
+          `File size error, maximum file size is ${
+            BLOCK_CHAIN_FILE_LIMIT * 1000
+          }kb.`,
+        );
       }
       if (currentBatchSize + chunksSizeInKb >= BLOCK_CHAIN_FILE_LIMIT * 1000) {
         // Split chunks and reset counter
@@ -119,7 +129,7 @@ const ModalCreate = (props: Props) => {
         const fileExt = getFileExtensionByFileName(fileName);
         if (!isERC721SupportedExt(fileExt)) {
           showError({
-            message: 'Unsupported file extension.'
+            message: 'Unsupported file extension.',
           });
           return;
         }
@@ -140,14 +150,15 @@ const ModalCreate = (props: Props) => {
     } catch (err) {
       if ((err as Error).message === 'pending') {
         showError({
-          message: 'You have some pending transactions. Please complete all of them before moving on.',
-          url: TC_WEB_URL,
-          linkText: 'Go to Wallet'
-        })
+          message:
+            'You have some pending transactions. Please complete all of them before moving on.',
+          url: `${TC_WEB_URL}/?tab=${DappsTabs.TRANSACTION}`,
+          linkText: 'Go to Wallet',
+        });
       } else {
         showError({
-          message: (err as Error).message
-        })
+          message: (err as Error).message,
+        });
       }
       console.log(err);
     } finally {
@@ -158,7 +169,12 @@ const ModalCreate = (props: Props) => {
   return (
     <StyledModalUpload show={show} onHide={handleClose} centered>
       <Modal.Header>
-        <IconSVG className="cursor-pointer" onClick={handleClose} src={`${CDN_URL}/icons/ic-close.svgF`} maxWidth={'22px'} />
+        <IconSVG
+          className="cursor-pointer"
+          onClick={handleClose}
+          src={`${CDN_URL}/icons/ic-close.svgF`}
+          maxWidth={'22px'}
+        />
       </Modal.Header>
       <Modal.Body>
         <Title className="font-medium">Create BRC-721</Title>
@@ -184,7 +200,9 @@ const ModalCreate = (props: Props) => {
                   className="input"
                   placeholder={`Enter name`}
                 />
-                {errors.name && touched.name && <p className="error">{errors.name}</p>}
+                {errors.name && touched.name && (
+                  <p className="error">{errors.name}</p>
+                )}
               </WrapInput>
 
               <FileUploader
@@ -199,7 +217,11 @@ const ModalCreate = (props: Props) => {
                   {file && (
                     <div className="upload-wrapper">
                       <p>{`${file.name} (${prettyPrintBytes(file.size)})`}</p>
-                      <IconSVG src={`${CDN_URL}/icons/ic-check.svg`} maxWidth={'18px'} color="#00AA6C" />
+                      <IconSVG
+                        src={`${CDN_URL}/icons/ic-check.svg`}
+                        maxWidth={'18px'}
+                        color="#00AA6C"
+                      />
                     </div>
                   )}
                   {!file && (
