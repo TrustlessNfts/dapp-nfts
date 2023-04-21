@@ -17,6 +17,7 @@ import { ConnectWalletButton, WalletBalance } from '../Header.styled';
 import { WalletPopover } from './Wallet.styled';
 import Text from '@/components/Text';
 import { WalletContext } from '@/contexts/wallet-context';
+import { DappsTabs } from '@/enums/tabs';
 
 const WalletHeader = () => {
   const router = useRouter();
@@ -73,7 +74,7 @@ const WalletHeader = () => {
             src={`${CDN_URL}/icons/ic-copy.svg`}
             color="white"
             maxWidth="16"
-          // type="stroke"
+            // type="stroke"
           ></IconSVG>
         </div>
       </div>
@@ -102,7 +103,10 @@ const WalletHeader = () => {
       </div>
       <div className="divider"></div>
       <div className="cta">
-        <div className="wallet-link" onClick={() => window.open(TC_WEB_URL)}>
+        <div
+          className="wallet-link"
+          onClick={() => window.open(`${TC_WEB_URL}?tab=${DappsTabs.NFT}`)}
+        >
           <IconSVG src={`${CDN_URL}/icons/ic-wallet.svg`} maxWidth="20" />
           <Text size="medium">Wallet</Text>
         </div>
@@ -127,7 +131,7 @@ const WalletHeader = () => {
           >
             <div
               className="wallet"
-              onClick={() => window.open(TC_WEB_URL)}
+              onClick={() => window.open(`${TC_WEB_URL}?tab=${DappsTabs.NFT}`)}
               ref={ref}
               onMouseEnter={handleOnMouseEnter}
               onMouseLeave={handleOnMouseLeave}
