@@ -6,10 +6,12 @@ import { useEffect, useRef, useState } from 'react';
 import { Wrapper } from './Header.styled';
 import MenuMobile from './MenuMobile';
 import WalletHeader from './Wallet';
+import { useWindowSize } from '@trustless-computer/dapp-core';
 
 const Header = ({ height }: { height: number }) => {
   const refMenu = useRef<HTMLDivElement | null>(null);
   const [isOpenMenu, setIsOpenMenu] = useState<boolean>(false);
+  const { mobileScreen } = useWindowSize();
 
   useEffect(() => {
     if (refMenu.current) {
@@ -29,31 +31,16 @@ const Header = ({ height }: { height: number }) => {
     <Wrapper style={{ height }}>
       <div className="indicator" />
       <Link className="logo" href={ROUTE_PATH.HOME}>
-        <img alt="logo" src={`${CDN_URL}/images/logo-nft-2.svg`} />
+        {mobileScreen && (
+          <img alt="logo" src={`${CDN_URL}/images/nfts-logo.svg`} />
+        )}
+        {!mobileScreen && (
+          <img alt="logo" src={`${CDN_URL}/images/logo-nft-2.svg`} />
+        )}
       </Link>
       <MenuMobile ref={refMenu} onCloseMenu={() => setIsOpenMenu(false)} />
       <div className="rightContainer">
         <WalletHeader />
-        {/* {account && isAuthenticated ? (
-          <>
-            <div className="wallet" onClick={() => router.push(ROUTE_PATH.WALLET)}>
-              <WalletBalance>
-                <div className="balance">
-                  <p>{formatBTCPrice(btcBalance)} BTC</p>
-                  <span className="divider"></span>
-                  <p>{formatEthPrice(juiceBalance)} TC</p>
-                </div>
-                <div className="avatar">
-                  <Jazzicon diameter={32} seed={jsNumberForAddress(account)} />
-                </div>
-              </WalletBalance>
-            </div>
-          </>
-        ) : (
-          <ConnectWalletButton onClick={goToConnectWalletPage}>
-            Connect wallet
-          </ConnectWalletButton>
-        )} */}
         <button className="btnMenuMobile" onClick={() => setIsOpenMenu(true)}>
           <img src={`${CDN_URL}/icons/ic_hambuger.svg`} />
         </button>
