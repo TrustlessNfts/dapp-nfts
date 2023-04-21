@@ -6,7 +6,7 @@ on:
       - 'v**'
 env:
   DOCKER_REGISTRY: gcr.io
-  DOCKER_IMAGE_NAME: dapp-drive
+  DOCKER_IMAGE_NAME: dapp-nfts
 
 jobs:
   build-and-push-to-gcr:

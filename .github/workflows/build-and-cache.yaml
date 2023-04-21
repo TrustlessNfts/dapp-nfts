@@ -8,7 +8,7 @@ on:
 
 env:
   DOCKER_REGISTRY: gcr.io
-  DOCKER_IMAGE_NAME: dapp-drive
+  DOCKER_IMAGE_NAME: dapp-nfts
 
 jobs:
 
