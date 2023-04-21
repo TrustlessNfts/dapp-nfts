@@ -8,7 +8,8 @@ import useContractOperation from '@/hooks/contract-operations/useContractOperati
 import toast from 'react-hot-toast';
 import { Formik } from 'formik';
 import useTransferERC721Token from '@/hooks/contract-operations/nft/useTransferERC721Token';
-import { CDN_URL } from '@/configs';
+import { CDN_URL, TC_WEB_URL } from '@/configs';
+import { showError } from '@/utils/toast';
 
 type Props = {
   show: boolean;
@@ -40,7 +41,9 @@ const TransferModal = (props: Props) => {
 
   const handleSubmit = async (values: IFormValue): Promise<void> => {
     if (!tokenId || !contractAddress) {
-      toast.error('Token information not found');
+      showError({
+        message: 'Token information not found'
+      });
       setIsProcessing(false);
       return;
     }
@@ -56,7 +59,17 @@ const TransferModal = (props: Props) => {
       toast.success('Transaction has been created. Please wait for few minutes.');
       handleClose();
     } catch (err) {
-      toast.error((err as Error).message);
+      if ((err as Error).message === 'pending') {
+        showError({
+          message: 'You have some pending transactions. Please complete all of them before moving on.',
+          url: TC_WEB_URL,
+          linkText: 'Go to Wallet'
+        })
+      } else {
+        showError({
+          message: (err as Error).message
+        })
+      }
       console.log(err);
     } finally {
       setIsProcessing(false);

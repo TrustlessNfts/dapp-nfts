@@ -8,8 +8,8 @@ import ModalCreate from './ModalCreate';
 import { useSelector } from 'react-redux';
 import { getIsAuthenticatedSelector } from '@/state/user/selector';
 import { useRouter } from 'next/router';
-import { toast } from 'react-hot-toast';
 import { ROUTE_PATH } from '@/constants/route-path';
+import { showError } from '@/utils/toast';
 
 const Collections = () => {
   const [showModal, setShowModal] = useState(false);
@@ -18,7 +18,9 @@ const Collections = () => {
 
   const handleOpenModal = async () => {
     if (!isAuthenticated) {
-      toast.error('Please connect wallet to continue.');
+      showError({
+        message: 'Please connect wallet to continue.'
+      });
       router.push(`${ROUTE_PATH.CONNECT_WALLET}?next=${window.location.href}`);
       return;
     }

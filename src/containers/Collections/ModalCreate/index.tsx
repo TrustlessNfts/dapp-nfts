@@ -22,7 +22,8 @@ import {
 } from '@/utils';
 import { BLOCK_CHAIN_FILE_LIMIT, ZIP_EXTENSION } from '@/constants/file';
 import { Buffer } from 'buffer';
-import { CDN_URL } from '@/configs';
+import { CDN_URL, TC_WEB_URL } from '@/configs';
+import { showError } from '@/utils/toast';
 
 interface IFormValue {
   name: string;
@@ -46,7 +47,9 @@ const ModalCreate = (props: Props) => {
   };
 
   const onSizeError = (): void => {
-    toast.error(`File size error, maximum file size is ${MINT_TOOL_MAX_FILE_SIZE * 1000}KB.`);
+    showError({
+      message: `File size error, maximum file size is ${MINT_TOOL_MAX_FILE_SIZE * 1000}KB.`
+    });
   };
 
   const handleSingleFile = async (file: File): Promise<Array<Array<Buffer>>> => {
@@ -115,7 +118,9 @@ const ModalCreate = (props: Props) => {
         const fileName = file.name;
         const fileExt = getFileExtensionByFileName(fileName);
         if (!isERC721SupportedExt(fileExt)) {
-          toast.error('Unsupported file extension.');
+          showError({
+            message: 'Unsupported file extension.'
+          });
           return;
         }
 
@@ -133,7 +138,17 @@ const ModalCreate = (props: Props) => {
       toast.success('Transaction has been created. Please wait for few minutes.');
       handleClose();
     } catch (err) {
-      toast.error((err as Error).message);
+      if ((err as Error).message === 'pending') {
+        showError({
+          message: 'You have some pending transactions. Please complete all of them before moving on.',
+          url: TC_WEB_URL,
+          linkText: 'Go to Wallet'
+        })
+      } else {
+        showError({
+          message: (err as Error).message
+        })
+      }
       console.log(err);
     } finally {
       setIsProcessing(false);

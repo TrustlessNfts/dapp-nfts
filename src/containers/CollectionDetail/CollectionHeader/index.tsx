@@ -3,7 +3,7 @@ import NFTDisplayBox from '@/components/NFTDisplayBox';
 import { ICollection } from '@/interfaces/api/collection';
 import React, { useState } from 'react';
 import { Container } from './CollectionHeader.styled';
-import { CDN_URL } from '@/configs';
+import { CDN_URL, TC_WEB_URL } from '@/configs';
 import { TC_EXPLORER } from '@/constants/url';
 import { useSelector } from 'react-redux';
 import { getUserSelector } from '@/state/user/selector';
@@ -16,6 +16,7 @@ import { FileUploader } from 'react-drag-drop-files';
 import { BLOCK_CHAIN_FILE_LIMIT, ERC721_SUPPORTED_EXTENSIONS, ZIP_EXTENSION } from '@/constants/file';
 import { Buffer } from 'buffer';
 import { fileToBase64, getFileExtensionByFileName, isERC721SupportedExt, unzipFile } from '@/utils';
+import { showError } from '@/utils/toast';
 
 interface ICollectionHeader {
   collection?: ICollection;
@@ -38,7 +39,9 @@ const CollectionHeader = (props: ICollectionHeader) => {
 
   const handleMintSingle = async (file: File): Promise<void> => {
     if (!collection?.contract) {
-      toast.error('Contract address not found.');
+      showError({
+        message: 'Contract address not found.'
+      });
       return;
     }
 
@@ -56,7 +59,17 @@ const CollectionHeader = (props: ICollectionHeader) => {
       toast.success('Transaction has been created. Please wait for few minutes.');
     } catch (err: unknown) {
       console.log(err);
-      toast.error((err as Error).message);
+      if ((err as Error).message === 'pending') {
+        showError({
+          message: 'You have some pending transactions. Please complete all of them before moving on.',
+          url: TC_WEB_URL,
+          linkText: 'Go to Wallet'
+        })
+      } else {
+        showError({
+          message: (err as Error).message || 'Something went wrong. Please try again later.'
+        })
+      }
     } finally {
       setIsMinting(false);
     }
@@ -64,7 +77,9 @@ const CollectionHeader = (props: ICollectionHeader) => {
 
   const handleMintBatch = async (file: File): Promise<void> => {
     if (!collection?.contract) {
-      toast.error('Contract address not found.');
+      showError({
+        message: 'Contract address not found.'
+      });
       return;
     }
     try {
@@ -83,7 +98,9 @@ const CollectionHeader = (props: ICollectionHeader) => {
         const chunks = Buffer.from(JSON.stringify(obj));
         const chunksSizeInKb = Buffer.byteLength(chunks) / 1000;
         if (chunksSizeInKb > BLOCK_CHAIN_FILE_LIMIT * 1000) {
-          toast.error(`File size error, maximum file size is ${BLOCK_CHAIN_FILE_LIMIT * 1000}kb.`);
+          showError({
+            message: `File size error, maximum file size is ${BLOCK_CHAIN_FILE_LIMIT * 1000}kb.`
+          });
           return;
         }
         if (currentBatchSize + chunksSizeInKb >= BLOCK_CHAIN_FILE_LIMIT * 1000) {
@@ -111,7 +128,17 @@ const CollectionHeader = (props: ICollectionHeader) => {
       }
       toast.success('Transaction has been created. Please wait for few minutes.');
     } catch (err: unknown) {
-      toast.error((err as Error).message || 'Something went wrong. Please try again later.');
+      if ((err as Error).message === 'pending') {
+        showError({
+          message: 'You have some pending transactions. Please complete all of them before moving on.',
+          url: TC_WEB_URL,
+          linkText: 'Go to Wallet'
+        })
+      } else {
+        showError({
+          message: (err as Error).message || 'Something went wrong. Please try again later.'
+        })
+      }
       console.log(err);
     } finally {
       setIsMinting(false);
@@ -122,7 +149,9 @@ const CollectionHeader = (props: ICollectionHeader) => {
     const fileName = file.name;
     const fileExt = getFileExtensionByFileName(fileName);
     if (!isERC721SupportedExt(fileExt)) {
-      toast.error('Unsupported file extension.');
+      showError({
+        message: 'Unsupported file extension.'
+      });
       return;
     }
 
@@ -131,7 +160,9 @@ const CollectionHeader = (props: ICollectionHeader) => {
     } else {
       const fileSizeInKb = file.size / 1000;
       if (fileSizeInKb > BLOCK_CHAIN_FILE_LIMIT * 1000) {
-        toast.error(`File size error, maximum file size is ${BLOCK_CHAIN_FILE_LIMIT * 1000}kb.`);
+        showError({
+          message: `File size error, maximum file size is ${BLOCK_CHAIN_FILE_LIMIT * 1000}kb.`
+        });
         return;
       }
 
