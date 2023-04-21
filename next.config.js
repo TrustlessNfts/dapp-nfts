@@ -1,8 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
   swcMinify: true,
   output: 'standalone',
+  reactStrictMode: true,
   images: {
     dangerouslyAllowSVG: true,
     remotePatterns: [
@@ -10,8 +10,12 @@ const nextConfig = {
         protocol: 'https',
         hostname: '**.trustless.computer',
       },
+      {
+        protocol: 'https',
+        hostname: '**.trustlessnfts.com'
+      }
     ],
   },
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;
