@@ -35,7 +35,7 @@ const Header = ({ height }: { height: number }) => {
           <img alt="logo" src={`${CDN_URL}/images/nfts-logo.svg`} />
         )}
         {!mobileScreen && (
-          <img alt="logo" src={`${CDN_URL}/images/logo-nft-2.svg`} />
+          <img alt="logo" src={`${CDN_URL}/images/logo-nft-3.svg`} />
         )}
       </Link>
       <MenuMobile ref={refMenu} onCloseMenu={() => setIsOpenMenu(false)} />
