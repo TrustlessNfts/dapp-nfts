@@ -29,7 +29,7 @@ const Header = ({ height }: { height: number }) => {
     <Wrapper style={{ height }}>
       <div className="indicator" />
       <Link className="logo" href={ROUTE_PATH.HOME}>
-        <img alt="logo" src={`${CDN_URL}/images/nfts-logo.svg`} />
+        <img alt="logo" src={`${CDN_URL}/images/logo-nft-2.svg`} />
       </Link>
       <MenuMobile ref={refMenu} onCloseMenu={() => setIsOpenMenu(false)} />
       <div className="rightContainer">
