@@ -15,12 +15,14 @@ export const Container = styled.div`
 
 export const UploadFileContainer = styled.div`
   padding: ${px2rem(24)} ${px2rem(32)};
-  background-color: ${({ theme }: { theme: DefaultTheme }) => theme.bg2};
   display: flex;
+  flex-direction: column;
+  text-align: center;
   align-items: center;
   justify-content: space-between;
   margin-bottom: ${px2rem(40)};
   color: ${({ theme }: { theme: DefaultTheme }) => theme.white};
+  gap: ${px2rem(28)};
 
   .upload_left {
     display: flex;
@@ -35,7 +37,12 @@ export const UploadFileContainer = styled.div`
   }
 
   .upload_title {
-    margin-bottom: ${px2rem(8)};
+    margin-bottom: ${px2rem(16)};
+  }
+
+  .upload_description {
+    max-width: 80ch;
+    opacity: 0.7;
   }
 
   .button-text {
@@ -53,10 +60,6 @@ export const UploadFileContainer = styled.div`
   @media screen and (max-width: 768px) {
     display: block;
     padding: ${px2rem(24)};
-
-    .create-btn {
-      width: 100%;
-    }
 
     .upload_description {
       margin-bottom: ${px2rem(16)};

@@ -1,30 +1,38 @@
 import Button from '@/components/Button';
 import IconSVG from '@/components/IconSVG';
 import Text from '@/components/Text';
-import { Formik } from 'formik';
-import { Modal } from 'react-bootstrap';
-import { StyledModalUpload, Title, WrapInput } from './ModalCreate.styled';
-import { useState } from 'react';
-import useContractOperation from '@/hooks/contract-operations/useContractOperation';
+import { CDN_URL, TC_WEB_URL } from '@/configs';
+import { MINT_TOOL_MAX_FILE_SIZE } from '@/constants/config';
+import { BLOCK_CHAIN_FILE_LIMIT, ZIP_EXTENSION } from '@/constants/file';
+import { DappsTabs } from '@/enums/tabs';
 import useCreateNFTCollection, {
   ICreateNFTCollectionParams,
 } from '@/hooks/contract-operations/nft/useCreateNFTCollection';
+import useContractOperation from '@/hooks/contract-operations/useContractOperation';
 import { DeployContractResponse } from '@/interfaces/contract-operation';
-import toast from 'react-hot-toast';
-import { FileUploader } from 'react-drag-drop-files';
-import { MINT_TOOL_MAX_FILE_SIZE } from '@/constants/config';
 import {
   fileToBase64,
   getFileExtensionByFileName,
   isERC721SupportedExt,
-  prettyPrintBytes,
   unzipFile,
 } from '@/utils';
-import { BLOCK_CHAIN_FILE_LIMIT, ZIP_EXTENSION } from '@/constants/file';
-import { Buffer } from 'buffer';
-import { CDN_URL, TC_WEB_URL } from '@/configs';
 import { showError } from '@/utils/toast';
-import { DappsTabs } from '@/enums/tabs';
+import { Buffer } from 'buffer';
+import { Formik } from 'formik';
+import { useContext, useEffect, useState } from 'react';
+import { Modal } from 'react-bootstrap';
+import toast from 'react-hot-toast';
+import DropFile from './DropFile';
+import {
+  Checkboxes,
+  StyledModalUpload,
+  Title,
+  WrapInput,
+} from './ModalCreate.styled';
+import { STATIC_IMAGE_EXTENSIONS } from '@/constants/file';
+import * as TC_SDK from 'trustless-computer-sdk';
+import { AssetsContext } from '@/contexts/assets-context';
+import { formatBTCPrice } from '@trustless-computer/dapp-core';
 
 interface IFormValue {
   name: string;
@@ -35,9 +43,16 @@ type Props = {
   handleClose: () => void;
 };
 
+enum UploadType {
+  Single = 0,
+  Zip = 1,
+}
+
 const ModalCreate = (props: Props) => {
   const { show = false, handleClose } = props;
   const [isProcessing, setIsProcessing] = useState(false);
+  const [uploadType, setUploadType] = useState(UploadType.Single);
+  const [estBTCFee, setEstBTCFee] = useState('0');
   const { run } = useContractOperation<
     ICreateNFTCollectionParams,
     DeployContractResponse | null
@@ -45,17 +60,38 @@ const ModalCreate = (props: Props) => {
     operation: useCreateNFTCollection,
   });
   const [file, setFile] = useState<File | null>(null);
+  const [isProcessingFile, setIsProcessingFile] = useState(false);
+  const [listFiles, setListFiles] = useState<Array<Array<Buffer>> | null>();
+  const { feeRate } = useContext(AssetsContext);
 
-  const onChangeFile = (file: File): void => {
+  const onChangeFile = (file: File | null): void => {
     setFile(file);
   };
 
-  const onSizeError = (): void => {
-    showError({
-      message: `File size error, maximum file size is ${
-        MINT_TOOL_MAX_FILE_SIZE * 1000
-      }KB.`,
+  // const onSizeError = (): void => {
+  //   showError({
+  //     message: `File size error, maximum file size is ${
+  //       MINT_TOOL_MAX_FILE_SIZE * 1000
+  //     }KB.`,
+  //   });
+  // };
+
+  const handleEstFee = async (
+    listOfChunks: Array<Array<Buffer>> | null,
+  ): Promise<void> => {
+    const tcTxSizeBytes =
+      listOfChunks
+        ?.map((chunk) =>
+          chunk.reduce((prev, cur) => prev + Buffer.byteLength(cur), 0),
+        )
+        .reduce((prev, cur) => prev + cur, 0) || 28000;
+
+    const estimatedFee = TC_SDK.estimateInscribeFee({
+      tcTxSizeByte: tcTxSizeBytes,
+      feeRatePerByte: feeRate.fastestFee,
     });
+
+    setEstBTCFee(estimatedFee.totalFee.toString());
   };
 
   const handleSingleFile = async (file: File): Promise<Array<Array<Buffer>>> => {
@@ -166,13 +202,52 @@ const ModalCreate = (props: Props) => {
     }
   };
 
+  useEffect(() => {
+    if (file) {
+      const fileExt = getFileExtensionByFileName(file.name);
+
+      if (fileExt === ZIP_EXTENSION) {
+        setIsProcessingFile(true);
+        handleZipFile(file)
+          .then((listOfChunks) => {
+            setListFiles(listOfChunks);
+          })
+          .catch((err) => {
+            showError({
+              message: (err as Error).message,
+            });
+          })
+          .finally(() => {
+            setIsProcessingFile(false);
+          });
+      } else {
+        handleSingleFile(file)
+          .then((listOfChunks) => {
+            setListFiles(listOfChunks);
+          })
+          .catch((err) => {
+            showError({
+              message: (err as Error).message,
+            });
+          })
+          .finally(() => {
+            setIsProcessingFile(false);
+          });
+      }
+    }
+  }, [file]);
+
+  useEffect(() => {
+    handleEstFee(listFiles || null);
+  }, [listFiles]);
+
   return (
     <StyledModalUpload show={show} onHide={handleClose} centered>
       <Modal.Header>
         <IconSVG
           className="cursor-pointer"
           onClick={handleClose}
-          src={`${CDN_URL}/icons/ic-close.svgF`}
+          src={`${CDN_URL}/icons/ic-close-1.svg`}
           maxWidth={'22px'}
         />
       </Modal.Header>
@@ -189,7 +264,8 @@ const ModalCreate = (props: Props) => {
         >
           {({ values, errors, touched, handleChange, handleBlur, handleSubmit }) => (
             <form onSubmit={handleSubmit}>
-              <WrapInput>
+              <WrapInput className="mb-20">
+                <label htmlFor="name">Name</label>
                 <input
                   id="name"
                   type="text"
@@ -204,39 +280,149 @@ const ModalCreate = (props: Props) => {
                   <p className="error">{errors.name}</p>
                 )}
               </WrapInput>
-
-              <FileUploader
-                handleChange={onChangeFile}
-                name={'fileUploader'}
-                maxSize={MINT_TOOL_MAX_FILE_SIZE}
-                onSizeError={onSizeError}
-                classes={'dropZone'}
-                types={['png', 'jpeg', 'jpg', 'zip']}
-              >
-                <>
-                  {file && (
-                    <div className="upload-wrapper">
-                      <p>{`${file.name} (${prettyPrintBytes(file.size)})`}</p>
-                      <IconSVG
-                        src={`${CDN_URL}/icons/ic-check.svg`}
-                        maxWidth={'18px'}
-                        color="#00AA6C"
-                      />
-                    </div>
-                  )}
-                  {!file && (
-                    <div className="upload-wrapper">
-                      <p>Choose a file to mint (optional)</p>
-                    </div>
-                  )}
-                </>
-              </FileUploader>
-
-              <Button disabled={isProcessing} type="submit" className="confirm-btn">
-                <Text size="medium" fontWeight="medium" className="confirm-text">
-                  {isProcessing ? 'Processing...' : 'Create'}
+              <div className="upload">
+                <Text
+                  size="regular"
+                  fontWeight="medium"
+                  className="mb-4"
+                  color="bg1"
+                >
+                  Upload NFT
                 </Text>
-              </Button>
+                <Text color={'black'}>
+                  Choose a file to mint the first NFT of your BRC-721 collection.
+                </Text>
+                <Text
+                  color={'black'}
+                  style={{ fontStyle: 'italic' }}
+                  className="mb-8"
+                >
+                  (You can mint additional NFTs later after your collection is
+                  created.)
+                </Text>
+                <div className="upload-options">
+                  <Checkboxes>
+                    <label
+                      className="label"
+                      onClick={() => {
+                        setUploadType(UploadType.Single);
+                        setFile(null);
+                        setListFiles(null);
+                      }}
+                    >
+                      Single image
+                      <input
+                        type="checkbox"
+                        checked={uploadType === UploadType.Single}
+                        name="fileType"
+                      />
+                      <span className="checkmark"></span>
+                    </label>
+                    <label
+                      className="label"
+                      onClick={() => {
+                        setUploadType(UploadType.Zip);
+                        setFile(null);
+                        setListFiles(null);
+                      }}
+                    >
+                      Zip file
+                      <input
+                        type="checkbox"
+                        checked={uploadType === UploadType.Zip}
+                        name="fileType"
+                      />
+                      <span className="checkmark"></span>
+                    </label>
+                  </Checkboxes>
+                </div>
+
+                {/* <FileUploader
+                  handleChange={onChangeFile}
+                  name={'fileUploader'}
+                  maxSize={MINT_TOOL_MAX_FILE_SIZE}
+                  onSizeError={onSizeError}
+                  classes={'dropZone'}
+                  types={['png', 'jpeg', 'jpg', 'zip']}
+                >
+                  <>
+                    {file && (
+                      <div className="upload-wrapper">
+                        <p>{`${file.name} (${prettyPrintBytes(file.size)})`}</p>
+                        <IconSVG
+                          src={`${CDN_URL}/icons/ic-check.svg`}
+                          maxWidth={'18px'}
+                          color="#00AA6C"
+                        />
+                      </div>
+                    )}
+                    {!file && (
+                      <div className="upload-wrapper">
+                        <p>Choose a file to mint (optional)</p>
+                      </div>
+                    )}
+                  </>
+                </FileUploader> */}
+                <DropFile
+                  labelText={
+                    uploadType === UploadType.Single
+                      ? 'Upload your image file here.'
+                      : 'Upload your Zip file here.'
+                  }
+                  className={'dropZoneContainer'}
+                  acceptedFileType={
+                    uploadType === UploadType.Single
+                      ? STATIC_IMAGE_EXTENSIONS
+                      : ['zip']
+                  }
+                  uploadFile={file}
+                  maxSize={
+                    uploadType === UploadType.Single
+                      ? MINT_TOOL_MAX_FILE_SIZE
+                      : 9999999
+                  }
+                  onChange={onChangeFile}
+                  isProcessing={isProcessingFile}
+                />
+              </div>
+              <ul className="extra-info">
+                {uploadType === UploadType.Zip && (
+                  <li className="font-bold">
+                    Please note that one zip file can only include one file
+                    extension.
+                  </li>
+                )}
+                <li>
+                  Supported file extensions are {STATIC_IMAGE_EXTENSIONS.join(', ')}.
+                </li>
+                <li>
+                  Maximum file size
+                  {uploadType === UploadType.Zip && ' for each file in zip'} is
+                  350KB.
+                </li>
+              </ul>
+              <div className="divider"></div>
+              <div className="est-fee">
+                <div className="est-fee-item">
+                  <Text size="regular" color="text333">
+                    Estimated fee (BTC)
+                  </Text>
+                  <Text size="medium" color="bg1" fontWeight="medium">
+                    ~ {formatBTCPrice(estBTCFee)} BTC
+                  </Text>
+                </div>
+              </div>
+              <div className="confirm">
+                <Button
+                  disabled={isProcessing}
+                  type="submit"
+                  className="confirm-btn"
+                >
+                  <Text size="medium" fontWeight="medium" className="confirm-text">
+                    {isProcessing ? 'Processing...' : 'Create'}
+                  </Text>
+                </Button>
+              </div>
             </form>
           )}
         </Formik>

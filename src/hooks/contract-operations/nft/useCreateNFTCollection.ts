@@ -1,4 +1,8 @@
-import { ContractOperationHook, DAppType, DeployContractResponse } from '@/interfaces/contract-operation';
+import {
+  ContractOperationHook,
+  DAppType,
+  DeployContractResponse,
+} from '@/interfaces/contract-operation';
 import ERC721ABIJson from '@/abis/erc721.json';
 import { useWeb3React } from '@web3-react/core';
 import { useContext } from 'react';
@@ -14,22 +18,35 @@ export interface ICreateNFTCollectionParams {
   listOfChunks: Array<Array<Buffer>>;
 }
 
-const useCreateNFTCollection: ContractOperationHook<ICreateNFTCollectionParams, DeployContractResponse | null> = () => {
+const useCreateNFTCollection: ContractOperationHook<
+  ICreateNFTCollectionParams,
+  DeployContractResponse | null
+> = () => {
   const { account, provider } = useWeb3React();
   const { btcBalance, feeRate } = useContext(AssetsContext);
 
-  const call = async (params: ICreateNFTCollectionParams): Promise<DeployContractResponse | null> => {
+  const call = async (
+    params: ICreateNFTCollectionParams,
+  ): Promise<DeployContractResponse | null> => {
     if (account && provider) {
       const { name, listOfChunks } = params;
       console.log(params);
       const byteCode = ERC721ABIJson.bytecode;
+
+      const tcTxSizeBytes = listOfChunks
+        .map((chunk) =>
+          chunk.reduce((prev, cur) => prev + Buffer.byteLength(cur), 0),
+        )
+        .reduce((prev, cur) => prev + cur, 0);
+      console.log('🚀 ~ tcTxSizeBytes:', tcTxSizeBytes);
+
       console.log({
         tcTxSizeByte: Buffer.byteLength(byteCode),
         feeRatePerByte: feeRate.fastestFee,
       });
       const estimatedFee = TC_SDK.estimateInscribeFee({
         // TODO remove hardcode
-        tcTxSizeByte: 28000,
+        tcTxSizeByte: tcTxSizeBytes || 28000,
         feeRatePerByte: feeRate.fastestFee,
       });
       const balanceInBN = new BigNumber(btcBalance);
@@ -41,7 +58,11 @@ const useCreateNFTCollection: ContractOperationHook<ICreateNFTCollectionParams, 
         );
       }
 
-      const factory = new ContractFactory(ERC721ABIJson.abi, byteCode, provider.getSigner());
+      const factory = new ContractFactory(
+        ERC721ABIJson.abi,
+        byteCode,
+        provider.getSigner(),
+      );
       console.log('factory', factory);
       const contract = await factory.deploy(name, listOfChunks);
 
@@ -49,6 +70,7 @@ const useCreateNFTCollection: ContractOperationHook<ICreateNFTCollectionParams, 
         hash: contract.deployTransaction.hash,
         contractAddress: contract.address,
         deployTransaction: contract.deployTransaction,
+        estFee: estimatedFee,
       };
     }
 

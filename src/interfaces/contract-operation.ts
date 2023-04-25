@@ -1,5 +1,6 @@
 import { TransactionEventType } from '@/enums/transaction';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
+import BigNumber from 'bignumber.js';
 
 export enum DAppType {
   ERC721 = 'NFT', // NFTs
@@ -19,4 +20,7 @@ export type DeployContractResponse = {
   hash: string;
   contractAddress: string;
   deployTransaction: TransactionResponse;
+  estFee: {
+    totalFee: BigNumber;
+  };
 };

@@ -8,7 +8,7 @@ export const StyledModalUpload = styled(Modal)`
   }
 
   .modal-content {
-    border-radius: 2px;
+    border-radius: 12px;
   }
 
   .modal-header {
@@ -61,7 +61,8 @@ export const WrapInput = styled.div`
     border: 1px solid ${({ theme }: { theme: DefaultTheme }) => theme.border3};
 
     :hover {
-      border: 1px solid ${({ theme }: { theme: DefaultTheme }) => theme.primary.brand};
+      border: 1px solid
+        ${({ theme }: { theme: DefaultTheme }) => theme.primary.brand};
     }
   }
 

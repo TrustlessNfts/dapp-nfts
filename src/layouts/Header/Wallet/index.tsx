@@ -33,8 +33,6 @@ const WalletHeader = () => {
     setShow(true);
   };
   const handleOnMouseLeave = () => {
-    console.log('trigger');
-
     setShow(false);
   };
   const ref = useRef(null);

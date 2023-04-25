@@ -14,18 +14,18 @@ import { showError } from '@/utils/toast';
 const Collections = () => {
   const [showModal, setShowModal] = useState(false);
   const isAuthenticated = useSelector(getIsAuthenticatedSelector);
-  const router = useRouter()
+  const router = useRouter();
 
   const handleOpenModal = async () => {
     if (!isAuthenticated) {
       showError({
-        message: 'Please connect wallet to continue.'
+        message: 'Please connect wallet to continue.',
       });
       router.push(`${ROUTE_PATH.CONNECT_WALLET}?next=${window.location.href}`);
       return;
     }
     setShowModal(true);
-  }
+  };
 
   return (
     <Container>
@@ -33,19 +33,24 @@ const Collections = () => {
         <div className="upload_left">
           <div className="upload_content">
             <h3 className="upload_title">BRC-721 on Bitcoin</h3>
-            <Text className='upload_description' size="medium" maxWidth="100%">
-              BRC-721 is the standard for Non-Fungible Tokens (NFT) on Bitcoin. You can use it for collectible items,
-              memberships, in-game items, and more.
+            <Text className="upload_description" size="medium" maxWidth="100%">
+              BRC-721 is the standard for Non-Fungible Tokens (NFT) on Bitcoin. You
+              can use it for collectible items, memberships, in-game items, and more.
             </Text>
           </div>
         </div>
         <div className="upload_right">
           <Button
-            className='create-btn'
+            className="create-btn"
             background={'linear-gradient(90deg, #9796f0,#fbc7d4)'}
             onClick={handleOpenModal}
           >
-            <Text size="medium" color="bg1" className="button-text" fontWeight="medium">
+            <Text
+              size="medium"
+              color="bg1"
+              className="button-text"
+              fontWeight="medium"
+            >
               Create BRC-721
             </Text>
           </Button>

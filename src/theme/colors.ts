@@ -44,6 +44,8 @@ const commonTheme = {
     b: '#F9D03F',
   },
   red: '#FF4747',
+
+  bgColor: '#1A1A1A',
 };
 
 export const darkTheme = {
@@ -63,6 +65,7 @@ export const darkTheme = {
   text5: '#4f43e2',
   text6: commonTheme.red,
   text7: commonTheme.primary.brand,
+  text333: commonTheme.primary[333],
 
   // Border
   border1: '#2c2c2c',

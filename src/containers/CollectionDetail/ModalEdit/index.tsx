@@ -41,7 +41,9 @@ const ModalEdit = (props: Props) => {
   };
 
   const onSizeError = (): void => {
-    setError(`File size error, maximum file size is ${MINT_TOOL_MAX_FILE_SIZE * 1000}KB.`);
+    setError(
+      `File size error, maximum file size is ${MINT_TOOL_MAX_FILE_SIZE * 1000}KB.`,
+    );
     setPreview(null);
   };
 
@@ -82,7 +84,9 @@ const ModalEdit = (props: Props) => {
       }
       await updateCollection({
         contractAddress: collection.contract,
-        payload: uploadRes ? { description, name, thumbnail: uploadRes.url } : { description, name },
+        payload: uploadRes
+          ? { description, name, thumbnail: uploadRes.url }
+          : { description, name },
       });
 
       onUpdateSuccess();
@@ -99,7 +103,12 @@ const ModalEdit = (props: Props) => {
   return (
     <StyledModalUpload show={show} onHide={handleClose} centered>
       <Modal.Header>
-        <IconSVG className="cursor-pointer" onClick={handleClose} src={`${CDN_URL}/icons/ic-close.svg`} maxWidth={'22px'} />
+        <IconSVG
+          className="cursor-pointer"
+          onClick={handleClose}
+          src={`${CDN_URL}/icons/ic-close.svg`}
+          maxWidth={'22px'}
+        />
       </Modal.Header>
       <Modal.Body>
         <Title className="font-medium">Edit project: {collection.name}</Title>
@@ -127,7 +136,9 @@ const ModalEdit = (props: Props) => {
                   placeholder={`Enter collection name`}
                   disabled={isProcessing}
                 />
-                {errors.name && touched.name && <p className="error">{errors.name}</p>}
+                {errors.name && touched.name && (
+                  <p className="error">{errors.name}</p>
+                )}
               </WrapInput>
 
               <WrapInput>
@@ -143,14 +154,19 @@ const ModalEdit = (props: Props) => {
                   placeholder={`Enter description`}
                   disabled={isProcessing}
                 />
-                {errors.description && touched.description && <p className="error">{errors.description}</p>}
+                {errors.description && touched.description && (
+                  <p className="error">{errors.description}</p>
+                )}
               </WrapInput>
 
               <div>
                 <div className="preview-wrapper">
                   {preview ? (
                     <div className="thumbnail-wrapper">
-                      <MediaPreview previewExt={file?.name?.split('.')?.pop() || ''} previewUrl={preview} />
+                      <MediaPreview
+                        previewExt={file?.name?.split('.')?.pop() || ''}
+                        previewUrl={preview}
+                      />
                     </div>
                   ) : (
                     <img src={collection.thumbnail} alt="default upload image"></img>
@@ -167,15 +183,23 @@ const ModalEdit = (props: Props) => {
                   disabled={isProcessing}
                 >
                   <div className="upload-btn">
-                    <IconSVG src={`${CDN_URL}/icons/ic_upload_image.svg'`} maxWidth={'22px'} />
+                    <IconSVG
+                      src={`${CDN_URL}/icons/ic_upload_image.svg'`}
+                      maxWidth={'22px'}
+                    />
                     <p className="upload-text">Upload thumbnail</p>
                   </div>
                 </FileUploader>
 
                 {error && <p className={'error-text'}>{error}</p>}
               </div>
-
-              <Button type="submit" className="confirm-btn" disabled={isProcessing}>
+              <Button
+                type="submit"
+                bg="linear-gradient(90deg, #9796f0,#fbc7d4)"
+                className="confirm-btn"
+                disabled={isProcessing}
+                background={'linear-gradient(90deg, #9796f0,#fbc7d4)'}
+              >
                 <Text size="medium" fontWeight="medium" className="confirm-text">
                   {isProcessing ? 'Updating...' : 'Update'}
                 </Text>
@@ -184,7 +208,9 @@ const ModalEdit = (props: Props) => {
           )}
         </Formik>
       </Modal.Body>
-      <Modal.Footer>{/* <Button onClick={handleClose}>Save Changes</Button> */}</Modal.Footer>
+      <Modal.Footer>
+        {/* <Button onClick={handleClose}>Save Changes</Button> */}
+      </Modal.Footer>
     </StyledModalUpload>
   );
 };

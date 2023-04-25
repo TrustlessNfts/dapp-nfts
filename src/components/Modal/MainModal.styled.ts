@@ -8,7 +8,7 @@ export const MainModal = styled(Modal)`
   }
 
   .modal-content {
-    border-radius: 2px;
+    border-radius: 12px;
   }
 
   .modal-header {

@@ -12,6 +12,14 @@
   width: 100%;
 }
 
+.mb-4 {
+  margin-bottom: 0.25rem !important;
+}
+
+.mb-8 {
+  margin-bottom: 0.5rem !important;
+}
+
 .mb-16 {
   margin-bottom: 1rem;
 }
@@ -20,6 +28,14 @@
   margin-bottom: 1.5rem;
 }
 
+.mb-20 {
+  margin-bottom: 1.25rem;
+}
+
 .font-ibm {
   font-family: 'IBMPlexMono', sans-serif !important;
+}
+
+.font-bold {
+  font-weight: bold;
 }
