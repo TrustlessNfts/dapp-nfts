@@ -46,7 +46,6 @@ export const UploadFileContainer = styled.div`
   }
 
   .button-text {
-    font-family: 'IBMPlexMono' !important;
     padding: ${px2rem(11)} ${px2rem(36)};
   }
 

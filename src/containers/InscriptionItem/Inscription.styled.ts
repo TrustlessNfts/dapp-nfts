@@ -39,7 +39,6 @@ const Container = styled.div`
         font-size: ${px2rem(34)};
         line-height: ${px2rem(44)};
         color: #ffffff;
-        font-family: 'IBMPlexMono' !important;
       }
 
       .subTitle {
@@ -121,72 +120,70 @@ const Container = styled.div`
   }
 
   @media screen and (max-width: 768px) {
-      padding: 0px 0px;
+    padding: 0px 0px;
 
-      .content {
-        flex-direction: column;
-        gap: 40px;
-      }
+    .content {
+      flex-direction: column;
+      gap: 40px;
+    }
 
-      .left-container {
+    .left-container {
+      width: 100%;
+
+      .thumbnail {
         width: 100%;
+      }
+    }
 
-        .thumbnail {
-          width: 100%;
+    .right-container {
+      width: 100%;
+
+      .header {
+        .title {
+          font-size: 28px;
+          line-height: 28px;
+        }
+
+        .subTitle {
+          font-size: 20px;
         }
       }
 
-      .right-container {
-        width: 100%;
-
-        .header {
-
-          .title {
-            font-size: 28px;
-            line-height: 28px;
-          }
-
-          .subTitle {
-            font-size: 20px;
-          }
+      .tag {
+        .tag-title {
         }
 
-        .tag {          
-          .tag-title {
-          }
-
-          .subTitle {
-            font-size: 20px;
-            line-height: 24px;
-          }
+        .subTitle {
+          font-size: 20px;
+          line-height: 24px;
         }
       }
+    }
   }
 
   @media screen and (max-width: 768px) {
-      .content {
-        gap: 28px;
-      }
+    .content {
+      gap: 28px;
+    }
 
-      .left-container {
-        .thumbnail {
-          width: 100%;
+    .left-container {
+      .thumbnail {
+        width: 100%;
+      }
+    }
+
+    .right-container {
+      .header {
+        .title {
+          line-height: 24px;
+          font-size: 24px;
+        }
+
+        .subTitle {
+          font-size: 16px;
         }
       }
-
-      .right-container {
-        .header {
-          .title {
-            line-height: 24px;
-            font-size: 24px;
-          }
-    
-          .subTitle {
-            font-size: 16px;
-          }
-        }
-  
-      }
+    }
   }
 `;
 
@@ -249,8 +246,8 @@ const Information = styled.div`
   }
 
   @media screen and (max-width: 768px) {
-      margin-top: 28px;
-  };
+    margin-top: 28px;
+  }
 `;
 
 export { Container, Information };

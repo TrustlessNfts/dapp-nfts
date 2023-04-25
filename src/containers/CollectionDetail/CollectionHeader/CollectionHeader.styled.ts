@@ -137,7 +137,6 @@ const Container = styled.div`
     font-size: ${px2rem(34)};
     line-height: ${px2rem(44)};
     color: #ffffff;
-    font-family: 'IBMPlexMono' !important;
     margin-bottom: ${px2rem(4)};
   }
 

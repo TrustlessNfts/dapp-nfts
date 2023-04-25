@@ -147,7 +147,6 @@ const StyledLink = styled(Link)<{ active: boolean; activeColor?: string }>`
     active: boolean;
     activeColor?: string;
   }) => (active ? activeColor || theme.white : theme.text2)};
-  font-family: 'IBMPlexMono';
   letter-spacing: -0.02em;
 
   :hover {
@@ -164,7 +163,6 @@ const Anchor = styled.a<{ active: boolean }>`
   text-decoration: none !important;
   color: ${({ theme, active }: { theme: DefaultTheme; active: boolean }) =>
     active ? theme.white : theme.text2};
-  font-family: 'IBMPlexMono';
   letter-spacing: -0.02em;
 
   :hover {
