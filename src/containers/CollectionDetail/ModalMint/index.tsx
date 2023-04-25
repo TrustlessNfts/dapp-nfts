@@ -13,7 +13,6 @@ import {
   Checkboxes,
   StyledModalUpload,
   Title,
-  WrapInput,
 } from '@/containers/Collections/ModalCreate/ModalCreate.styled';
 import { AssetsContext } from '@/contexts/assets-context';
 import { DappsTabs } from '@/enums/tabs';
@@ -284,18 +283,6 @@ const ModalMint = (props: Props) => {
         {/* <Formik key="mint" onSubmit={handleMintFile}>
           {({ values, errors, touched, handleChange, handleBlur, handleSubmit }) => ( */}
         <form>
-          <WrapInput className="mb-20">
-            <label htmlFor="name">Name</label>
-            <input
-              id="name"
-              type="text"
-              name="name"
-              value={collection.name}
-              className="input"
-              placeholder={`Enter name`}
-              disabled={true}
-            />
-          </WrapInput>
           <div className="upload">
             <Text size="regular" fontWeight="medium" className="mb-4" color="bg1">
               Upload NFT
