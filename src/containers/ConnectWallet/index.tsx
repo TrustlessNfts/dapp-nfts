@@ -64,7 +64,7 @@ const ConnectWallet: React.FC = (): React.ReactElement => {
             width={292}
             height={118}
             className="logo"
-            src={`${CDN_URL}/images/trustless-logo-1.svg`}
+            src={`${CDN_URL}/images/logo-nft-3.svg`}
             alt="trustless computer logo"
           />
           <h1 className="title">

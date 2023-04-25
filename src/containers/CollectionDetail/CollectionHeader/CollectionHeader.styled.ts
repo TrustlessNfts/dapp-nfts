@@ -34,12 +34,12 @@ const Container = styled.div`
 
       .mintButton {
         padding: ${px2rem(3)} ${px2rem(12)};
-        background: #fff;
+        background: linear-gradient(90deg, #9796f0 0%, #fbc7d4 100%);
+        border-radius: 100px;
         color: #1c1c1c;
         font-weight: 500;
         font-size: ${px2rem(14)};
         line-height: ${px2rem(24)};
-        border-radius: 2px;
 
         :disabled {
           opacity: 0.8;
@@ -49,15 +49,14 @@ const Container = styled.div`
       .editButton {
         padding: ${px2rem(3)} ${px2rem(12)};
         background: transparent;
-        color: #fff;
+        color: #95a4fc;
 
-        border: 1px solid #ffffff;
-        border-radius: 2px;
+        border: 1px solid #95a4fc;
+        border-radius: 100px;
 
-        font-weight: 500;
+        font-weight: 600;
         font-size: ${px2rem(14)};
         line-height: ${px2rem(24)};
-        border-radius: 2px;
 
         :disabled {
           opacity: 0.8;
