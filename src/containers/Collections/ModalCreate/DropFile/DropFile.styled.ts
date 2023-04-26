@@ -25,6 +25,13 @@ export const StyledDropFile = styled.div`
       height: ${px2rem(100)};
     }
 
+    .dropZoneDescriptionWrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: ${px2rem(8)};
+    }
+
     .dropZoneDescription {
       font-weight: 400;
       font-size: ${px2rem(16)};

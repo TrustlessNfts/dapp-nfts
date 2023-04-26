@@ -56,8 +56,14 @@ const ModalMint = (props: Props) => {
   // const [isProcessing, _] = useState(false);
   const [uploadType, setUploadType] = useState(UploadType.Single);
   const [isMinting, setIsMinting] = useState(false);
+  const [selectFee, setSelectFee] = useState<number>(0);
 
-  const [estBTCFee, setEstBTCFee] = useState('0');
+  // const [estBTCFee, setEstBTCFee] = useState('0');
+  const [estBTCFee, setEstBTCFee] = useState({
+    economy: '0',
+    faster: '0',
+    fastest: '0',
+  });
   const [file, setFile] = useState<File | null>(null);
   // const [listFiles, setListFiles] = useState<Array<Array<Buffer>> | null>();
   const { feeRate } = useContext(AssetsContext);
@@ -120,9 +126,34 @@ const ModalMint = (props: Props) => {
     return listOfChunks;
   };
 
+  const calculateEstFee = (fileSize: number) => {
+    const estimatedFastestFee = TC_SDK.estimateInscribeFee({
+      tcTxSizeByte: fileSize,
+      feeRatePerByte: feeRate.fastestFee,
+    });
+    const estimatedFasterFee = TC_SDK.estimateInscribeFee({
+      tcTxSizeByte: fileSize,
+      feeRatePerByte: feeRate.halfHourFee,
+    });
+    const estimatedEconomyFee = TC_SDK.estimateInscribeFee({
+      tcTxSizeByte: fileSize,
+      feeRatePerByte: feeRate.hourFee,
+    });
+
+    setEstBTCFee({
+      fastest: estimatedFastestFee.totalFee.toString(),
+      faster: estimatedFasterFee.totalFee.toString(),
+      economy: estimatedEconomyFee.totalFee.toString(),
+    });
+  };
+
   const handleEstFee = async (): Promise<void> => {
     if (!file) {
-      setEstBTCFee('0');
+      setEstBTCFee({
+        economy: '0',
+        faster: '0',
+        fastest: '0',
+      });
       return;
     }
     const fileExt = getFileExtensionByFileName(file.name);
@@ -133,24 +164,16 @@ const ModalMint = (props: Props) => {
           ?.map((chunk) =>
             chunk.reduce((prev, cur) => prev + Buffer.byteLength(cur), 0),
           )
-          .reduce((prev, cur) => prev + cur, 0) || 28000;
+          .reduce((prev, cur) => prev + cur, 0) || 0;
 
-      const estimatedFee = TC_SDK.estimateInscribeFee({
-        tcTxSizeByte: tcTxSizeBytes,
-        feeRatePerByte: feeRate.fastestFee,
-      });
-
-      setEstBTCFee(estimatedFee.totalFee.toString());
+      calculateEstFee(tcTxSizeBytes);
     } else {
       const obj = {
         image: await fileToBase64(file),
       };
       const chunks = Buffer.from(JSON.stringify(obj));
-      const estimatedFee = TC_SDK.estimateInscribeFee({
-        tcTxSizeByte: Buffer.byteLength(chunks),
-        feeRatePerByte: feeRate.fastestFee,
-      });
-      setEstBTCFee(estimatedFee.totalFee.toString());
+
+      calculateEstFee(Buffer.byteLength(chunks));
     }
   };
 
@@ -264,6 +287,34 @@ const ModalMint = (props: Props) => {
     }
   };
 
+  const renderEstFee = ({
+    title,
+    estFee,
+    feeRate,
+  }: {
+    title: string;
+    estFee: string;
+    feeRate: number;
+  }) => {
+    return (
+      <div className={`${selectFee === feeRate ? 'active' : ''}`}>
+        <Text fontWeight="medium" size="regular" color="bg1">
+          {title}
+        </Text>
+        <Text color="border2" className="mb-8">
+          {feeRate} sats/vByte
+        </Text>
+        <p className="ext-price">
+          {formatBTCPrice(estFee)} <span>BTC</span>
+        </p>
+      </div>
+    );
+  };
+
+  useEffect(() => {
+    setSelectFee(feeRate.fastestFee);
+  }, [feeRate.fastestFee]);
+
   useEffect(() => {
     handleEstFee();
   }, [file]);
@@ -356,15 +407,41 @@ const ModalMint = (props: Props) => {
               {uploadType === UploadType.Zip && ' for each file in zip'} is 350KB.
             </li>
           </ul>
-          <div className="divider"></div>
           <div className="est-fee">
-            <div className="est-fee-item">
-              <Text size="regular" color="text333">
-                Estimated fee (BTC)
-              </Text>
-              <Text size="medium" color="bg1" fontWeight="medium">
-                ~ {formatBTCPrice(estBTCFee)} BTC
-              </Text>
+            <Text size="regular" fontWeight="medium" color="bg1" className="mb-8">
+              Select the network fee
+            </Text>
+            <div className="est-fee-options">
+              <div
+                className="est-fee-item"
+                onClick={() => setSelectFee(feeRate.hourFee)}
+              >
+                {renderEstFee({
+                  title: 'Economy',
+                  estFee: estBTCFee.economy,
+                  feeRate: feeRate.hourFee,
+                })}
+              </div>
+              <div
+                className="est-fee-item"
+                onClick={() => setSelectFee(feeRate.halfHourFee)}
+              >
+                {renderEstFee({
+                  title: 'Faster',
+                  estFee: estBTCFee.faster,
+                  feeRate: feeRate.halfHourFee,
+                })}
+              </div>
+              <div
+                className="est-fee-item"
+                onClick={() => setSelectFee(feeRate.fastestFee)}
+              >
+                {renderEstFee({
+                  title: 'Fastest',
+                  estFee: estBTCFee.fastest,
+                  feeRate: feeRate.fastestFee,
+                })}
+              </div>
             </div>
           </div>
           <div className="confirm">

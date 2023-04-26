@@ -106,6 +106,7 @@ export const StyledModalUpload = styled(Modal)`
 
     &:has(.active) {
       opacity: 1;
+      border-color: #9997f0;
     }
 
     &:hover {

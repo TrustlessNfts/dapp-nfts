@@ -1,12 +1,12 @@
-import cs from 'classnames';
-import { useEffect, useState } from 'react';
-import { FileUploader } from 'react-drag-drop-files';
-import { StyledDropFile } from './DropFile.styled';
-import { MINT_TOOL_MAX_FILE_SIZE } from '@/constants/config';
 import IconSVG from '@/components/IconSVG';
 import { CDN_URL } from '@/configs';
+import { MINT_TOOL_MAX_FILE_SIZE } from '@/constants/config';
 import { prettyPrintBytes } from '@trustless-computer/dapp-core';
+import cs from 'classnames';
+import { useEffect, useState } from 'react';
 import { Spinner } from 'react-bootstrap';
+import { FileUploader } from 'react-drag-drop-files';
+import { StyledDropFile } from './DropFile.styled';
 
 export interface IProps {
   className: string;
@@ -77,9 +77,12 @@ const DropFile: React.FC<IProps> = ({
             src={`${CDN_URL}/images/docs.svg`}
           ></IconSVG>
           {file ? (
-            <p className={'dropZoneDescription'}>
-              {`${file.name} (${prettyPrintBytes(file.size)})`}
-            </p>
+            <div className="dropZoneDescriptionWrapper">
+              <p className={'dropZoneDescription'}>
+                {`${file.name} (${prettyPrintBytes(file.size)})`}
+              </p>
+              <IconSVG src={`${CDN_URL}/icons/ic-check.svg`} maxWidth="16" />
+            </div>
           ) : (
             <p className={'dropZoneDescription'}>{labelText}</p>
           )}
