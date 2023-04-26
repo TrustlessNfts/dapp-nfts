@@ -7,6 +7,10 @@ export const StyledModalUpload = styled(Modal)`
     --bs-modal-color: ${({ theme }) => theme.bg1};
   }
 
+  .modal-dialog {
+    width: 700px !important;
+  }
+
   .modal-content {
     border-radius: 12px;
   }

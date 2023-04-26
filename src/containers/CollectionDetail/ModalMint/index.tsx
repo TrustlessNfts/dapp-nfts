@@ -320,7 +320,7 @@ const ModalMint = (props: Props) => {
   }, [file]);
 
   return (
-    <StyledModalUpload show={show} onHide={handleClose} centered>
+    <StyledModalUpload show={show} onHide={handleClose} centered size="lg">
       <Modal.Header>
         <IconSVG
           className="cursor-pointer"
