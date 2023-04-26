@@ -38,7 +38,6 @@ const useCreateNFTCollection: ContractOperationHook<
           chunk.reduce((prev, cur) => prev + Buffer.byteLength(cur), 0),
         )
         .reduce((prev, cur) => prev + cur, 0);
-      console.log('🚀 ~ tcTxSizeBytes:', tcTxSizeBytes);
 
       console.log({
         tcTxSizeByte: Buffer.byteLength(byteCode),
