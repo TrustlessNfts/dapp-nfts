@@ -54,7 +54,13 @@ const ModalCreate = (props: Props) => {
   const { show = false, handleClose } = props;
   const [isProcessing, setIsProcessing] = useState(false);
   const [uploadType, setUploadType] = useState(UploadType.Single);
-  const [estBTCFee, setEstBTCFee] = useState('0');
+  const [estBTCFee, setEstBTCFee] = useState({
+    economy: '0',
+    faster: '0',
+    fastest: '0',
+  });
+  const { feeRate } = useContext(AssetsContext);
+
   const { run } = useContractOperation<
     ICreateNFTCollectionParams,
     DeployContractResponse | null
@@ -65,8 +71,10 @@ const ModalCreate = (props: Props) => {
 
   const [file, setFile] = useState<File | null>(null);
   const [isProcessingFile, setIsProcessingFile] = useState(false);
+  const [selectFee, setSelectFee] = useState<number>(0);
+
+  const [showUploadField, setShowUploadField] = useState(false);
   const [listFiles, setListFiles] = useState<Array<Array<Buffer>> | null>();
-  const { feeRate } = useContext(AssetsContext);
 
   const onChangeFile = (file: File | null): void => {
     setFile(file);
@@ -88,14 +96,28 @@ const ModalCreate = (props: Props) => {
         ?.map((chunk) =>
           chunk.reduce((prev, cur) => prev + Buffer.byteLength(cur), 0),
         )
-        .reduce((prev, cur) => prev + cur, 0) || 28000;
+        .reduce((prev, cur) => prev + cur, 0) || 0;
 
-    const estimatedFee = TC_SDK.estimateInscribeFee({
+    const estimatedFastestFee = TC_SDK.estimateInscribeFee({
       tcTxSizeByte: tcTxSizeBytes,
       feeRatePerByte: feeRate.fastestFee,
     });
+    const estimatedFasterFee = TC_SDK.estimateInscribeFee({
+      tcTxSizeByte: tcTxSizeBytes,
+      feeRatePerByte: feeRate.halfHourFee,
+    });
+    const estimatedEconomyFee = TC_SDK.estimateInscribeFee({
+      tcTxSizeByte: tcTxSizeBytes,
+      feeRatePerByte: feeRate.hourFee,
+    });
 
-    setEstBTCFee(estimatedFee.totalFee.toString());
+    setEstBTCFee({
+      fastest: estimatedFastestFee.totalFee.toString(),
+      faster: estimatedFasterFee.totalFee.toString(),
+      economy: estimatedEconomyFee.totalFee.toString(),
+    });
+
+    // setEstBTCFee(estimatedFee.totalFee.toString());
   };
 
   const handleSingleFile = async (file: File): Promise<Array<Array<Buffer>>> => {
@@ -184,6 +206,7 @@ const ModalCreate = (props: Props) => {
       const tx = await run({
         name,
         listOfChunks,
+        selectFee,
       });
 
       toast.success(
@@ -230,6 +253,40 @@ const ModalCreate = (props: Props) => {
     }
   };
 
+  const handleShowUploadField = () => {
+    if (!showUploadField) {
+      setShowUploadField(true);
+    } else {
+      setShowUploadField(false);
+      setFile(null);
+      setListFiles([]);
+    }
+  };
+
+  const renderEstFee = ({
+    title,
+    estFee,
+    feeRate,
+  }: {
+    title: string;
+    estFee: string;
+    feeRate: number;
+  }) => {
+    return (
+      <div className={`${selectFee === feeRate ? 'active' : ''}`}>
+        <Text fontWeight="medium" size="regular" color="bg1">
+          {title}
+        </Text>
+        <Text color="border2" className="mb-8">
+          {feeRate} sats/vByte
+        </Text>
+        <p className="ext-price">
+          {formatBTCPrice(estFee)} <span>BTC</span>
+        </p>
+      </div>
+    );
+  };
+
   useEffect(() => {
     if (file) {
       const fileExt = getFileExtensionByFileName(file.name);
@@ -269,6 +326,10 @@ const ModalCreate = (props: Props) => {
     handleEstFee(listFiles || null);
   }, [listFiles]);
 
+  useEffect(() => {
+    setSelectFee(feeRate.fastestFee);
+  }, [feeRate.fastestFee]);
+
   return (
     <StyledModalUpload show={show} onHide={handleClose} centered>
       <Modal.Header>
@@ -293,7 +354,9 @@ const ModalCreate = (props: Props) => {
           {({ values, errors, touched, handleChange, handleBlur, handleSubmit }) => (
             <form onSubmit={handleSubmit}>
               <WrapInput className="mb-20">
-                <label htmlFor="name">Name</label>
+                <label htmlFor="name">
+                  Name <span className="text-red">*</span>
+                </label>
                 <input
                   id="name"
                   type="text"
@@ -308,17 +371,19 @@ const ModalCreate = (props: Props) => {
                   <p className="error">{errors.name}</p>
                 )}
               </WrapInput>
+
               <div className="upload">
                 <Text
                   size="regular"
                   fontWeight="medium"
-                  className="mb-4"
-                  color="bg1"
+                  className="mb-4 upload-title"
+                  // onClick={() => {
+                  //   setShowUploadField(!showUploadField);
+                  // }}
+                  onClick={handleShowUploadField}
                 >
-                  Upload NFT
-                </Text>
-                <Text color={'black'}>
-                  Choose a file to mint the first NFT of your BRC-721 collection.
+                  <IconSVG src={`${CDN_URL}/icons/ic-upload.svg`} maxWidth="20" />
+                  Upload NFT {showUploadField ? 'later' : 'now'}
                 </Text>
                 <Text
                   color={'black'}
@@ -328,116 +393,126 @@ const ModalCreate = (props: Props) => {
                   (You can mint additional NFTs later after your collection is
                   created.)
                 </Text>
-                <div className="upload-options">
-                  <Checkboxes>
-                    <label
-                      className="label"
-                      onClick={() => {
-                        setUploadType(UploadType.Single);
-                        setFile(null);
-                        setListFiles(null);
-                      }}
-                    >
-                      Single image
-                      <input
-                        type="checkbox"
-                        checked={uploadType === UploadType.Single}
-                        name="fileType"
-                      />
-                      <span className="checkmark"></span>
-                    </label>
-                    <label
-                      className="label"
-                      onClick={() => {
-                        setUploadType(UploadType.Zip);
-                        setFile(null);
-                        setListFiles(null);
-                      }}
-                    >
-                      Zip file
-                      <input
-                        type="checkbox"
-                        checked={uploadType === UploadType.Zip}
-                        name="fileType"
-                      />
-                      <span className="checkmark"></span>
-                    </label>
-                  </Checkboxes>
-                </div>
-
-                {/* <FileUploader
-                  handleChange={onChangeFile}
-                  name={'fileUploader'}
-                  maxSize={MINT_TOOL_MAX_FILE_SIZE}
-                  onSizeError={onSizeError}
-                  classes={'dropZone'}
-                  types={['png', 'jpeg', 'jpg', 'zip']}
-                >
-                  <>
-                    {file && (
-                      <div className="upload-wrapper">
-                        <p>{`${file.name} (${prettyPrintBytes(file.size)})`}</p>
-                        <IconSVG
-                          src={`${CDN_URL}/icons/ic-check.svg`}
-                          maxWidth={'18px'}
-                          color="#00AA6C"
-                        />
-                      </div>
-                    )}
-                    {!file && (
-                      <div className="upload-wrapper">
-                        <p>Choose a file to mint (optional)</p>
-                      </div>
-                    )}
-                  </>
-                </FileUploader> */}
-                <DropFile
-                  labelText={
-                    uploadType === UploadType.Single
-                      ? 'Upload your image file here.'
-                      : 'Upload your Zip file here.'
-                  }
-                  className={'dropZoneContainer'}
-                  acceptedFileType={
-                    uploadType === UploadType.Single
-                      ? STATIC_IMAGE_EXTENSIONS
-                      : ['zip']
-                  }
-                  uploadFile={file}
-                  maxSize={
-                    uploadType === UploadType.Single
-                      ? MINT_TOOL_MAX_FILE_SIZE
-                      : 9999999
-                  }
-                  onChange={onChangeFile}
-                  isProcessing={isProcessingFile}
-                />
               </div>
-              <ul className="extra-info">
-                {uploadType === UploadType.Zip && (
-                  <li className="font-bold">
-                    Please note that one zip file can only include one file
-                    extension.
-                  </li>
-                )}
-                <li>
-                  Supported file extensions are {STATIC_IMAGE_EXTENSIONS.join(', ')}.
-                </li>
-                <li>
-                  Maximum file size
-                  {uploadType === UploadType.Zip && ' for each file in zip'} is
-                  350KB.
-                </li>
-              </ul>
-              <div className="divider"></div>
+              {showUploadField && (
+                <div className="upload-wrapper">
+                  <div className="upload-options">
+                    <Checkboxes>
+                      <label
+                        className="label"
+                        onClick={() => {
+                          setUploadType(UploadType.Single);
+                          setFile(null);
+                          setListFiles(null);
+                        }}
+                      >
+                        Single image
+                        <input
+                          type="checkbox"
+                          checked={uploadType === UploadType.Single}
+                          name="fileType"
+                        />
+                        <span className="checkmark"></span>
+                      </label>
+                      <label
+                        className="label"
+                        onClick={() => {
+                          setUploadType(UploadType.Zip);
+                          setFile(null);
+                          setListFiles(null);
+                        }}
+                      >
+                        Zip file
+                        <input
+                          type="checkbox"
+                          checked={uploadType === UploadType.Zip}
+                          name="fileType"
+                        />
+                        <span className="checkmark"></span>
+                      </label>
+                    </Checkboxes>
+                  </div>
+
+                  <DropFile
+                    labelText={
+                      uploadType === UploadType.Single
+                        ? 'Upload your image file here.'
+                        : 'Upload your Zip file here.'
+                    }
+                    className={'dropZoneContainer'}
+                    acceptedFileType={
+                      uploadType === UploadType.Single
+                        ? STATIC_IMAGE_EXTENSIONS
+                        : ['zip']
+                    }
+                    uploadFile={file}
+                    maxSize={
+                      uploadType === UploadType.Single
+                        ? MINT_TOOL_MAX_FILE_SIZE
+                        : 9999999
+                    }
+                    onChange={onChangeFile}
+                    isProcessing={isProcessingFile}
+                  />
+                  <ul className="extra-info">
+                    {uploadType === UploadType.Zip && (
+                      <li className="font-bold">
+                        Please note that one zip file can only include one file
+                        extension.
+                      </li>
+                    )}
+                    <li>
+                      Supported file extensions are{' '}
+                      {STATIC_IMAGE_EXTENSIONS.join(', ')}.
+                    </li>
+                    <li>
+                      Maximum file size
+                      {uploadType === UploadType.Zip && ' for each file in zip'} is
+                      350KB.
+                    </li>
+                  </ul>
+                </div>
+              )}
               <div className="est-fee">
-                <div className="est-fee-item">
-                  <Text size="regular" color="text333">
-                    Estimated fee (BTC)
-                  </Text>
-                  <Text size="medium" color="bg1" fontWeight="medium">
-                    ~ {formatBTCPrice(estBTCFee)} BTC
-                  </Text>
+                <Text
+                  size="regular"
+                  fontWeight="medium"
+                  color="bg1"
+                  className="mb-8"
+                >
+                  Select the network fee
+                </Text>
+                <div className="est-fee-options">
+                  <div
+                    className="est-fee-item"
+                    onClick={() => setSelectFee(feeRate.hourFee)}
+                  >
+                    {renderEstFee({
+                      title: 'Economy',
+                      estFee: estBTCFee.economy,
+                      feeRate: feeRate.hourFee,
+                    })}
+                  </div>
+                  <div
+                    className="est-fee-item"
+                    onClick={() => setSelectFee(feeRate.halfHourFee)}
+                  >
+                    {renderEstFee({
+                      title: 'Faster',
+                      estFee: estBTCFee.faster,
+                      feeRate: feeRate.halfHourFee,
+                    })}
+                  </div>
+                  <div
+                    className="est-fee-item"
+                    onClick={() => setSelectFee(feeRate.fastestFee)}
+                  >
+                    {renderEstFee({
+                      title: 'Fastest',
+                      estFee: estBTCFee.fastest,
+                      feeRate: feeRate.fastestFee,
+                    })}
+                  </div>
                 </div>
               </div>
               <div className="confirm">

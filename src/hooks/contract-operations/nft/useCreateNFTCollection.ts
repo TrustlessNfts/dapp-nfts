@@ -16,6 +16,7 @@ import { TransactionEventType } from '@/enums/transaction';
 export interface ICreateNFTCollectionParams {
   name: string;
   listOfChunks: Array<Array<Buffer>>;
+  selectFee: number;
 }
 
 const useCreateNFTCollection: ContractOperationHook<
@@ -23,13 +24,13 @@ const useCreateNFTCollection: ContractOperationHook<
   DeployContractResponse | null
 > = () => {
   const { account, provider } = useWeb3React();
-  const { btcBalance, feeRate } = useContext(AssetsContext);
+  const { btcBalance } = useContext(AssetsContext);
 
   const call = async (
     params: ICreateNFTCollectionParams,
   ): Promise<DeployContractResponse | null> => {
     if (account && provider) {
-      const { name, listOfChunks } = params;
+      const { name, listOfChunks, selectFee } = params;
       console.log(params);
       const byteCode = ERC721ABIJson.bytecode;
 
@@ -41,13 +42,18 @@ const useCreateNFTCollection: ContractOperationHook<
 
       console.log({
         tcTxSizeByte: Buffer.byteLength(byteCode),
-        feeRatePerByte: feeRate.fastestFee,
+        feeRatePerByte: selectFee,
       });
       const estimatedFee = TC_SDK.estimateInscribeFee({
         // TODO remove hardcode
-        tcTxSizeByte: tcTxSizeBytes || 28000,
-        feeRatePerByte: feeRate.fastestFee,
+        tcTxSizeByte: tcTxSizeBytes || 0,
+        feeRatePerByte: selectFee,
       });
+      console.log(
+        '🚀 ~  estimatedFee.totalFee.toString():',
+        estimatedFee.totalFee.toString(),
+      );
+      console.log('🚀 ~ btcBalance:', btcBalance);
       const balanceInBN = new BigNumber(btcBalance);
       if (balanceInBN.isLessThan(estimatedFee.totalFee)) {
         throw Error(

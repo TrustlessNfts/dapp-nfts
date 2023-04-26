@@ -40,21 +40,22 @@ export const StyledModalUpload = styled(Modal)`
     margin-bottom: rem(8px);
   }
 
-  .upload-wrapper {
-    padding: ${px2rem(12)};
-    border: 1px solid #ccc;
+  .upload-title {
+    color: #9997f0;
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: ${px2rem(8)};
 
-    p {
-      font-weight: 500;
-      font-size: ${px2rem(12)};
-      line-height: ${px2rem(20)};
-      text-transform: uppercase;
-      color: ${({ theme }: { theme: DefaultTheme }) => theme.primary['5b']};
+    &:hover {
+      text-decoration: underline;
+      cursor: pointer;
     }
+  }
+
+  .upload-wrapper {
+    padding: ${px2rem(16)} ${px2rem(12)};
+    border: 1px solid #cecece;
+    border-radius: 8px;
   }
 
   .file-upload-name {
@@ -65,7 +66,7 @@ export const StyledModalUpload = styled(Modal)`
   }
 
   .extra-info {
-    padding-left: ${px2rem(32)};
+    padding-left: ${px2rem(16)};
     font-size: ${px2rem(12)};
     line-height: 22px;
 
@@ -83,13 +84,42 @@ export const StyledModalUpload = styled(Modal)`
   }
 
   .est-fee {
+    margin-top: ${px2rem(20)};
     margin-bottom: ${px2rem(28)};
   }
 
-  .est-fee-item {
+  .est-fee-options {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: ${px2rem(10)};
+  }
+
+  .est-fee-item {
+    flex: 1;
+    padding: ${px2rem(8)} ${px2rem(16)};
+    border: 1px solid #cecece;
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    opacity: 0.6;
+
+    &:has(.active) {
+      opacity: 1;
+    }
+
+    &:hover {
+      cursor: pointer;
+      opacity: 1;
+    }
+  }
+
+  .ext-price {
+    color: #9997f0;
+    font-size: ${px2rem(14)};
+    span {
+      font-size: ${px2rem(12)};
+    }
   }
 
   .confirm {
