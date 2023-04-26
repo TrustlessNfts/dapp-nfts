@@ -111,6 +111,7 @@ export const StyledModalUpload = styled(Modal)`
     &:has(.active) {
       opacity: 1;
       border-color: #9997f0;
+      border-width: 2px;
     }
 
     &:hover {
@@ -120,7 +121,7 @@ export const StyledModalUpload = styled(Modal)`
   }
 
   .ext-price {
-    color: #9997f0;
+    color: #9796f0;
     font-size: ${px2rem(14)};
     span {
       font-size: ${px2rem(12)};

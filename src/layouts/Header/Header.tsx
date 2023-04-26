@@ -31,15 +31,22 @@ const Header = ({ height }: { height: number }) => {
     <Wrapper style={{ height }}>
       <div className="indicator" />
       <Link className="logo" href={ROUTE_PATH.HOME}>
-        {mobileScreen && (
-          <img alt="logo" src={`${CDN_URL}/images/nfts-logo.svg`} />
-        )}
+        {mobileScreen && <img alt="logo" src={`${CDN_URL}/images/nfts-logo.svg`} />}
         {!mobileScreen && (
           <img alt="logo" src={`${CDN_URL}/images/logo-nft-3.svg`} />
         )}
       </Link>
       <MenuMobile ref={refMenu} onCloseMenu={() => setIsOpenMenu(false)} />
       <div className="rightContainer">
+        <div className="external-link">
+          <Link href={'https://trustless.computer/'} target="_blank">
+            Trustless
+          </Link>
+          <Link href={'https://trustlessfaucet.io/'} target="_blank">
+            Faucet
+          </Link>
+        </div>
+
         <WalletHeader />
         <button className="btnMenuMobile" onClick={() => setIsOpenMenu(true)}>
           <img src={`${CDN_URL}/icons/ic_hambuger.svg`} />

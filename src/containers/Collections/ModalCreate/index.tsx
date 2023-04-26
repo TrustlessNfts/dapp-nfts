@@ -355,7 +355,7 @@ const ModalCreate = (props: Props) => {
             <form onSubmit={handleSubmit}>
               <WrapInput className="mb-20">
                 <label htmlFor="name">
-                  Name <span className="text-red">*</span>
+                  Collection Name <span className="text-red">*</span>
                 </label>
                 <input
                   id="name"
@@ -365,7 +365,7 @@ const ModalCreate = (props: Props) => {
                   onBlur={handleBlur}
                   value={values.name}
                   className="input"
-                  placeholder={`Enter name`}
+                  placeholder={`Enter collection name`}
                 />
                 {errors.name && touched.name && (
                   <p className="error">{errors.name}</p>
