@@ -422,7 +422,7 @@ const ModalCreate = (props: Props) => {
                           setListFiles(null);
                         }}
                       >
-                        Zip file
+                        Multi-image (Zip file)
                         <input
                           type="checkbox"
                           checked={uploadType === UploadType.Zip}
