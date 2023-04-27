@@ -27,7 +27,7 @@ const CollectionHeader = (props: ICollectionHeader) => {
         <div className="infor">
           <div className="infor-left">
             <NFTDisplayBox contentClass="image" thumbnail={collection?.thumbnail} />
-            <div>
+            <div className="infor-content">
               <p className="title">{collection?.name}</p>
               <p className="subTitle">{collection?.description}</p>
             </div>

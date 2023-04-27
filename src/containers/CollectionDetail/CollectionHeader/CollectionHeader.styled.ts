@@ -11,7 +11,7 @@ const Container = styled.div`
   .infor-left {
     display: flex;
     flex-direction: row;
-    width: 65%;
+    gap: ${px2rem(24)};
 
     .image {
       width: ${px2rem(178)};
@@ -21,8 +21,12 @@ const Container = styled.div`
     }
   }
 
+  .infor-content {
+    flex: 1;
+  }
+
   .infor-right {
-    width: 35%;
+    /* width: 35%; */
     display: flex;
     flex-direction: column;
     gap: ${px2rem(14)};
