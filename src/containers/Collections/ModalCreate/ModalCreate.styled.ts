@@ -108,7 +108,7 @@ export const StyledModalUpload = styled(Modal)`
     text-align: center;
     opacity: 0.6;
 
-    &:has(.active) {
+    &.active {
       opacity: 1;
       border-color: #9997f0;
       border-width: 2px;
