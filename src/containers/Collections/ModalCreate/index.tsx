@@ -480,11 +480,7 @@ const ModalCreate = (props: Props) => {
                       Supported file extensions are{' '}
                       {STATIC_IMAGE_EXTENSIONS.join(', ')}.
                     </li>
-                    <li>
-                      Maximum file size
-                      {uploadType === UploadType.Zip && ' for each file in zip'} is
-                      350KB.
-                    </li>
+                    <li>Maximum file size is 350KB.</li>
                   </ul>
                 </div>
               )}

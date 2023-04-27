@@ -51,12 +51,19 @@ enum UploadType {
   Zip = 1,
 }
 
+enum optionFees {
+  economy = 'Economy',
+  faster = 'Faster',
+  fastest = 'Fastest',
+}
+
 const ModalMint = (props: Props) => {
   const { show = false, handleClose, collection, onUpdateSuccess } = props;
   // const [isProcessing, _] = useState(false);
   const [uploadType, setUploadType] = useState(UploadType.Single);
   const [isMinting, setIsMinting] = useState(false);
   const [selectFee, setSelectFee] = useState<number>(0);
+  const [activeFee, setActiveFee] = useState(optionFees.fastest);
 
   // const [estBTCFee, setEstBTCFee] = useState('0');
   const [estBTCFee, setEstBTCFee] = useState({
@@ -195,6 +202,7 @@ const ModalMint = (props: Props) => {
       await mintSingle({
         contractAddress: collection.contract,
         chunks: chunks,
+        selectFee,
       });
       toast.success('Transaction has been created. Please wait for few minutes.');
       onUpdateSuccess();
@@ -235,6 +243,7 @@ const ModalMint = (props: Props) => {
         await mintBatch({
           contractAddress: collection.contract,
           listOfChunks: batch,
+          selectFee,
         });
       }
       toast.success('Transaction has been created. Please wait for few minutes.');
@@ -292,25 +301,32 @@ const ModalMint = (props: Props) => {
     estFee,
     feeRate,
   }: {
-    title: string;
+    title: optionFees;
     estFee: string;
     feeRate: number;
   }) => {
     return (
-      <div className={`${selectFee === feeRate ? 'active' : ''}`}>
-        <Text fontWeight="medium" size="regular" color="bg1">
-          {title}
-        </Text>
-        <Text color="border2" className="mb-8">
-          {feeRate} sats/vByte
-        </Text>
-        <p className="ext-price">
-          {formatBTCPrice(estFee)} <span>BTC</span>
-        </p>
+      <div
+        className={`est-fee-item ${activeFee === title ? 'active' : ''}`}
+        onClick={() => {
+          setSelectFee(feeRate);
+          setActiveFee(title);
+        }}
+      >
+        <div>
+          <Text fontWeight="medium" color="text2" size="regular">
+            {title}
+          </Text>
+          <Text color="border2" className="mb-10">
+            {feeRate} sats/vByte
+          </Text>
+          <p className="ext-price">
+            {formatBTCPrice(estFee)} <span>BTC</span>
+          </p>
+        </div>
       </div>
     );
   };
-
   useEffect(() => {
     setSelectFee(feeRate.fastestFee);
   }, [feeRate.fastestFee]);
@@ -412,36 +428,21 @@ const ModalMint = (props: Props) => {
               Select the network fee
             </Text>
             <div className="est-fee-options">
-              <div
-                className="est-fee-item"
-                onClick={() => setSelectFee(feeRate.hourFee)}
-              >
-                {renderEstFee({
-                  title: 'Economy',
-                  estFee: estBTCFee.economy,
-                  feeRate: feeRate.hourFee,
-                })}
-              </div>
-              <div
-                className="est-fee-item"
-                onClick={() => setSelectFee(feeRate.halfHourFee)}
-              >
-                {renderEstFee({
-                  title: 'Faster',
-                  estFee: estBTCFee.faster,
-                  feeRate: feeRate.halfHourFee,
-                })}
-              </div>
-              <div
-                className="est-fee-item"
-                onClick={() => setSelectFee(feeRate.fastestFee)}
-              >
-                {renderEstFee({
-                  title: 'Fastest',
-                  estFee: estBTCFee.fastest,
-                  feeRate: feeRate.fastestFee,
-                })}
-              </div>
+              {renderEstFee({
+                title: optionFees.economy,
+                estFee: estBTCFee.economy,
+                feeRate: feeRate.hourFee,
+              })}
+              {renderEstFee({
+                title: optionFees.faster,
+                estFee: estBTCFee.faster,
+                feeRate: feeRate.halfHourFee,
+              })}
+              {renderEstFee({
+                title: optionFees.fastest,
+                estFee: estBTCFee.fastest,
+                feeRate: feeRate.fastestFee,
+              })}
             </div>
           </div>
           <div className="confirm">
