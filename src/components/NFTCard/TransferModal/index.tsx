@@ -11,6 +11,7 @@ import useTransferERC721Token from '@/hooks/contract-operations/nft/useTransferE
 import { CDN_URL, TC_WEB_URL } from '@/configs';
 import { showError } from '@/utils/toast';
 import { DappsTabs } from '@/enums/tabs';
+import { ERROR_CODE } from '@/constants/error';
 
 type Props = {
   show: boolean;
@@ -60,7 +61,7 @@ const TransferModal = (props: Props) => {
       toast.success('Transaction has been created. Please wait for few minutes.');
       handleClose();
     } catch (err) {
-      if ((err as Error).message === 'pending') {
+      if ((err as Error).message === ERROR_CODE.PENDING) {
         showError({
           message:
             'You have some pending transactions. Please complete all of them before moving on.',

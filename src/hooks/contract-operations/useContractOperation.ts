@@ -10,6 +10,7 @@ import { useContext } from 'react';
 import { useSelector } from 'react-redux';
 import useBitcoin from '../useBitcoin';
 import * as TC_SDK from 'trustless-computer-sdk';
+import { ERROR_CODE } from '@/constants/error';
 
 interface IParams<P, R> {
   operation: ContractOperationHook<P, R>;
@@ -79,7 +80,7 @@ const useContractOperation = <P, R>(
       console.timeEnd('____unInscribedTxIDsLoadTime');
 
       if (unInscribedTxIDs.length > 0) {
-        throw Error('pending');
+        throw Error(ERROR_CODE.PENDING);
       }
 
       console.log('unInscribedTxIDs', unInscribedTxIDs);

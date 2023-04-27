@@ -3,6 +3,7 @@ import IconSVG from '@/components/IconSVG';
 import Text from '@/components/Text';
 import { CDN_URL, TC_WEB_URL } from '@/configs';
 import { MINT_TOOL_MAX_FILE_SIZE } from '@/constants/config';
+import { ERROR_CODE } from '@/constants/error';
 import {
   BLOCK_CHAIN_FILE_LIMIT,
   STATIC_IMAGE_EXTENSIONS,
@@ -208,11 +209,17 @@ const ModalMint = (props: Props) => {
       onUpdateSuccess();
     } catch (err: unknown) {
       console.log(err);
-      if ((err as Error).message === 'pending') {
+      if ((err as Error).message === ERROR_CODE.PENDING) {
         showError({
           message:
             'You have some pending transactions. Please complete all of them before moving on.',
           url: `${TC_WEB_URL}/?tab=${DappsTabs.TRANSACTION}`,
+          linkText: 'Go to Wallet',
+        });
+      } else if ((err as Error).message === ERROR_CODE.INSUFFICIENT_BALANCE) {
+        showError({
+          message: `Your balance is insufficient. Please top up BTC to pay network fee.`,
+          url: `${TC_WEB_URL}`,
           linkText: 'Go to Wallet',
         });
       } else {
@@ -249,11 +256,17 @@ const ModalMint = (props: Props) => {
       toast.success('Transaction has been created. Please wait for few minutes.');
       onUpdateSuccess();
     } catch (err: unknown) {
-      if ((err as Error).message === 'pending') {
+      if ((err as Error).message === ERROR_CODE.PENDING) {
         showError({
           message:
             'You have some pending transactions. Please complete all of them before moving on.',
           url: `${TC_WEB_URL}/?tab=${DappsTabs.TRANSACTION}`,
+          linkText: 'Go to Wallet',
+        });
+      } else if ((err as Error).message === ERROR_CODE.INSUFFICIENT_BALANCE) {
+        showError({
+          message: `Your balance is insufficient. Please top up BTC to pay network fee.`,
+          url: `${TC_WEB_URL}`,
           linkText: 'Go to Wallet',
         });
       } else {

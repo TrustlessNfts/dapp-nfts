@@ -35,6 +35,7 @@ import { AssetsContext } from '@/contexts/assets-context';
 import { formatBTCPrice } from '@trustless-computer/dapp-core';
 import ToastConfirm from '@/components/ToastConfirm';
 import { walletLinkSignTemplate } from '@/utils/configs';
+import { ERROR_CODE } from '@/constants/error';
 
 interface IFormValue {
   name: string;
@@ -242,11 +243,17 @@ const ModalCreate = (props: Props) => {
       // toast.success('Transaction has been created. Please wait for few minutes.');
       handleClose();
     } catch (err) {
-      if ((err as Error).message === 'pending') {
+      if ((err as Error).message === ERROR_CODE.PENDING) {
         showError({
           message:
             'You have some pending transactions. Please complete all of them before moving on.',
           url: `${TC_WEB_URL}/?tab=${DappsTabs.TRANSACTION}`,
+          linkText: 'Go to Wallet',
+        });
+      } else if ((err as Error).message === ERROR_CODE.INSUFFICIENT_BALANCE) {
+        showError({
+          message: `Your balance is insufficient. Please top up BTC to pay network fee.`,
+          url: `${TC_WEB_URL}`,
           linkText: 'Go to Wallet',
         });
       } else {
