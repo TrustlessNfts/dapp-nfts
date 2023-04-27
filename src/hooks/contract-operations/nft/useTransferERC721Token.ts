@@ -1,15 +1,15 @@
-import { ContractOperationHook, DAppType } from '@/interfaces/contract-operation';
 import ERC721ABIJson from '@/abis/erc721.json';
-import { useWeb3React } from '@web3-react/core';
-import { useCallback, useContext } from 'react';
-import { Transaction } from 'ethers';
-import { AssetsContext } from '@/contexts/assets-context';
-import BigNumber from 'bignumber.js';
-import * as TC_SDK from 'trustless-computer-sdk';
-import { formatBTCPrice } from '@/utils/format';
-import { getContract } from '@/utils';
 import { TRANSFER_TX_SIZE } from '@/configs';
+import { ERROR_CODE } from '@/constants/error';
+import { AssetsContext } from '@/contexts/assets-context';
 import { TransactionEventType } from '@/enums/transaction';
+import { ContractOperationHook, DAppType } from '@/interfaces/contract-operation';
+import { getContract } from '@/utils';
+import { useWeb3React } from '@web3-react/core';
+import BigNumber from 'bignumber.js';
+import { Transaction } from 'ethers';
+import { useCallback, useContext } from 'react';
+import * as TC_SDK from 'trustless-computer-sdk';
 
 export interface ITransferERC721TokenParams {
   to: string;
@@ -17,7 +17,10 @@ export interface ITransferERC721TokenParams {
   contractAddress: string;
 }
 
-const useTransferERC721Token: ContractOperationHook<ITransferERC721TokenParams, Transaction | null> = () => {
+const useTransferERC721Token: ContractOperationHook<
+  ITransferERC721TokenParams,
+  Transaction | null
+> = () => {
   const { account, provider } = useWeb3React();
   const { btcBalance, feeRate } = useContext(AssetsContext);
 
@@ -25,7 +28,12 @@ const useTransferERC721Token: ContractOperationHook<ITransferERC721TokenParams, 
     async (params: ITransferERC721TokenParams): Promise<Transaction | null> => {
       const { to, tokenId, contractAddress } = params;
       if (account && provider && contractAddress) {
-        const contract = getContract(contractAddress, ERC721ABIJson.abi, provider, account);
+        const contract = getContract(
+          contractAddress,
+          ERC721ABIJson.abi,
+          provider,
+          account,
+        );
         console.log({
           tcTxSizeByte: TRANSFER_TX_SIZE,
           feeRatePerByte: feeRate.fastestFee,
@@ -37,14 +45,12 @@ const useTransferERC721Token: ContractOperationHook<ITransferERC721TokenParams, 
         });
         const balanceInBN = new BigNumber(btcBalance);
         if (balanceInBN.isLessThan(estimatedFee.totalFee)) {
-          throw Error(
-            `Your balance is insufficient. Please top up at least ${formatBTCPrice(
-              estimatedFee.totalFee.toString(),
-            )} BTC to pay network fee.`,
-          );
+          throw Error(ERROR_CODE.INSUFFICIENT_BALANCE);
         }
 
-        const transaction = await contract.connect(provider.getSigner()).transferFrom(account, to, tokenId);
+        const transaction = await contract
+          .connect(provider.getSigner())
+          .transferFrom(account, to, tokenId);
 
         return transaction;
       }

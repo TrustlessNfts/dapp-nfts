@@ -1,17 +1,17 @@
+import ERC721ABIJson from '@/abis/erc721.json';
+import { ERROR_CODE } from '@/constants/error';
+import { AssetsContext } from '@/contexts/assets-context';
+import { TransactionEventType } from '@/enums/transaction';
 import {
   ContractOperationHook,
   DAppType,
   DeployContractResponse,
 } from '@/interfaces/contract-operation';
-import ERC721ABIJson from '@/abis/erc721.json';
 import { useWeb3React } from '@web3-react/core';
-import { useContext } from 'react';
-import { ContractFactory } from 'ethers';
-import { AssetsContext } from '@/contexts/assets-context';
-import * as TC_SDK from 'trustless-computer-sdk';
 import BigNumber from 'bignumber.js';
-import { formatBTCPrice } from '@/utils/format';
-import { TransactionEventType } from '@/enums/transaction';
+import { ContractFactory } from 'ethers';
+import { useContext } from 'react';
+import * as TC_SDK from 'trustless-computer-sdk';
 
 export interface ICreateNFTCollectionParams {
   name: string;
@@ -56,11 +56,7 @@ const useCreateNFTCollection: ContractOperationHook<
       console.log('🚀 ~ btcBalance:', btcBalance);
       const balanceInBN = new BigNumber(btcBalance);
       if (balanceInBN.isLessThan(estimatedFee.totalFee)) {
-        throw Error(
-          `Your balance is insufficient. Please top up at least ${formatBTCPrice(
-            estimatedFee.totalFee.toString(),
-          )} BTC to pay network fee.`,
-        );
+        throw Error(ERROR_CODE.INSUFFICIENT_BALANCE);
       }
 
       const factory = new ContractFactory(

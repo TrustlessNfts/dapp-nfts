@@ -1,14 +1,14 @@
-import { ContractOperationHook, DAppType } from '@/interfaces/contract-operation';
 import ERC721ABIJson from '@/abis/erc721.json';
-import { useWeb3React } from '@web3-react/core';
-import { useCallback, useContext } from 'react';
-import { Transaction } from 'ethers';
+import { ERROR_CODE } from '@/constants/error';
 import { AssetsContext } from '@/contexts/assets-context';
-import BigNumber from 'bignumber.js';
-import * as TC_SDK from 'trustless-computer-sdk';
-import { formatBTCPrice } from '@/utils/format';
-import { getContract } from '@/utils';
 import { TransactionEventType } from '@/enums/transaction';
+import { ContractOperationHook, DAppType } from '@/interfaces/contract-operation';
+import { getContract } from '@/utils';
+import { useWeb3React } from '@web3-react/core';
+import BigNumber from 'bignumber.js';
+import { Transaction } from 'ethers';
+import { useCallback, useContext } from 'react';
+import * as TC_SDK from 'trustless-computer-sdk';
 
 export interface IMintChunksParams {
   chunks: Buffer;
@@ -44,11 +44,7 @@ const useMintChunks: ContractOperationHook<
         });
         const balanceInBN = new BigNumber(btcBalance);
         if (balanceInBN.isLessThan(estimatedFee.totalFee)) {
-          throw Error(
-            `Your balance is insufficient. Please top up at least ${formatBTCPrice(
-              estimatedFee.totalFee.toString(),
-            )} BTC to pay network fee.`,
-          );
+          throw Error(ERROR_CODE.INSUFFICIENT_BALANCE);
         }
         const transaction = await contract
           .connect(provider.getSigner())
