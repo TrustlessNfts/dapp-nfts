@@ -62,7 +62,6 @@ const ModalCreate = (props: Props) => {
   const handleZipFile = async (file: File): Promise<Array<Array<Buffer>>> => {
     const files: Record<string, Blob> = await unzipFile(file);
     const listOfChunks: Array<Array<Buffer>> = [];
-    let currentChunks: Array<Buffer> = [];
     let currentBatchSize = 0;
 
     // Create batch of chunks
@@ -78,19 +77,17 @@ const ModalCreate = (props: Props) => {
       }
       if (currentBatchSize + chunksSizeInKb >= BLOCK_CHAIN_FILE_LIMIT * 1000) {
         // Split chunks and reset counter
-        listOfChunks.push([...currentChunks]);
-        currentChunks = [];
-        currentBatchSize = 0;
+        console.log('File size reach 350kb', currentBatchSize);
         console.log('batch number', listOfChunks.length);
+        return listOfChunks;
       }
+
+      listOfChunks.push([chunks]);
       currentBatchSize += chunksSizeInKb;
-      currentChunks.push(chunks);
+      console.log('batch number', listOfChunks.length);
+      console.log('listOfChunks', listOfChunks);
       console.log('currentBatchSize', currentBatchSize);
     }
-
-    console.log('batch number', listOfChunks.length);
-    listOfChunks.push([...currentChunks]);
-    console.log('listOfChunks', listOfChunks);
 
     return listOfChunks;
   };
