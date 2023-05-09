@@ -12,10 +12,11 @@ interface ICollectionHeader {
   collection?: ICollection;
   onClickEdit: () => void;
   onClickMint: () => void;
+  onClickTransfer: () => void;
 }
 
 const CollectionHeader = (props: ICollectionHeader) => {
-  const { collection, onClickEdit, onClickMint } = props;
+  const { collection, onClickEdit, onClickMint, onClickTransfer } = props;
   const user = useSelector(getUserSelector);
 
   const isOwner =
@@ -80,21 +81,15 @@ const CollectionHeader = (props: ICollectionHeader) => {
               </div>
               {isOwner && (
                 <div className="actionWrapper">
+                  <button className="editButton" onClick={onClickTransfer}>
+                    Transfer
+                  </button>
                   <button className="editButton" onClick={onClickEdit}>
                     Edit
                   </button>
-                  <div className="mintWrapper">
-                    <button className="mintButton" onClick={onClickMint}>
-                      Mint
-                    </button>
-                    {/* <FileUploader
-                      onSelect={onChangeFile}
-                      name={'fileUploader'}
-                      classes={'file-uploader'}
-                      fileOrFiles={file}
-                      types={ERC721_SUPPORTED_EXTENSIONS}
-                    /> */}
-                  </div>
+                  <button className="mintButton" onClick={onClickMint}>
+                    Mint
+                  </button>
                 </div>
               )}
             </div>
