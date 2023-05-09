@@ -14,6 +14,7 @@ import ModalEdit from './ModalEdit';
 import { useRouter } from 'next/router';
 import { ROUTE_PATH } from '@/constants/route-path';
 import ModalMint from './ModalMint';
+import ModalTransfer from './ModalTransfer';
 
 const LIMIT = 32;
 
@@ -28,6 +29,7 @@ const Collection = () => {
   const [inscriptions, setInscriptions] = useState<IInscription[]>([]);
   const [showModalEdit, setShowModalEdit] = useState(false);
   const [showModalMint, setShowModalMint] = useState(false);
+  const [showModalTransfer, setShowModalTransfer] = useState(false);
 
   useEffect(() => {
     fetchCollectionDetail();
@@ -78,6 +80,7 @@ const Collection = () => {
           collection={collection}
           onClickEdit={() => setShowModalEdit(true)}
           onClickMint={() => setShowModalMint(true)}
+          onClickTransfer={() => setShowModalTransfer(true)}
         />
         <div>
           <InfiniteScroll
@@ -133,6 +136,14 @@ const Collection = () => {
           collection={collection}
           show={showModalMint}
           handleClose={() => setShowModalMint(false)}
+          onUpdateSuccess={() => fetchCollectionDetail()}
+        />
+      )}
+      {collection && showModalTransfer && (
+        <ModalTransfer
+          collection={collection}
+          show={showModalTransfer}
+          handleClose={() => setShowModalTransfer(false)}
           onUpdateSuccess={() => fetchCollectionDetail()}
         />
       )}
