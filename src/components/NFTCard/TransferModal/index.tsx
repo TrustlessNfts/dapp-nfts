@@ -121,7 +121,7 @@ const TransferModal = (props: Props) => {
                 )}
               </WrapInput>
 
-              <Button disabled={isProcessing} type="submit" className="confirm-btn">
+              <Button background='#1c1c1c' disabled={isProcessing} type="submit" className="confirm-btn">
                 <Text size="medium" fontWeight="medium" className="confirm-text">
                   {isProcessing ? 'Processing...' : 'Transfer'}
                 </Text>
