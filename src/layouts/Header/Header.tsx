@@ -1,33 +1,17 @@
-import { AssetsContext } from '@/contexts/assets-context';
-import { formatBTCPrice, formatEthPrice } from '@/utils/format';
-import { useWeb3React } from '@web3-react/core';
-import { gsap } from 'gsap';
-import { useContext, useEffect, useRef, useState } from 'react';
-import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
-import Link from 'next/link';
-import {
-  ConnectWalletButton,
-  WalletBalance,
-  Wrapper,
-} from './Header.styled';
-import MenuMobile from './MenuMobile';
-import { useSelector } from 'react-redux';
-import { getIsAuthenticatedSelector } from '@/state/user/selector';
-import { ROUTE_PATH } from '@/constants/route-path';
 import { CDN_URL } from '@/configs';
-import { useRouter } from 'next/router';
+import { ROUTE_PATH } from '@/constants/route-path';
+import { gsap } from 'gsap';
+import Link from 'next/link';
+import { useEffect, useRef, useState } from 'react';
+import { Wrapper } from './Header.styled';
+import MenuMobile from './MenuMobile';
+import WalletHeader from './Wallet';
+import { useWindowSize } from '@trustless-computer/dapp-core';
 
 const Header = ({ height }: { height: number }) => {
-  const { account } = useWeb3React();
-  const router = useRouter();
-  const isAuthenticated = useSelector(getIsAuthenticatedSelector);
-  const { btcBalance, juiceBalance } = useContext(AssetsContext);
   const refMenu = useRef<HTMLDivElement | null>(null);
   const [isOpenMenu, setIsOpenMenu] = useState<boolean>(false);
-
-  const goToConnectWalletPage = async () => {
-    router.push(`${ROUTE_PATH.CONNECT_WALLET}?next=${window.location.href}`);
-  };
+  const { mobileScreen } = useWindowSize();
 
   useEffect(() => {
     if (refMenu.current) {
@@ -47,30 +31,23 @@ const Header = ({ height }: { height: number }) => {
     <Wrapper style={{ height }}>
       <div className="indicator" />
       <Link className="logo" href={ROUTE_PATH.HOME}>
-        <img alt="logo" src={`${CDN_URL}/images/nfts-logo.svg`} />
+        {mobileScreen && <img alt="logo" src={`${CDN_URL}/images/nfts-logo.svg`} />}
+        {!mobileScreen && (
+          <img alt="logo" src={`${CDN_URL}/images/logo-nft-3.svg`} />
+        )}
       </Link>
       <MenuMobile ref={refMenu} onCloseMenu={() => setIsOpenMenu(false)} />
       <div className="rightContainer">
-        {account && isAuthenticated ? (
-          <>
-            <div className="wallet" onClick={() => router.push(ROUTE_PATH.WALLET)}>
-              <WalletBalance>
-                <div className="balance">
-                  <p>{formatBTCPrice(btcBalance)} BTC</p>
-                  <span className="divider"></span>
-                  <p>{formatEthPrice(juiceBalance)} TC</p>
-                </div>
-                <div className="avatar">
-                  <Jazzicon diameter={32} seed={jsNumberForAddress(account)} />
-                </div>
-              </WalletBalance>
-            </div>
-          </>
-        ) : (
-          <ConnectWalletButton onClick={goToConnectWalletPage}>
-            Connect wallet
-          </ConnectWalletButton>
-        )}
+        <div className="external-link">
+          <Link href={'https://trustless.computer/'} target="_blank">
+            Trustless
+          </Link>
+          <Link href={'https://trustlessfaucet.io/'} target="_blank">
+            Faucet
+          </Link>
+        </div>
+
+        <WalletHeader />
         <button className="btnMenuMobile" onClick={() => setIsOpenMenu(true)}>
           <img src={`${CDN_URL}/icons/ic_hambuger.svg`} />
         </button>

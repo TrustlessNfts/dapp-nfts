@@ -8,3 +8,5 @@ export const isProduction = (): boolean => {
 export const isDevelop = (): boolean => {
   return APP_ENV === ApplicationEnvironment.DEVELOP;
 };
+
+export const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));

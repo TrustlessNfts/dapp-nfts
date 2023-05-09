@@ -7,6 +7,7 @@ import { CDN_URL } from '@/configs';
 import { Container } from '@/layouts';
 import { ROUTE_PATH } from '@/constants/route-path';
 import { useRouter } from 'next/router';
+import { showError } from '@/utils/toast';
 
 const ConnectWallet: React.FC = (): React.ReactElement => {
   const { onConnect, requestBtcAddress, onDisconnect } = useContext(WalletContext);
@@ -21,6 +22,9 @@ const ConnectWallet: React.FC = (): React.ReactElement => {
       await onConnect();
       await requestBtcAddress();
     } catch (err) {
+      showError({
+        message: (err as Error).message,
+      });
       console.log(err);
       onDisconnect();
     } finally {
@@ -39,11 +43,19 @@ const ConnectWallet: React.FC = (): React.ReactElement => {
       <Wrapper>
         <div className="header">
           <div className="socialContainer">
-            <a href="https://discord.com/channels/1052411011036090458/1094649301210239086" target="_blank">
-              <img alt="icon" className="icon" src={`${CDN_URL}/icons/ic-discord-18x18.svg`} />
+            <a href="https://generative.xyz/discord" target="_blank">
+              <img
+                alt="icon"
+                className="icon"
+                src={`${CDN_URL}/icons/ic-discord-18x18.svg`}
+              />
             </a>
             <a href="https://twitter.com/DappsOnBitcoin" target="_blank">
-              <img alt="icon" className="icon" src={`${CDN_URL}/icons/ic-twitter-18x18.svg`} />
+              <img
+                alt="icon"
+                className="icon"
+                src={`${CDN_URL}/icons/ic-twitter-18x18.svg`}
+              />
             </a>
           </div>
         </div>
@@ -52,11 +64,12 @@ const ConnectWallet: React.FC = (): React.ReactElement => {
             width={292}
             height={118}
             className="logo"
-            src={`${CDN_URL}/images/trustless-logo-1.svg`}
+            src={`${CDN_URL}/images/logo-nft-3.svg`}
             alt="trustless computer logo"
           />
           <h1 className="title">
-            Trustless Computer is an open-source protocol that powers decentralized applications on Bitcoin.
+            Trustless Computer is an open-source protocol that powers decentralized
+            applications on Bitcoin.
           </h1>
           <ConnectWalletButton disabled={isConnecting} onClick={handleConnectWallet}>
             {isConnecting ? 'Connecting...' : 'Connect wallet'}

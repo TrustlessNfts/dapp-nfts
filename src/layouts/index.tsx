@@ -17,7 +17,6 @@ export const Container = styled.div`
   padding: 0 ${px2rem(32)};
   /* padding-left: 6%;
   padding-right: 6%; */
-  background-color: ${({ theme }) => theme.bg1};
 `;
 
 const ContentWrapper = styled.div`

@@ -13,16 +13,21 @@ import CollectionHeader from './CollectionHeader';
 import ModalEdit from './ModalEdit';
 import { useRouter } from 'next/router';
 import { ROUTE_PATH } from '@/constants/route-path';
+import ModalMint from './ModalMint';
 
 const LIMIT = 32;
 
 const Collection = () => {
   const router = useRouter();
-  const { contract, owner } = queryString.parse(location.search) as { contract: string; owner?: string };
+  const { contract, owner } = queryString.parse(location.search) as {
+    contract: string;
+    owner?: string;
+  };
   const [collection, setCollection] = useState<ICollection | undefined>();
   const [isFetching, setIsFetching] = useState(false);
   const [inscriptions, setInscriptions] = useState<IInscription[]>([]);
   const [showModalEdit, setShowModalEdit] = useState(false);
+  const [showModalMint, setShowModalMint] = useState(false);
 
   useEffect(() => {
     fetchCollectionDetail();
@@ -41,9 +46,14 @@ const Collection = () => {
   const fetchInscriptions = async (page = 1) => {
     try {
       setIsFetching(true);
-      const data = await getCollectionNfts({ contractAddress: contract, page, limit: LIMIT, owner: owner || '' });
+      const data = await getCollectionNfts({
+        contractAddress: contract,
+        page,
+        limit: LIMIT,
+        owner: owner || '',
+      });
       if (page > 1) {
-        setInscriptions(prev => [...prev, ...data]);
+        setInscriptions((prev) => [...prev, ...data]);
       } else {
         setInscriptions(data);
       }
@@ -64,7 +74,11 @@ const Collection = () => {
   return (
     <Container>
       <div className="content">
-        <CollectionHeader collection={collection} onClickEdit={() => setShowModalEdit(true)} />
+        <CollectionHeader
+          collection={collection}
+          onClickEdit={() => setShowModalEdit(true)}
+          onClickMint={() => setShowModalMint(true)}
+        />
         <div>
           <InfiniteScroll
             className="list"
@@ -92,7 +106,10 @@ const Collection = () => {
                       tokenId={item.tokenId}
                       contentType={item.contentType}
                       title1={
-                        item.name || (collection && collection.contract ? shortenAddress(collection.contract, 4) : '')
+                        item.name ||
+                        (collection && collection.contract
+                          ? shortenAddress(collection.contract, 4)
+                          : '')
                       }
                       title2={shortenAddress(item.owner, 4)}
                       owner={item.owner}
@@ -108,6 +125,14 @@ const Collection = () => {
           collection={collection}
           show={showModalEdit}
           handleClose={() => setShowModalEdit(false)}
+          onUpdateSuccess={() => fetchCollectionDetail()}
+        />
+      )}
+      {collection && showModalMint && (
+        <ModalMint
+          collection={collection}
+          show={showModalMint}
+          handleClose={() => setShowModalMint(false)}
           onUpdateSuccess={() => fetchCollectionDetail()}
         />
       )}

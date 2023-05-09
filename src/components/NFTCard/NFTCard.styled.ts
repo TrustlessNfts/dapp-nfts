@@ -8,8 +8,9 @@ export const Styled = styled(Link)`
   text-decoration: none !important;
   --bs-card-bg: none;
 
-  background: ${({ theme }: { theme: DefaultTheme }) => theme.primary['2e']};
-  border: 1px solid transparent;
+  /* background: ${({ theme }: { theme: DefaultTheme }) => theme.primary['2e']}; */
+  border: 1px solid #5b5b5b;
+  border-radius: 12px;
 
   :hover {
     border: 1px solid ${({ theme }: { theme: DefaultTheme }) => theme.primary['d9']};
@@ -19,7 +20,6 @@ export const Styled = styled(Link)`
   }
 
   .card-image {
-    background: ${({ theme }: { theme: DefaultTheme }) => theme.primary['5b']};
     min-height: ${px2rem(180)};
     padding: ${px2rem(32)};
     position: relative;
@@ -43,12 +43,13 @@ export const Styled = styled(Link)`
 
   .card-info {
     padding: ${px2rem(16)} ${px2rem(24)};
+    padding-top: 0;
 
     .card-title1 {
       font-style: normal;
       font-weight: 500;
-      font-size: ${px2rem(22)};
-      line-height: ${px2rem(32)};
+      font-size: ${px2rem(20)};
+      line-height: ${px2rem(30)};
       color: ${({ theme }: { theme: DefaultTheme }) => theme.white};
       text-overflow: ellipsis;
       overflow: hidden;
@@ -57,21 +58,21 @@ export const Styled = styled(Link)`
 
     .card-title2 {
       font-style: normal;
-      font-weight: 500;
-      font-size: ${px2rem(18)};
-      line-height: ${px2rem(28)};
+      font-weight: 400;
+      font-size: ${px2rem(16)};
+      line-height: ${px2rem(26)};
       color: ${({ theme }: { theme: DefaultTheme }) => theme.text2};
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
+      margin-bottom: ${px2rem(12)};
     }
 
     .card-title3 {
       font-style: normal;
-      font-weight: 500;
-      font-size: ${px2rem(16)};
+      font-weight: 400;
+      font-size: ${px2rem(14)};
       line-height: ${px2rem(26)};
-      margin-top: ${px2rem(12)};
       color: ${({ theme }: { theme: DefaultTheme }) => theme.text2};
       text-overflow: ellipsis;
       overflow: hidden;

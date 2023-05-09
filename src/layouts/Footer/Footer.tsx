@@ -50,7 +50,6 @@ const Wrapper = styled.div`
       font-size: ${px2rem(16)};
       line-height: ${px2rem(28)};
       font-weight: 500;
-      font-family: 'IBMPlexMono';
 
       &:hover {
         opacity: 0.8;

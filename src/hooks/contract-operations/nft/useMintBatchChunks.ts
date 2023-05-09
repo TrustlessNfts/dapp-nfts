@@ -13,27 +13,39 @@ import { TransactionEventType } from '@/enums/transaction';
 export interface IMintBatchChunksParams {
   listOfChunks: Array<Buffer>;
   contractAddress: string;
+  selectFee: number;
 }
 
-const useMintBatchChunks: ContractOperationHook<IMintBatchChunksParams, Transaction | null> = () => {
+const useMintBatchChunks: ContractOperationHook<
+  IMintBatchChunksParams,
+  Transaction | null
+> = () => {
   const { account, provider } = useWeb3React();
   const { btcBalance, feeRate } = useContext(AssetsContext);
 
   const call = useCallback(
     async (params: IMintBatchChunksParams): Promise<Transaction | null> => {
-      const { listOfChunks, contractAddress } = params;
+      const { listOfChunks, contractAddress, selectFee } = params;
       console.log('useMintBatchChunks', params);
       if (account && provider && contractAddress) {
-        const contract = getContract(contractAddress, ERC721ABIJson.abi, provider, account);
-        const tcTxSizeByte = listOfChunks.reduce((prev, cur) => prev + Buffer.byteLength(cur), 0);
+        const contract = getContract(
+          contractAddress,
+          ERC721ABIJson.abi,
+          provider,
+          account,
+        );
+        const tcTxSizeByte = listOfChunks.reduce(
+          (prev, cur) => prev + Buffer.byteLength(cur),
+          0,
+        );
         console.log({
           tcTxSizeByte: tcTxSizeByte,
-          feeRatePerByte: feeRate.fastestFee,
+          feeRatePerByte: selectFee,
           contractAddress,
         });
         const estimatedFee = TC_SDK.estimateInscribeFee({
           tcTxSizeByte: tcTxSizeByte,
-          feeRatePerByte: feeRate.fastestFee,
+          feeRatePerByte: selectFee,
         });
         const balanceInBN = new BigNumber(btcBalance);
         if (balanceInBN.isLessThan(estimatedFee.totalFee)) {
@@ -44,8 +56,10 @@ const useMintBatchChunks: ContractOperationHook<IMintBatchChunksParams, Transact
           );
         }
 
-        const chunks = listOfChunks.map(item => [item]);
-        const transaction = await contract.connect(provider.getSigner()).mintBatchChunks(account, chunks);
+        const chunks = listOfChunks.map((item) => [item]);
+        const transaction = await contract
+          .connect(provider.getSigner())
+          .mintBatchChunks(account, chunks);
         return transaction;
       }
 
