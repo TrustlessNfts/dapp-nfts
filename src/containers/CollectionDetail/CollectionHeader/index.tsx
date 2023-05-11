@@ -82,7 +82,7 @@ const CollectionHeader = (props: ICollectionHeader) => {
               {isOwner && (
                 <div className="actionWrapper">
                   <button className="editButton" onClick={onClickTransfer}>
-                    Transfer
+                    Transfer owner
                   </button>
                   <button className="editButton" onClick={onClickEdit}>
                     Edit
