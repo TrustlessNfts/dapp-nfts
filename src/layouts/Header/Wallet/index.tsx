@@ -1,11 +1,10 @@
 import IconSVG from '@/components/IconSVG';
-import { CDN_URL, TC_WEB_URL } from '@/configs';
+import { CDN_URL, TC_WEB_WALLET_URL } from '@/configs';
 import { ROUTE_PATH } from '@/constants/route-path';
 import { AssetsContext } from '@/contexts/assets-context';
 import { getIsAuthenticatedSelector, getUserSelector } from '@/state/user/selector';
 import { formatEthPrice } from '@/utils/format';
 import { formatBTCPrice, formatLongAddress } from '@trustless-computer/dapp-core';
-import { useWeb3React } from '@web3-react/core';
 import copy from 'copy-to-clipboard';
 import { useRouter } from 'next/router';
 import { useContext, useRef, useState } from 'react';
@@ -21,12 +20,11 @@ import { DappsTabs } from '@/enums/tabs';
 
 const WalletHeader = () => {
   const router = useRouter();
-  const { account } = useWeb3React();
   const user = useSelector(getUserSelector);
-  const { onDisconnect } = useContext(WalletContext);
+  const { disconnect } = useContext(WalletContext);
 
   const isAuthenticated = useSelector(getIsAuthenticatedSelector);
-  const { btcBalance, juiceBalance } = useContext(AssetsContext);
+  const { btcBalance, tcBalance } = useContext(AssetsContext);
 
   const [show, setShow] = useState(false);
   const handleOnMouseEnter = () => {
@@ -61,18 +59,18 @@ const WalletHeader = () => {
             maxHeight="24"
           />
           <Text size={'regular'} className="address" fontWeight="regular">
-            {formatLongAddress(user?.walletAddress || '')}
+            {formatLongAddress(user?.tcAddress || '')}
           </Text>
         </div>
         <div
           className="icCopy"
-          onClick={() => onClickCopy(user?.walletAddress || '')}
+          onClick={() => onClickCopy(user?.tcAddress || '')}
         >
           <IconSVG
             src={`${CDN_URL}/icons/ic-copy.svg`}
             color="white"
             maxWidth="16"
-            // type="stroke"
+          // type="stroke"
           ></IconSVG>
         </div>
       </div>
@@ -85,12 +83,12 @@ const WalletHeader = () => {
             maxHeight="24"
           />
           <Text size={'regular'} className="address" fontWeight="regular">
-            {formatLongAddress(user?.walletAddressBtcTaproot || '')}
+            {formatLongAddress(user?.btcAddress || '')}
           </Text>
         </div>
         <div
           className="icCopy"
-          onClick={() => onClickCopy(user?.walletAddressBtcTaproot || '')}
+          onClick={() => onClickCopy(user?.btcAddress || '')}
         >
           <IconSVG
             src={`${CDN_URL}/icons/ic-copy.svg`}
@@ -103,12 +101,12 @@ const WalletHeader = () => {
       <div className="cta">
         <div
           className="wallet-link"
-          onClick={() => window.open(`${TC_WEB_URL}?tab=${DappsTabs.NFT}`)}
+          onClick={() => window.open(`${TC_WEB_WALLET_URL}?tab=${DappsTabs.NFT}`)}
         >
           <IconSVG src={`${CDN_URL}/icons/ic-wallet.svg`} maxWidth="20" />
           <Text size="medium">Wallet</Text>
         </div>
-        <div className="wallet-disconnect" onClick={onDisconnect}>
+        <div className="wallet-disconnect" onClick={disconnect}>
           <IconSVG src={`${CDN_URL}/icons/ic-logout.svg`} maxWidth="20" />
           <Text size="medium">Disconnect</Text>
         </div>
@@ -118,7 +116,7 @@ const WalletHeader = () => {
 
   return (
     <>
-      {account && isAuthenticated ? (
+      {user.tcAddress && isAuthenticated ? (
         <>
           <OverlayTrigger
             trigger={['hover', 'focus']}
@@ -129,7 +127,7 @@ const WalletHeader = () => {
           >
             <div
               className="wallet"
-              onClick={() => window.open(`${TC_WEB_URL}?tab=${DappsTabs.NFT}`)}
+              onClick={() => window.open(`${TC_WEB_WALLET_URL}?tab=${DappsTabs.NFT}`)}
               ref={ref}
               onMouseEnter={handleOnMouseEnter}
               onMouseLeave={handleOnMouseLeave}
@@ -138,10 +136,10 @@ const WalletHeader = () => {
                 <div className="balance">
                   <p>{formatBTCPrice(btcBalance)} BTC</p>
                   <span className="divider"></span>
-                  <p>{formatEthPrice(juiceBalance)} TC</p>
+                  <p>{formatEthPrice(tcBalance)} TC</p>
                 </div>
                 <div className="avatar">
-                  <Jazzicon diameter={32} seed={jsNumberForAddress(account)} />
+                  <Jazzicon diameter={32} seed={jsNumberForAddress(user.tcAddress)} />
                 </div>
               </WalletBalance>
             </div>

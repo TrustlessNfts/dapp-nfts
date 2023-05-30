@@ -1,43 +1,38 @@
-import { ACCESS_TOKEN, REFRESH_TOKEN } from '@/constants/storage-key';
-import localStorage from '@/utils/localstorage';
-// import { User } from '@interfaces/user';
-// import { isBrowser } from '@utils/common';
-// import { walletBTCStorage } from '@/bitcoin/utils/storage';
+import { USER_PUBLIC_INFO } from '@/constants/storage-key';
+import { User } from '@/interfaces/user';
+import logger from '@/services/logger';
+import { isBrowser } from '@trustless-computer/dapp-core';
 
-// export const clearAccessTokenStorage = (): void => {
-//   localStorage.remove(ACCESS_TOKEN);
-//   localStorage.remove(REFRESH_TOKEN);
-// };
+export const getAuthStorage = (): User | null => {
+  if (!isBrowser()) {
+    return null;
+  }
 
-export const getAccessToken = (): string | null => {
-  const accessToken = localStorage.get(ACCESS_TOKEN) as string;
-  return accessToken;
+  try {
+    const json = localStorage.getItem(USER_PUBLIC_INFO) as string;
+    return json ? JSON.parse(json) : null;
+  } catch (err: unknown) {
+    logger.error(err);
+    return null;
+  }
 };
 
-export const clearAccessTokenStorage = (): void => {
-  localStorage.remove(ACCESS_TOKEN);
-  localStorage.remove(REFRESH_TOKEN);
+export const setAuthStorage = (payload: User): void => {
+  if (!isBrowser()) {
+    return;
+  }
+
+  try {
+    localStorage.setItem(USER_PUBLIC_INFO, JSON.stringify(payload));
+  } catch (err: unknown) {
+    logger.error(err);
+  }
 };
 
 export const clearAuthStorage = (): void => {
-  localStorage.remove(ACCESS_TOKEN);
-  localStorage.remove(REFRESH_TOKEN);
-  // walletBTCStorage.removeWallet();
-};
+  if (!isBrowser()) {
+    return;
+  }
 
-export const setAccessToken = (accessToken: string, refreshToken: string): void => {
-  localStorage.set(ACCESS_TOKEN, accessToken);
-  localStorage.set(REFRESH_TOKEN, refreshToken);
+  localStorage.removeItem(USER_PUBLIC_INFO);
 };
-
-// export const setUserInfo = (user: User) => {
-//   if (isBrowser()) {
-//     localStorage.set(LocalStorageKey.USER_ID, user.id);
-//     localStorage.set(
-//       LocalStorageKey.USER_WALLET_ADDRESS,
-//       user.walletAddress
-//     );
-//     localStorage.set(LocalStorageKey.USER_AVATAR, user.avatar);
-//     localStorage.set(LocalStorageKey.USER_DISPLAYNAME, user.displayName);
-//   }
-// };

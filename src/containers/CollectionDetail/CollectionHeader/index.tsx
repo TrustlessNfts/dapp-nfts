@@ -20,7 +20,7 @@ const CollectionHeader = (props: ICollectionHeader) => {
   const user = useSelector(getUserSelector);
 
   const isOwner =
-    user?.walletAddress?.toLowerCase() === collection?.creator.toLowerCase();
+    user?.tcAddress?.toLowerCase() === collection?.creator.toLowerCase();
 
   return (
     <Container>

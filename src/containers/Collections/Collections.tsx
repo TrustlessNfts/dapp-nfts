@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import { getIsAuthenticatedSelector } from '@/state/user/selector';
 import { useRouter } from 'next/router';
 import { ROUTE_PATH } from '@/constants/route-path';
-import { showError } from '@/utils/toast';
+import { showToastError } from '@/utils/toast';
 
 const Collections = () => {
   const [showModal, setShowModal] = useState(false);
@@ -18,7 +18,7 @@ const Collections = () => {
 
   const handleOpenModal = async () => {
     if (!isAuthenticated) {
-      showError({
+      showToastError({
         message: 'Please connect wallet to continue.',
       });
       router.push(`${ROUTE_PATH.CONNECT_WALLET}?next=${window.location.href}`);

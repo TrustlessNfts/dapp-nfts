@@ -1,7 +1,7 @@
 import Button from '@/components/Button';
 import IconSVG from '@/components/IconSVG';
 import Text from '@/components/Text';
-import { CDN_URL, TC_WEB_URL } from '@/configs';
+import { CDN_URL, TC_WEB_WALLET_URL } from '@/configs';
 import { MINT_TOOL_MAX_FILE_SIZE } from '@/constants/config';
 import { BLOCK_CHAIN_FILE_LIMIT, ZIP_EXTENSION } from '@/constants/file';
 import { DappsTabs } from '@/enums/tabs';
@@ -9,19 +9,17 @@ import useCreateNFTCollection, {
   ICreateNFTCollectionParams,
 } from '@/hooks/contract-operations/nft/useCreateNFTCollection';
 import useContractOperation from '@/hooks/contract-operations/useContractOperation';
-import { DeployContractResponse } from '@/interfaces/contract-operation';
 import {
   fileToBase64,
   getFileExtensionByFileName,
   isERC721SupportedExt,
   unzipFile,
 } from '@/utils';
-import { showError } from '@/utils/toast';
+import { showToastError, showToastSuccess } from '@/utils/toast';
 import { Buffer } from 'buffer';
 import { Formik } from 'formik';
 import { useContext, useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
-import toast from 'react-hot-toast';
 import DropFile from './DropFile';
 import {
   Checkboxes,
@@ -31,11 +29,11 @@ import {
 } from './ModalCreate.styled';
 import { STATIC_IMAGE_EXTENSIONS } from '@/constants/file';
 import * as TC_SDK from 'trustless-computer-sdk';
-import { AssetsContext } from '@/contexts/assets-context';
+import { IRequestSignResp } from 'tc-connect';
 import { formatBTCPrice } from '@trustless-computer/dapp-core';
-import ToastConfirm from '@/components/ToastConfirm';
-import { walletLinkSignTemplate } from '@/utils/configs';
 import { ERROR_CODE } from '@/constants/error';
+import { MempoolContext } from '@/contexts/mempool-context';
+import logger from '@/services/logger';
 
 interface IFormValue {
   name: string;
@@ -66,21 +64,17 @@ const ModalCreate = (props: Props) => {
     faster: '0',
     fastest: '0',
   });
-  const { feeRate } = useContext(AssetsContext);
+  const { feeRate } = useContext(MempoolContext);
 
   const { run } = useContractOperation<
     ICreateNFTCollectionParams,
-    DeployContractResponse | null
+    IRequestSignResp | null
   >({
     operation: useCreateNFTCollection,
   });
-  const { dAppType, transactionType } = useCreateNFTCollection();
 
   const [file, setFile] = useState<File | null>(null);
   const [isProcessingFile, setIsProcessingFile] = useState(false);
-  const [selectFee, setSelectFee] = useState<number>(0);
-  const [activeFee, setActiveFee] = useState(optionFees.fastest);
-
   const [showUploadField, setShowUploadField] = useState(false);
   const [listFiles, setListFiles] = useState<Array<Array<Buffer>> | null>();
 
@@ -89,7 +83,7 @@ const ModalCreate = (props: Props) => {
   };
 
   // const onSizeError = (): void => {
-  //   showError({
+  //   showToastError({
   //     message: `File size error, maximum file size is ${
   //       MINT_TOOL_MAX_FILE_SIZE * 1000
   //     }KB.`,
@@ -132,7 +126,6 @@ const ModalCreate = (props: Props) => {
     const obj = {
       image: await fileToBase64(file),
     };
-    console.log('json', JSON.stringify(obj));
     const chunks = Buffer.from(JSON.stringify(obj));
     const chunkItem = [chunks];
     return [chunkItem];
@@ -160,16 +153,11 @@ const ModalCreate = (props: Props) => {
       }
       if (currentBatchSize + chunksSizeInKb >= BLOCK_CHAIN_FILE_LIMIT * 1000) {
         // Split chunks and reset counter
-        console.log('File size reach 350kb', currentBatchSize);
-        console.log('batch number', listOfChunks.length);
         return listOfChunks;
       }
 
       listOfChunks.push([chunks]);
       currentBatchSize += chunksSizeInKb;
-      console.log('batch number', listOfChunks.length);
-      console.log('listOfChunks', listOfChunks);
-      console.log('currentBatchSize', currentBatchSize);
     }
 
     return listOfChunks;
@@ -195,7 +183,7 @@ const ModalCreate = (props: Props) => {
         const fileName = file.name;
         const fileExt = getFileExtensionByFileName(fileName);
         if (!isERC721SupportedExt(fileExt)) {
-          showError({
+          showToastError({
             message: 'Unsupported file extension.',
           });
           return;
@@ -208,57 +196,35 @@ const ModalCreate = (props: Props) => {
         }
       }
 
-      const tx = await run({
+      await run({
         name,
         listOfChunks,
-        selectFee,
       });
 
-      toast.success(
-        () => (
-          <ToastConfirm
-            id="create-success"
-            url={walletLinkSignTemplate({
-              transactionType,
-              dAppType,
-              hash: Object(tx).hash,
-              isRedirect: true,
-            })}
-            message="Please go to your wallet to authorize the request for the Bitcoin transaction."
-            linkText="Go to wallet"
-          />
-        ),
-        {
-          duration: 50000,
-          position: 'top-right',
-          style: {
-            maxWidth: '900px',
-            borderLeft: '4px solid #00AA6C',
-          },
-        },
-      );
-      // toast.success('Transaction has been created. Please wait for few minutes.');
+      showToastSuccess({
+        message: ''
+      })
       handleClose();
     } catch (err) {
       if ((err as Error).message === ERROR_CODE.PENDING) {
-        showError({
+        showToastError({
           message:
             'You have some pending transactions. Please complete all of them before moving on.',
-          url: `${TC_WEB_URL}/?tab=${DappsTabs.TRANSACTION}`,
+          url: `${TC_WEB_WALLET_URL}/?tab=${DappsTabs.TRANSACTION}`,
           linkText: 'Go to Wallet',
         });
       } else if ((err as Error).message === ERROR_CODE.INSUFFICIENT_BALANCE) {
-        showError({
+        showToastError({
           message: `Your balance is insufficient. Please top up BTC to pay network fee.`,
-          url: `${TC_WEB_URL}`,
+          url: `${TC_WEB_WALLET_URL}`,
           linkText: 'Go to Wallet',
         });
       } else {
-        showError({
+        showToastError({
           message: (err as Error).message,
         });
       }
-      console.log(err);
+      logger.error(err);
     } finally {
       setIsProcessing(false);
     }
@@ -285,11 +251,7 @@ const ModalCreate = (props: Props) => {
   }) => {
     return (
       <div
-        className={`est-fee-item ${activeFee === title ? 'active' : ''}`}
-        onClick={() => {
-          setSelectFee(feeRate);
-          setActiveFee(title);
-        }}
+        className={`est-fee-item`}
       >
         <div>
           <Text fontWeight="medium" color="text2" size="regular">
@@ -317,7 +279,7 @@ const ModalCreate = (props: Props) => {
             setListFiles(listOfChunks);
           })
           .catch((err) => {
-            showError({
+            showToastError({
               message: (err as Error).message,
             });
           })
@@ -330,7 +292,7 @@ const ModalCreate = (props: Props) => {
             setListFiles(listOfChunks);
           })
           .catch((err) => {
-            showError({
+            showToastError({
               message: (err as Error).message,
             });
           })
@@ -344,10 +306,6 @@ const ModalCreate = (props: Props) => {
   useEffect(() => {
     handleEstFee(listFiles || null);
   }, [listFiles]);
-
-  useEffect(() => {
-    setSelectFee(feeRate.fastestFee);
-  }, [feeRate.fastestFee]);
 
   return (
     <StyledModalUpload show={show} onHide={handleClose} centered size="lg">
