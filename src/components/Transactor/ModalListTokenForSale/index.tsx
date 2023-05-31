@@ -7,7 +7,16 @@ import Form from 'react-bootstrap/Form';
 import { TOKEN_OPTIONS, WETH_ADDRESS } from '@/constants/marketplace';
 import { SubmitButton } from '../TransactorBaseModal/TransactorBaseModal.styled';
 import EstimatedFee from '@/components/EstimatedFee';
-import { TRANSFER_TX_SIZE } from '@/configs';
+import { TC_MARKETPLACE_CONTRACT, TRANSFER_TX_SIZE } from '@/configs';
+import { isNaN } from 'lodash';
+import cs from 'classnames';
+import { showToastError, showToastSuccess } from '@/utils/toast';
+import useContractOperation from '@/hooks/contract-operations/useContractOperation';
+import { IRequestSignResp } from 'tc-connect';
+import useIsApprovedForAll, { IIsApprovedForAllParams } from '@/hooks/contract-operations/nft/useIsApprovedForAll';
+import useSetApprovalForAll, { ISetApprovalForAllParams } from '@/hooks/contract-operations/marketplace/useSetApprovalForAll';
+import useListTokenForSale, { IListTokenForSaleParams } from '@/hooks/contract-operations/marketplace/useListTokenForSale';
+import { checkCacheApprovalPermission, setCacheApprovalPermission } from '@/utils/marketplace-storage';
 
 interface IProps {
   show: boolean;
@@ -15,20 +24,97 @@ interface IProps {
   inscription: IInscription;
 }
 
+interface IFormValues {
+  price: string;
+  erc20Token: string;
+}
+
 const ModalListTokenForSale: React.FC<IProps> = ({
   show,
   handleClose,
   inscription,
 }: IProps) => {
-  console.log(inscription);
   const [processing, setProcessing] = useState(false);
+  const { run: isTokenApproved } = useContractOperation<
+    IIsApprovedForAllParams,
+    boolean
+  >({
+    operation: useIsApprovedForAll,
+  });
+  const { run: setApprovalForAll } = useContractOperation<
+    ISetApprovalForAllParams,
+    IRequestSignResp | null
+  >({
+    operation: useSetApprovalForAll,
+  });
+  const { run: listToken } = useContractOperation<
+    IListTokenForSaleParams,
+    IRequestSignResp | null
+  >({
+    operation: useListTokenForSale,
+  });
 
-  const validateForm = () => {
+  const validateForm = (values: IFormValues) => {
+    const errors: Record<string, string> = {};
 
+    if (!values.price) {
+      errors.price = 'Price is required.';
+    } else if (isNaN(values.price) || Number(values.price) <= 0) {
+      errors.price = 'Invalid number. Must be a numeric and greater than 0.';
+    }
+
+    return errors;
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async (values: IFormValues) => {
+    if (processing || !inscription) return;
 
+    try {
+      setProcessing(true);
+      const isApproved = await isTokenApproved({
+        contractAddress: inscription.collectionAddress,
+        operatorAddress: TC_MARKETPLACE_CONTRACT
+      });
+      const hasApprovalCache = checkCacheApprovalPermission(`${TC_MARKETPLACE_CONTRACT}_${inscription.collectionAddress}`);
+      if (!isApproved && !hasApprovalCache) {
+        logger.debug(TC_MARKETPLACE_CONTRACT);
+        logger.debug(inscription.collectionAddress);
+
+        await setApprovalForAll({
+          marketplaceAddress: TC_MARKETPLACE_CONTRACT,
+          collectionAddress: inscription.collectionAddress,
+        })
+
+        setCacheApprovalPermission(`${TC_MARKETPLACE_CONTRACT}_${inscription.collectionAddress}`);
+      }
+
+      logger.debug({
+        collectionAddress: inscription.collectionAddress,
+        erc20Token: values.erc20Token,
+        price: values.price,
+        durationTime: 0,
+        tokenID: inscription.tokenId,
+      });
+      await listToken({
+        collectionAddress: inscription.collectionAddress,
+        erc20Token: values.erc20Token,
+        price: values.price.toString(),
+        durationTime: 0,
+        tokenID: inscription.tokenId,
+      })
+
+      showToastSuccess({
+        message: 'Listed for sale successfully.'
+      })
+      handleClose();
+    } catch (err: unknown) {
+      logger.error(err);
+      showToastError({
+        message: (err as Error).message
+      })
+    } finally {
+      setProcessing(false);
+    }
   }
 
   return (
@@ -60,16 +146,22 @@ const ModalListTokenForSale: React.FC<IProps> = ({
             <div className="form-item">
               <label className='label' htmlFor="price">Price</label>
               <Form.Control
-                className={'form-control'}
+                className={cs('form-control', {
+                  'has-error': touched.price && errors.price
+                })}
                 value={values.price}
                 onChange={handleChange}
                 type="number"
                 name='price'
                 id='price'
-                placeholder="Set a price" />
+                placeholder="Set a price"
+              />
+              {(touched.price && errors.price) && (
+                <p className='form-control-error'>{errors.price}</p>
+              )}
             </div>
             <div className="form-item">
-              <EstimatedFee 
+              <EstimatedFee
                 txSize={TRANSFER_TX_SIZE}
               />
             </div>

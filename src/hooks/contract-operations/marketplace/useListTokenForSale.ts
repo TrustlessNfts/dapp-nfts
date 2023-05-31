@@ -61,7 +61,8 @@ const useListTokenForSale: ContractOperationHook<
         redirectURL: window.location.href,
         isInscribe: true,
         gasPrice: undefined,
-        gasLimit: undefined,
+        gasLimit: '500000',
+        isExecuteTransaction: false,
         functionType: 'List Token For Sale',
         functionName: 'listToken(tuple)',
       });

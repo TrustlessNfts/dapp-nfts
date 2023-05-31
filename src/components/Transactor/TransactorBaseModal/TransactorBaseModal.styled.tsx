@@ -29,6 +29,18 @@ export const StyledOfferModal = styled(MainModal)`
     border: 1px solid rgba(0,0,0,.102);
     border-radius: 4px;
     width: 100%;
+
+    &.has-error {
+      border-color: #ff4747;
+    }
+  }
+
+  .form-control-error {
+    font-weight: 400;
+    font-size: ${px2rem(12)};
+    line-height: 1.5;
+    color: #ff4747;
+    margin-top: ${px2rem(6)};
   }
 
   .label {
