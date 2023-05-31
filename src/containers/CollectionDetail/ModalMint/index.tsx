@@ -31,7 +31,7 @@ import {
   isERC721SupportedExt,
   unzipFile,
 } from '@/utils';
-import { showToastError } from '@/utils/toast';
+import { showToastError, showToastSuccess } from '@/utils/toast';
 import { formatBTCPrice } from '@trustless-computer/dapp-core';
 import { Buffer } from 'buffer';
 import { useContext, useEffect, useState } from 'react';
@@ -75,7 +75,6 @@ const ModalMint = (props: Props) => {
     fastest: '0',
   });
   const [file, setFile] = useState<File | null>(null);
-  // const [listFiles, setListFiles] = useState<Array<Array<Buffer>> | null>();
   const { feeRate } = useContext(MempoolContext);
 
   const { run: mintSingle } = useContractOperation<
@@ -206,7 +205,9 @@ const ModalMint = (props: Props) => {
         chunks: chunks,
         owner: user.tcAddress,
       });
-      toast.success('Transaction has been created. Please wait for few minutes.');
+      showToastSuccess({
+        message: 'Transaction has been created. Please wait for few minutes.'
+      });
       onUpdateSuccess();
     } catch (err: unknown) {
       logger.error(err);
@@ -341,8 +342,6 @@ const ModalMint = (props: Props) => {
       </Modal.Header>
       <Modal.Body>
         <Title className="font-medium">Mint BRC-721</Title>
-        {/* <Formik key="mint" onSubmit={handleMintFile}>
-          {({ values, errors, touched, handleChange, handleBlur, handleSubmit }) => ( */}
         <form>
           <div className="upload">
             <Text size="regular" fontWeight="medium" className="mb-4" color="bg1">
@@ -355,7 +354,6 @@ const ModalMint = (props: Props) => {
                   onClick={() => {
                     setUploadType(UploadType.Single);
                     setFile(null);
-                    // setListFiles(null);
                   }}
                 >
                   Single image
@@ -371,7 +369,6 @@ const ModalMint = (props: Props) => {
                   onClick={() => {
                     setUploadType(UploadType.Zip);
                     setFile(null);
-                    // setListFiles(null);
                   }}
                 >
                   Multi-image (Zip file)

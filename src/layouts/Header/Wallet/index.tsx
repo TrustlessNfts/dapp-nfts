@@ -1,12 +1,10 @@
 import IconSVG from '@/components/IconSVG';
 import { CDN_URL, TC_WEB_WALLET_URL } from '@/configs';
-import { ROUTE_PATH } from '@/constants/route-path';
 import { AssetsContext } from '@/contexts/assets-context';
 import { getIsAuthenticatedSelector, getUserSelector } from '@/state/user/selector';
 import { formatEthPrice } from '@/utils/format';
 import { formatBTCPrice, formatLongAddress } from '@trustless-computer/dapp-core';
 import copy from 'copy-to-clipboard';
-import { useRouter } from 'next/router';
 import { useContext, useRef, useState } from 'react';
 import { OverlayTrigger } from 'react-bootstrap';
 import { toast } from 'react-hot-toast';
@@ -17,13 +15,13 @@ import { WalletPopover } from './Wallet.styled';
 import Text from '@/components/Text';
 import { WalletContext } from '@/contexts/wallet-context';
 import { DappsTabs } from '@/enums/tabs';
+import logger from '@/services/logger';
 
 const WalletHeader = () => {
-  const router = useRouter();
   const user = useSelector(getUserSelector);
-  const { disconnect } = useContext(WalletContext);
-
+  const [isProcessing, setProcessing] = useState(false);
   const isAuthenticated = useSelector(getIsAuthenticatedSelector);
+  const { connect, disconnect } = useContext(WalletContext);
   const { btcBalance, tcBalance } = useContext(AssetsContext);
 
   const [show, setShow] = useState(false);
@@ -35,8 +33,16 @@ const WalletHeader = () => {
   };
   const ref = useRef(null);
 
-  const goToConnectWalletPage = async () => {
-    router.push(`${ROUTE_PATH.CONNECT_WALLET}?next=${window.location.href}`);
+  const handleConnect = async () => {
+    if (isProcessing) return;
+    try {
+      setProcessing(true);
+      await connect();
+    } catch (err: unknown) {
+      logger.error(err);
+    } finally {
+      setProcessing(false);
+    }
   };
 
   const onClickCopy = (address: string) => {
@@ -146,7 +152,7 @@ const WalletHeader = () => {
           </OverlayTrigger>
         </>
       ) : (
-        <ConnectWalletButton className="hideMobile" onClick={goToConnectWalletPage}>
+        <ConnectWalletButton className="hideMobile" onClick={handleConnect}>
           Connect wallet
         </ConnectWalletButton>
       )}
