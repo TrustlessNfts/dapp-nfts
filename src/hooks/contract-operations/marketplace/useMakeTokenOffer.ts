@@ -1,0 +1,79 @@
+import { ContractOperationHook, DAppType } from '@/interfaces/contract-operation';
+import MarketplaceABIJson from '@/abis/marketplace.json';
+import { useCallback } from 'react';
+import { TransactionEventType } from '@/enums/transaction';
+import { IRequestSignResp } from 'tc-connect';
+import logger from '@/services/logger';
+import { ethers } from "ethers";
+import connector from '@/connectors/tc-connector';
+import Web3 from 'web3';
+import { TC_MARKETPLACE_CONTRACT } from '@/configs';
+
+export interface IMakeTokenOfferParams {
+  collectionAddress: string;
+  tokenID: string;
+  price: string;
+  erc20Token?: string;
+  durationTime: number; // Unix timestamp
+  buyer: string;
+}
+
+const useMakeTokenOffer: ContractOperationHook<
+  IMakeTokenOfferParams,
+  IRequestSignResp | null
+> = () => {
+  const call = useCallback(
+    async (params: IMakeTokenOfferParams): Promise<IRequestSignResp | null> => {
+      const {
+        collectionAddress,
+        tokenID,
+        price,
+        erc20Token,
+        durationTime,
+        buyer
+      } = params;
+
+      const payload = JSON.parse(
+        JSON.stringify({
+          _collectionContract: collectionAddress,
+          _tokenId: Web3.utils.toHex(tokenID),
+          _buyer: buyer,
+          _price: Web3.utils.toWei(price),
+          _erc20Token: erc20Token,
+          _closed: false,
+          _durationTime: durationTime,
+        })
+      );
+
+      const ContractInterface = new ethers.Interface(MarketplaceABIJson.abi);
+      const encodeAbi = ContractInterface.encodeFunctionData("makeOffer", [
+        payload
+      ]);
+
+      const response = await connector.requestSign({
+        target: "_blank",
+        calldata: encodeAbi,
+        to: TC_MARKETPLACE_CONTRACT,
+        value: "",
+        redirectURL: window.location.href,
+        isInscribe: true,
+        gasPrice: undefined,
+        gasLimit: undefined,
+        functionType: 'Make Token Offer',
+        functionName: 'makeOffer(tuple)',
+      });
+
+      logger.debug(response);
+      return response;
+    },
+    [],
+  );
+
+  return {
+    call: call,
+    dAppType: DAppType.ERC721,
+    transactionType: TransactionEventType.NONE,
+  };
+};
+
+export default useMakeTokenOffer;

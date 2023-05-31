@@ -20,5 +20,7 @@ export const TRANSFER_TX_SIZE = 1000!;
 export const TC_BRIDGE_URL = 'https://trustlessbridge.io';
 export const TC_DAPP_STORE = 'https://trustless.computer';
 export const TC_GAS_STATION = 'https://tcgasstation.com';
+export const TC_MARKETPLACE_CONTRACT =
+  process.env.NEXT_PUBLIC_TC_MARKETPLACE_CONTRACT!;
 
 /* eslint-enable @typescript-eslint/no-non-null-assertion */
