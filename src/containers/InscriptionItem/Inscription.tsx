@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import Accordion from '@/components/Accordion';
 import NFTDisplayBox from '@/components/NFTDisplayBox';
-import { ARTIFACT_CONTRACT } from '@/configs';
+import { ARTIFACT_CONTRACT, CDN_URL } from '@/configs';
 import { ROUTE_PATH } from '@/constants/route-path';
 import { IInscription } from '@/interfaces/api/inscription';
 import { getNFTDetail } from '@/services/nft-explorer';
@@ -12,15 +12,33 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Container, StyledDetailList } from './Inscription.styled';
 import ActivityList from './ActivityList';
 import OfferList from './OfferList';
+import CTAButtons from './CTAButtons';
+import { useSelector } from 'react-redux';
+import { getUserSelector } from '@/state/user/selector';
+import { shortenAddress } from '@/utils';
+import IconSVG from '@/components/IconSVG';
+import { onClickCopy } from '@/utils/commons';
+import InscriptionModal from './Modal';
+import { TransactionEventType } from '@/enums/transaction';
 
 const Inscription = () => {
   const router = useRouter();
+  const { tcAddress: userTcWallet } = useSelector(getUserSelector);
+
   const { contract, id } = queryString.parse(location.search) as {
     contract: string;
     id: string;
   };
+
+  const [transactionType, setTransactionType] =
+    useState<TransactionEventType | null>(null);
+  const [showModal, setShowModal] = useState(false);
   const [inscription, setInscription] = useState<IInscription | undefined>();
-  console.log('🚀 ~ Inscription ~ inscription:', inscription);
+
+  const isOwner = useMemo(
+    () => userTcWallet === inscription?.owner,
+    [inscription?.owner, userTcWallet],
+  );
 
   useEffect(() => {
     fetchInscriptionDetail();
@@ -44,7 +62,15 @@ const Inscription = () => {
       <StyledDetailList>
         <div className="list-item">
           <span>Owner</span>
-          <span>{owner}</span>
+          <span>
+            {isOwner ? 'You' : shortenAddress(owner)}
+            <IconSVG
+              onClick={() => onClickCopy(owner)}
+              src={`${CDN_URL}/icons/ic-copy.svg`}
+              color="white"
+              maxWidth="16"
+            ></IconSVG>
+          </span>
         </div>
         <div className="list-item">
           <span>Contract</span>
@@ -63,9 +89,10 @@ const Inscription = () => {
       </StyledDetailList>
     );
   }, [inscription]);
+  // console.log('🚀 ~ Inscription ~ inscription:', inscription);
 
   const renderAttributeList = useMemo(() => {
-    const attributesList = inscription?.attributes.sort((a, b) =>
+    const attributesList = inscription?.attributes?.sort((a, b) =>
       a.traitType.localeCompare(b.traitType),
     );
 
@@ -89,53 +116,73 @@ const Inscription = () => {
   );
 
   return (
-    <Container>
-      <div className="content">
-        <div className="left-container">
-          {inscription && (
-            <NFTDisplayBox
-              collectionID={inscription?.collectionAddress}
-              contentClass="thumbnail"
-              src={inscription.image}
-              tokenID={inscription?.tokenId}
-              type={inscription?.contentType}
-            />
-          )}
-        </div>
-        <div className="right-container">
-          <div className="header">
-            {inscription?.collection?.creator && (
-              <p className="creator">{inscription?.collection?.creator}</p>
-            )}
-            <p className="title">
-              {contract.toLocaleLowerCase() === ARTIFACT_CONTRACT.toLocaleLowerCase()
-                ? `Artifact #${inscription?.tokenId}`
-                : collectionName}
-            </p>
-            {inscription?.name !== collectionName && (
-              <div className="token-name">
-                <p>{inscription?.name}</p>
-              </div>
+    <>
+      <Container>
+        <div className="content">
+          <div className="left-container">
+            {inscription && (
+              <NFTDisplayBox
+                collectionID={inscription?.collectionAddress}
+                contentClass="thumbnail"
+                src={inscription.image}
+                tokenID={inscription?.tokenId}
+                type={inscription?.contentType}
+              />
             )}
           </div>
+          <div className="right-container">
+            <div className="header">
+              {inscription?.collection?.creator && (
+                <p className="creator">
+                  {shortenAddress(inscription?.collection?.creator)}
+                </p>
+              )}
+              <p className="title">
+                {contract.toLocaleLowerCase() ===
+                ARTIFACT_CONTRACT.toLocaleLowerCase()
+                  ? `Artifact #${inscription?.tokenId}`
+                  : collectionName}
+              </p>
+              {inscription?.name !== collectionName && (
+                <div className="token-name">
+                  <p>{inscription?.name}</p>
+                </div>
+              )}
+              <CTAButtons
+                isOwner={isOwner}
+                setTransactionType={setTransactionType}
+                setShowModal={setShowModal}
+              />
+            </div>
 
-          <Accordion header="Artifact Details">{renderDetailsList}</Accordion>
-          {inscription?.attributes && inscription?.attributes.length > 0 && (
-            <Accordion header="Attribute">{renderAttributeList}</Accordion>
-          )}
-          {inscription?.activities && inscription?.activities.length > 0 && (
-            <Accordion header="Activities">
-              <ActivityList activities={inscription.activities} />
-            </Accordion>
-          )}
-          {inscription?.makeOffers && inscription?.makeOffers.length > 0 && (
-            <Accordion header="Offers">
-              <OfferList offers={inscription.makeOffers} />
-            </Accordion>
-          )}
+            <Accordion header="Artifact Details">{renderDetailsList}</Accordion>
+            {inscription?.attributes && inscription?.attributes.length > 0 && (
+              <Accordion header="Attribute">{renderAttributeList}</Accordion>
+            )}
+            {inscription?.activities && inscription?.activities.length > 0 && (
+              <Accordion header="Activities">
+                <ActivityList activities={inscription.activities} />
+              </Accordion>
+            )}
+            {inscription?.makeOffers && inscription?.makeOffers.length > 0 && (
+              <Accordion header="Offers">
+                <OfferList
+                  offers={inscription.makeOffers}
+                  isOwner={isOwner}
+                  setTransactionType={setTransactionType}
+                  setShowModal={setShowModal}
+                />
+              </Accordion>
+            )}
+          </div>
         </div>
-      </div>
-    </Container>
+      </Container>
+      <InscriptionModal
+        show={showModal}
+        handleClose={() => setShowModal(false)}
+        type={transactionType}
+      />
+    </>
   );
 };
 
