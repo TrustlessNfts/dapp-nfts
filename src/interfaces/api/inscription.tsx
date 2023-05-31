@@ -17,8 +17,8 @@ export interface IInscription {
   owner: string;
   image?: string;
   activities?: IInscriptionActivity[];
-  listingForSales: null;
-  makeOffers: IInscriptionOffer[];
+  listingForSales?: IInscriptionLisftingForSale[];
+  makeOffers?: IInscriptionOffer[];
 }
 
 export interface IInscriptionActivity {
@@ -42,7 +42,6 @@ export interface IInscriptionActivity {
   txHash: string;
   logIndex: number;
 }
-
 export interface IInscriptionOffer {
   id: string;
   deletedAt: string | null;
@@ -58,4 +57,21 @@ export interface IInscriptionOffer {
   durationTime: number;
   blockNumber: number;
   ownerAddress: string | null;
+}
+
+export interface IInscriptionLisftingForSale {
+  id: string;
+  deletedAt?: string;
+  createdAt: string;
+  updatedAt?: string;
+  offeringId: string;
+  collectionContract: string;
+  tokenId: string;
+  seller: string;
+  erc20Token: string;
+  price: string;
+  status: number;
+  durationTime: number;
+  blockNumber: number;
+  ownerAddress?: string;
 }

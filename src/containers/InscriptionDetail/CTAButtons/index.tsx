@@ -5,6 +5,7 @@ import { useState } from 'react';
 import ModalListTokenForSale from '@/components/Transactor/ModalListTokenForSale';
 import { IInscription } from '@/interfaces/api/inscription';
 import ModalMakeOffer from '@/components/Transactor/ModalMakeOffer';
+import { formatEthPrice, mappingERC20ToSymbol } from '@/utils/format';
 
 type Props = {
   isOwner: boolean;
@@ -19,27 +20,36 @@ const CTAButtons = ({ isOwner, inscription }: Props) => {
   if (!inscription) {
     return <></>;
   }
+  const showBuyButton =
+    inscription?.listingForSales &&
+    inscription?.listingForSales?.length > 0 &&
+    !isOwner;
+
+  const listingInfo = inscription?.listingForSales?.[0];
 
   return (
     <>
       <StyledCTAButtons>
+        {showBuyButton && listingInfo && (
+          <Button
+            background={'white'}
+            bg="white"
+            className="cta-btn"
+            onClick={() => setShowPurchase(true)}
+          >
+            <Text
+              size="medium"
+              color="bg1"
+              className="button-text"
+              fontWeight="medium"
+            >
+              Buy {formatEthPrice(listingInfo?.price)}{' '}
+              {mappingERC20ToSymbol(listingInfo?.erc20Token)}
+            </Text>
+          </Button>
+        )}
         {!isOwner && (
           <>
-            <Button
-              background={'white'}
-              bg="white"
-              className="cta-btn"
-              onClick={() => setShowPurchase(true)}
-            >
-              <Text
-                size="medium"
-                color="bg1"
-                className="button-text"
-                fontWeight="medium"
-              >
-                Buy 0 TC
-              </Text>
-            </Button>
             <Button
               background={'white'}
               bg="white"
