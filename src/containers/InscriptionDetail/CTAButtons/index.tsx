@@ -4,6 +4,7 @@ import { StyledCTAButtons } from './CTAButtons.styled';
 import { useState } from 'react';
 import ModalListTokenForSale from '@/components/Transactor/ModalListTokenForSale';
 import { IInscription } from '@/interfaces/api/inscription';
+import ModalMakeOffer from '@/components/Transactor/ModalMakeOffer';
 
 type Props = {
   isOwner: boolean;
@@ -61,7 +62,8 @@ const CTAButtons = ({ isOwner, inscription }: Props) => {
             onClick={() => setShowListForSale(true)}
             background={'white'}
             bg="white"
-            className="cta-btn">
+            className="cta-btn"
+          >
             <Text
               size="medium"
               color="bg1"
@@ -77,6 +79,11 @@ const CTAButtons = ({ isOwner, inscription }: Props) => {
       <ModalListTokenForSale
         show={showListForSale}
         handleClose={() => setShowListForSale(false)}
+        inscription={inscription}
+      />
+      <ModalMakeOffer
+        show={showMakeOffer}
+        handleClose={() => setShowMakeOffer(false)}
         inscription={inscription}
       />
     </>

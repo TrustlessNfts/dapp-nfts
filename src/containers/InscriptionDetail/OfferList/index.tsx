@@ -2,11 +2,13 @@ import Table from '@/components/Table';
 import { IInscriptionOffer } from '@/interfaces/api/inscription';
 import { shortenAddress } from '@/utils';
 import { formatEthPrice } from '@/utils/format';
-import React from 'react';
+import React, { useState } from 'react';
 import { StyledOfferList } from './OfferList.styled';
 import Button from '@/components/Button';
 import { useSelector } from 'react-redux';
 import { getUserSelector } from '@/state/user/selector';
+import ModalCancelOffer from '@/components/Transactor/ModalCancelOffer';
+import ModalAcceptOffer from '@/components/Transactor/ModalAcceptOffer';
 
 type Props = {
   offers: IInscriptionOffer[];
@@ -15,6 +17,8 @@ type Props = {
 
 const OfferList = ({ offers, isOwner }: Props) => {
   const { tcAddress: userTcWallet } = useSelector(getUserSelector);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showAcceptModal, setShowAcceptModal] = useState(false);
 
   const tableData = offers?.map((offer) => {
     const { buyer, offeringId, createdAt, price } = offer;
@@ -42,21 +46,23 @@ const OfferList = ({ offers, isOwner }: Props) => {
         ),
         action: (
           <div className={'offer-action'}>
-            {isOwner && (
-              <Button
-                bg="transparent"
-                background="transparent"
-                className="accept-btn"
-              >
-                Accept
-              </Button>
-            )}
+            {/* {isOwner && ( */}
+            <Button
+              bg="transparent"
+              background="transparent"
+              className="accept-btn"
+              onClick={() => setShowAcceptModal(true)}
+            >
+              Accept
+            </Button>
+            {/* )} */}
             {isOfferer && (
               <>
                 <Button
                   bg="transparent"
                   background="transparent"
                   className="cancel-btn"
+                  onClick={() => setShowCancelModal(true)}
                 >
                   Cancel
                 </Button>
@@ -78,13 +84,23 @@ const OfferList = ({ offers, isOwner }: Props) => {
   if (!offers) return null;
 
   return (
-    <StyledOfferList>
-      <Table
-        tableHead={['price', 'Date', 'from', '']}
-        data={tableData}
-        className="activity-table"
+    <>
+      <StyledOfferList>
+        <Table
+          tableHead={['price', 'Date', 'from', '']}
+          data={tableData}
+          className="activity-table"
+        />
+      </StyledOfferList>
+      <ModalCancelOffer
+        show={showCancelModal}
+        handleClose={() => setShowCancelModal(false)}
       />
-    </StyledOfferList>
+      <ModalAcceptOffer
+        show={showAcceptModal}
+        handleClose={() => setShowAcceptModal(false)}
+      />
+    </>
   );
 };
 
