@@ -28,7 +28,7 @@ const Collections = () => {
       setIsFetching(true);
       const data = await getCollections(page, LIMIT_PAGE, isShowAll);
       if (isFetchMore) {
-        setCollections(prev => [...prev, ...data]);
+        setCollections((prev) => [...prev, ...data]);
       } else {
         setCollections(data);
       }
@@ -47,7 +47,10 @@ const Collections = () => {
   const debounceLoadMore = debounce(onLoadMoreCollections, 300);
 
   const showCollections = useMemo(
-    () => collections.filter(item => item.contract !== ARTIFACT_CONTRACT.toLocaleLowerCase()),
+    () =>
+      collections.filter(
+        (item) => item.contract !== ARTIFACT_CONTRACT.toLocaleLowerCase(),
+      ),
     [collections],
   );
 
@@ -55,9 +58,18 @@ const Collections = () => {
     <Container>
       <div className="showAll" onClick={() => setIsShowAll(!isShowAll)}>
         {isShowAll ? (
-          <IconSVG src={`${CDN_URL}/icons/ic-checkedbox.svg`} color="white" maxWidth="24px"></IconSVG>
+          <IconSVG
+            src={`${CDN_URL}/icons/ic-checkedbox.svg`}
+            color="white"
+            maxWidth="24px"
+          ></IconSVG>
         ) : (
-          <IconSVG src={`${CDN_URL}/icons/ic-checkbox.svg`} color="white" type="stroke" maxWidth="24px"></IconSVG>
+          <IconSVG
+            src={`${CDN_URL}/icons/ic-checkbox.svg`}
+            color="white"
+            type="stroke"
+            maxWidth="24px"
+          ></IconSVG>
         )}
         <p>Show all</p>
       </div>
@@ -74,7 +86,7 @@ const Collections = () => {
         }
         next={debounceLoadMore}
       >
-        <Grid className='nft-list'>
+        <Grid className="nft-list">
           {showCollections.length > 0 &&
             showCollections.map((item) => {
               return (

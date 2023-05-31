@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import Accordion from '@/components/Accordion';
 import NFTDisplayBox from '@/components/NFTDisplayBox';
-import { ARTIFACT_CONTRACT } from '@/configs';
+import { ARTIFACT_CONTRACT, CDN_URL } from '@/configs';
 import { ROUTE_PATH } from '@/constants/route-path';
 import { IInscription } from '@/interfaces/api/inscription';
 import { getNFTDetail } from '@/services/nft-explorer';
@@ -12,18 +12,21 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Container, StyledDetailList } from './Inscription.styled';
 import ActivityList from './ActivityList';
 import OfferList from './OfferList';
+import { useSelector } from 'react-redux';
+import { getUserSelector } from '@/state/user/selector';
+import IconSVG from '@/components/IconSVG';
+import { shortenAddress } from '@/utils';
+import { onClickCopy } from '@/utils/commons';
+import Link from 'next/link';
 
 const Inscription = () => {
   const router = useRouter();
+  const { tcAddress: userTcWallet } = useSelector(getUserSelector);
   const { contract, id } = queryString.parse(location.search) as {
     contract: string;
     id: string;
   };
   const [inscription, setInscription] = useState<IInscription | undefined>();
-
-  useEffect(() => {
-    fetchInscriptionDetail();
-  }, []);
 
   const fetchInscriptionDetail = async () => {
     try {
@@ -34,6 +37,11 @@ const Inscription = () => {
     }
   };
 
+  const isOwner = useMemo(
+    () => userTcWallet === inscription?.owner,
+    [inscription?.owner, userTcWallet],
+  );
+
   const renderDetailsList = useMemo(() => {
     if (!inscription) return null;
 
@@ -43,11 +51,30 @@ const Inscription = () => {
       <StyledDetailList>
         <div className="list-item">
           <span>Owner</span>
-          <span>{owner}</span>
+          <div>
+            <Link
+              href={`https://explorer.trustless.computer/address/${owner}`}
+              target="_blank"
+            >
+              {isOwner ? 'You' : shortenAddress(owner)}
+            </Link>
+            <IconSVG
+              onClick={() => onClickCopy(owner)}
+              src={`${CDN_URL}/icons/ic-copy.svg`}
+              color="white"
+              maxWidth="16"
+              className="icon-copy"
+            ></IconSVG>
+          </div>
         </div>
         <div className="list-item">
           <span>Contract</span>
-          <span>{collectionAddress}</span>
+          <Link
+            href={`https://explorer.trustless.computer/address/${collectionAddress}`}
+            target="_blank"
+          >
+            {collectionAddress}
+          </Link>
         </div>
         <div className="list-item">
           <span>Content type</span>
@@ -87,10 +114,14 @@ const Inscription = () => {
     [inscription?.collection?.name, inscription?.tokenId],
   );
 
+  useEffect(() => {
+    fetchInscriptionDetail();
+  }, []);
+
   if (!inscription) {
     return <></>;
   }
-  
+
   return (
     <Container>
       <div className="content">
@@ -110,11 +141,14 @@ const Inscription = () => {
             {inscription?.collection?.creator && (
               <p className="creator">{inscription?.collection?.creator}</p>
             )}
-            <p className="title">
+            <Link
+              href={`${ROUTE_PATH.COLLECTION}?contract=${contract}`}
+              className="title"
+            >
               {contract.toLocaleLowerCase() === ARTIFACT_CONTRACT.toLocaleLowerCase()
                 ? `Artifact #${inscription?.tokenId}`
                 : collectionName}
-            </p>
+            </Link>
             {inscription?.name !== collectionName && (
               <div className="token-name">
                 <p>{inscription?.name}</p>
@@ -123,7 +157,7 @@ const Inscription = () => {
           </div>
 
           <Accordion header="Artifact Details">{renderDetailsList}</Accordion>
-          {(inscription?.attributes && inscription?.attributes.length > 0) && (
+          {inscription?.attributes && inscription?.attributes.length > 0 && (
             <Accordion header="Attribute">{renderAttributeList}</Accordion>
           )}
           {inscription?.activities && inscription?.activities.length > 0 && (
