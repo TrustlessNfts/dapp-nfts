@@ -30,9 +30,10 @@ const OfferList = ({ offers }: Props) => {
           <div className={'offer-buyer'}>{buyer ? shortenAddress(buyer) : '-'}</div>
         ),
         action: (
-          <div className={'offer-action'}>
-            <button>Accept</button>
-          </div>
+          // <div className={'offer-action'}>
+          //   <button>Accept</button>
+          // </div>
+          <></>
         ),
       },
     };
