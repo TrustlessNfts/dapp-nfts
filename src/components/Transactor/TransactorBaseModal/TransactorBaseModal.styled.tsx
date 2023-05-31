@@ -3,11 +3,36 @@ import styled from 'styled-components';
 import px2rem from '@/utils/px2rem';
 
 export const StyledOfferModal = styled(MainModal)`
-  .modalTitle {
+  .modal-title {
     font-weight: 700;
     font-size: ${px2rem(24)};
     line-height: ${px2rem(44)};
     text-align: center;
     margin-bottom: ${px2rem(20)};
+  }
+
+  .form-item {
+    margin-bottom: ${px2rem(16)};
+  }
+
+  .form-control {
+    background-color: #fff;
+    font-weight: 400;
+    font-size: ${px2rem(16)};
+    line-height: ${px2rem(26)};
+    color: #1c1c1c;
+    padding: ${px2rem(8)} ${px2rem(12)};
+    border: 1px solid rgba(0,0,0,.102);
+    border-radius: 4px;
+    width: 100%;
+  }
+
+  .label {
+    font-weight: 400;
+    font-size: ${px2rem(14)};
+    line-height: 1.5;
+    color: rgba(0,0,0,.6);
+    margin-bottom: ${px2rem(6)};
+    text-transform: uppercase;
   }
 `;

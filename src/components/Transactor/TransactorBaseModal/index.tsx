@@ -24,7 +24,7 @@ const TransactorBaseModal: React.FC<IProps> = (props: IProps) => {
         />
       </Modal.Header>
       <Modal.Body>
-        <h3 className="font-medium modalTitle">{title}</h3>
+        <h3 className="font-medium modal-title">{title}</h3>
         {children}
       </Modal.Body>
     </StyledOfferModal>

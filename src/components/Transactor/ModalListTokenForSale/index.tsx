@@ -42,6 +42,7 @@ const ModalListTokenForSale: React.FC<IProps> = ({
             <div className="form-item">
               <label className='label' htmlFor="erc20Token">Choose token</label>
               <Form.Select
+                className={'form-control'}
                 value={values.erc20Token}
                 onChange={handleChange}
                 name='erc20Token'
@@ -54,6 +55,7 @@ const ModalListTokenForSale: React.FC<IProps> = ({
             <div className="form-item">
               <label className='label' htmlFor="price">Price</label>
               <Form.Control
+                className={'form-control'}
                 value={values.price}
                 onChange={handleChange}
                 type="number"
