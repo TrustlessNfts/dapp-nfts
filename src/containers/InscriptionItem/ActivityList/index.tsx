@@ -5,6 +5,7 @@ import { shortenAddress } from '@/utils';
 import { formatEthPrice } from '@/utils/format';
 import React from 'react';
 import { StyledActivityList } from './ActivityList.styled';
+import Link from 'next/link';
 
 type Props = {
   activities: IInscriptionActivity[];
@@ -16,10 +17,18 @@ const ActivityList = ({ activities }: Props) => {
   const tableData = activities?.map((activity) => {
     const { amount, userAAddress, userBAddress, type, offeringId } = activity;
 
+    const isMintActivity = userAAddress?.startsWith('0x000000');
+
     return {
       id: offeringId,
       render: {
-        event: <div className={'activity-event'}>{TokenActivityType[type]}</div>,
+        event: (
+          <div className={'activity-event'}>
+            {isMintActivity
+              ? TokenActivityType[TokenActivityType.Mint]
+              : TokenActivityType[type]}
+          </div>
+        ),
 
         price: (
           <div className={'activity-amount'}>
@@ -29,12 +38,22 @@ const ActivityList = ({ activities }: Props) => {
         ),
         seller: (
           <div className={'activity-address'}>
-            {userAAddress ? shortenAddress(userAAddress) : '-'}
+            <Link
+              href={`https://explorer.trustless.computer/address/${userAAddress}`}
+              target="_blank"
+            >
+              {userAAddress ? shortenAddress(userAAddress) : '-'}
+            </Link>
           </div>
         ),
         buyer: (
           <div className={'activity-address'}>
-            {userBAddress ? shortenAddress(userBAddress) : '-'}
+            <Link
+              href={`https://explorer.trustless.computer/address/${userBAddress}`}
+              target="_blank"
+            >
+              {userBAddress ? shortenAddress(userBAddress) : '-'}
+            </Link>
           </div>
         ),
       },

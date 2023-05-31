@@ -109,7 +109,7 @@ const Collection = () => {
                       tokenId={item.tokenId}
                       contentType={item.contentType}
                       title1={
-                        item.name ||
+                        `${item.name}` ||
                         (collection && collection.contract
                           ? shortenAddress(collection.contract, 4)
                           : '')

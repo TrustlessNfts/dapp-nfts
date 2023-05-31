@@ -4,6 +4,7 @@ import { shortenAddress } from '@/utils';
 import { formatEthPrice } from '@/utils/format';
 import React from 'react';
 import { StyledOfferList } from './OfferList.styled';
+import Link from 'next/link';
 
 type Props = {
   offers: IInscriptionOffer[];
@@ -27,7 +28,18 @@ const OfferList = ({ offers }: Props) => {
         ),
         offerAt: <div className={'offer-at'}>{createdAt ? createdAt : '-'}</div>,
         buyer: (
-          <div className={'offer-buyer'}>{buyer ? shortenAddress(buyer) : '-'}</div>
+          <div className={'offer-buyer'}>
+            {buyer ? (
+              <Link
+                href={`https://explorer.trustless.computer/address/${buyer}`}
+                target="_blank"
+              >
+                {shortenAddress(buyer)}
+              </Link>
+            ) : (
+              '-'
+            )}
+          </div>
         ),
         action: (
           // <div className={'offer-action'}>
