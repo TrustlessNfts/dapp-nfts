@@ -40,8 +40,8 @@ const Container = styled.div`
 
       .creator {
         color: ${commonTheme.text['black-20']};
-        font-size: ${px2rem(24)};
-        line-height: ${px2rem(36)};
+        font-size: ${px2rem(20)};
+        line-height: ${px2rem(32)};
       }
 
       .title {
@@ -275,7 +275,7 @@ const Information = styled.div`
 
 const StyledDetailList = styled.div`
   color: white;
-  font-size: ${px2rem(18)};
+  font-size: ${px2rem(16)};
   line-height: ${px2rem(28)};
   display: flex;
   flex-direction: column;
@@ -291,32 +291,39 @@ const StyledDetailList = styled.div`
     span:first-child {
       color: ${commonTheme.text['black-20']};
     }
+    span:nth-child(2) {
+      display: inline-flex;
+      gap: ${px2rem(8)};
+      svg {
+        cursor: pointer;
+      }
+    }
   }
 `;
 
 const StyledTableList = styled.div`
-  .tableHead {
-    text-transform: uppercase;
-    background-color: #1e1e22;
-    border-top: 1px solid #353945;
-    border-bottom: 1px solid #353945;
+  .table {
+    .tableHead {
+      text-transform: uppercase;
+      background-color: #1e1e22;
+      border-top: 1px solid #353945;
+      border-bottom: 1px solid #353945;
 
-    .tableHead_item {
-      color: white;
-      font-size: ${px2rem(12)};
-
-      &:not(:first-child) {
-        padding-left: ${px2rem(20)};
+      .tableHead_item {
+        color: white;
+        font-size: ${px2rem(10)};
       }
     }
-  }
 
-  .tableData {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    .tableData {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 
-    .tableData_item {
-      padding-top: ${px2rem(12)};
-      padding-bottom: ${px2rem(12)};
+      .tableData_item {
+        padding-top: ${px2rem(12)};
+        padding-bottom: ${px2rem(12)};
+        font-size: ${px2rem(12)};
+        vertical-align: middle;
+      }
     }
   }
 `;

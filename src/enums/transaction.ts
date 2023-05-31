@@ -8,6 +8,10 @@ export enum TransactionEventType {
   CREATE = 'create',
   TRANSFER = 'transfer',
   MINT = 'mint',
+  BUY = 'buy',
+  OFFER = 'offer',
+  CANCEL_OFFER = 'cancel',
+  ACCEPT_OFFER = 'accept',
   NONE = 'none',
 }
 

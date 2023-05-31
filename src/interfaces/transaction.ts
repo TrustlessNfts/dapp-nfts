@@ -39,3 +39,7 @@ export interface IUpdateStatusTxPayload {
   btc_hash?: string;
   status?: string;
 }
+
+export interface ITransactionType {
+  type: 'buy' | 'make' | 'cancel' | 'accept';
+}
