@@ -103,7 +103,7 @@ const Collection = () => {
                   return (
                     <NFTCard
                       key={index.toString()}
-                      href={`/inscription?contract=${collection?.contract}&id=${item.tokenId}`}
+                      href={`/token?contract=${collection?.contract}&id=${item.tokenId}`}
                       image={item?.image}
                       contract={collection?.contract}
                       tokenId={item.tokenId}

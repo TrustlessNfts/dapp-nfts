@@ -155,7 +155,11 @@ const Inscription = () => {
               </div>
             )}
           </div>
-
+          {inscription?.makeOffers && inscription?.makeOffers.length > 0 && (
+            <Accordion header="Offers">
+              <OfferList offers={inscription.makeOffers} />
+            </Accordion>
+          )}
           <Accordion header="Artifact Details">{renderDetailsList}</Accordion>
           {inscription?.attributes && inscription?.attributes.length > 0 && (
             <Accordion header="Attribute">{renderAttributeList}</Accordion>
@@ -163,11 +167,6 @@ const Inscription = () => {
           {inscription?.activities && inscription?.activities.length > 0 && (
             <Accordion header="Activities">
               <ActivityList activities={inscription.activities} />
-            </Accordion>
-          )}
-          {inscription?.makeOffers && inscription?.makeOffers.length > 0 && (
-            <Accordion header="Offers">
-              <OfferList offers={inscription.makeOffers} />
             </Accordion>
           )}
         </div>

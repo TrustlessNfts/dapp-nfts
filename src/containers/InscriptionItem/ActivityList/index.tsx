@@ -63,7 +63,7 @@ const ActivityList = ({ activities }: Props) => {
   return (
     <StyledActivityList>
       <Table
-        tableHead={['event', 'price', 'seller', 'buyer']}
+        tableHead={['event', 'price', 'from', 'to']}
         data={tableData}
         className="activity-table"
       />
