@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import TransactorBaseModal from '../TransactorBaseModal';
 import { IInscription } from '@/interfaces/api/inscription';
 import logger from '@/services/logger';
 import { Formik } from 'formik';
 import Form from 'react-bootstrap/Form';
 import { TOKEN_OPTIONS, WETH_ADDRESS } from '@/constants/marketplace';
+import { SubmitButton } from '../TransactorBaseModal/TransactorBaseModal.styled';
+import EstimatedFee from '@/components/EstimatedFee';
+import { TRANSFER_TX_SIZE } from '@/configs';
 
 interface IProps {
   show: boolean;
@@ -18,6 +21,8 @@ const ModalListTokenForSale: React.FC<IProps> = ({
   inscription,
 }: IProps) => {
   console.log(inscription);
+  const [processing, setProcessing] = useState(false);
+
   const validateForm = () => {
 
   }
@@ -62,6 +67,18 @@ const ModalListTokenForSale: React.FC<IProps> = ({
                 name='price'
                 id='price'
                 placeholder="Set a price" />
+            </div>
+            <div className="form-item">
+              <EstimatedFee 
+                txSize={TRANSFER_TX_SIZE}
+              />
+            </div>
+            <div className="action-wrapper">
+              <SubmitButton
+                disabled={processing}
+                type='submit'>
+                {processing ? 'Processing...' : 'Confirm'}
+              </SubmitButton>
             </div>
           </form>
         )}

@@ -23,7 +23,7 @@ const TransactorBaseModal: React.FC<IProps> = (props: IProps) => {
           maxWidth={'16'}
         />
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className='modal-body'>
         <h3 className="font-medium modal-title">{title}</h3>
         {children}
       </Modal.Body>
