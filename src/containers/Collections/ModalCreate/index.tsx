@@ -434,7 +434,7 @@ const ModalCreate = (props: Props) => {
                   color="bg1"
                   className="mb-8"
                 >
-                  Select the network fee
+                  Estimated network fee
                 </Text>
                 <div className="est-fee-options">
                   {renderEstFee({

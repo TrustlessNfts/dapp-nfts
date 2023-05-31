@@ -106,18 +106,7 @@ export const StyledModalUpload = styled(Modal)`
     display: grid;
     place-items: center;
     text-align: center;
-    opacity: 0.6;
-
-    &.active {
-      opacity: 1;
-      border-color: #9997f0;
-      border-width: 2px;
-    }
-
-    &:hover {
-      cursor: pointer;
-      opacity: 1;
-    }
+    opacity: 1;
   }
 
   .ext-price {
