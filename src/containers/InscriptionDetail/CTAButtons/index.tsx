@@ -6,6 +6,8 @@ import ModalListTokenForSale from '@/components/Transactor/ModalListTokenForSale
 import { IInscription } from '@/interfaces/api/inscription';
 import ModalMakeOffer from '@/components/Transactor/ModalMakeOffer';
 import { formatEthPrice, mappingERC20ToSymbol } from '@/utils/format';
+import ModalCancelListing from '@/components/Transactor/ModalCancelListing';
+import ModalPurchase from '@/components/Transactor/ModalPurchase';
 
 type Props = {
   isOwner: boolean;
@@ -16,6 +18,7 @@ const CTAButtons = ({ isOwner, inscription }: Props) => {
   const [showPurchase, setShowPurchase] = useState(false);
   const [showMakeOffer, setShowMakeOffer] = useState(false);
   const [showListForSale, setShowListForSale] = useState(false);
+  const [showCancelListing, setShowCancelListing] = useState(false);
 
   if (!inscription) {
     return <></>;
@@ -67,7 +70,7 @@ const CTAButtons = ({ isOwner, inscription }: Props) => {
             </Button>
           </>
         )}
-        {isOwner && (
+        {isOwner && !listingInfo && (
           <Button
             onClick={() => setShowListForSale(true)}
             background={'white'}
@@ -84,6 +87,23 @@ const CTAButtons = ({ isOwner, inscription }: Props) => {
             </Text>
           </Button>
         )}
+        {isOwner && listingInfo && (
+          <Button
+            onClick={() => setShowCancelListing(true)}
+            background={'white'}
+            bg="white"
+            className="cta-btn"
+          >
+            <Text
+              size="medium"
+              color="bg1"
+              className="button-text"
+              fontWeight="medium"
+            >
+              Cancel Listing
+            </Text>
+          </Button>
+        )}
       </StyledCTAButtons>
 
       <ModalListTokenForSale
@@ -91,9 +111,19 @@ const CTAButtons = ({ isOwner, inscription }: Props) => {
         handleClose={() => setShowListForSale(false)}
         inscription={inscription}
       />
+      <ModalCancelListing
+        show={showCancelListing}
+        handleClose={() => setShowCancelListing(false)}
+        inscription={inscription}
+      />
       <ModalMakeOffer
         show={showMakeOffer}
         handleClose={() => setShowMakeOffer(false)}
+        inscription={inscription}
+      />
+      <ModalPurchase
+        show={showPurchase}
+        handleClose={() => setShowPurchase(false)}
         inscription={inscription}
       />
     </>
