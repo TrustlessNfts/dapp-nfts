@@ -160,7 +160,7 @@ const Inscription = () => {
               <OfferList offers={inscription.makeOffers} />
             </Accordion>
           )}
-          <Accordion header="Artifact Details">{renderDetailsList}</Accordion>
+          <Accordion header="Token Details">{renderDetailsList}</Accordion>
           {inscription?.attributes && inscription?.attributes.length > 0 && (
             <Accordion header="Attribute">{renderAttributeList}</Accordion>
           )}
