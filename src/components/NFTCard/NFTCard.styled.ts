@@ -1,8 +1,9 @@
 import styled, { DefaultTheme } from 'styled-components';
 import px2rem from '@/utils/px2rem';
 import Link from 'next/link';
+import { css } from 'styled-components';
 
-export const Styled = styled(Link)`
+export const Styled = styled(Link)<{ isBNS?: boolean }>`
   width: 100%;
   height: 100%;
   text-decoration: none !important;
@@ -43,7 +44,12 @@ export const Styled = styled(Link)`
 
   .card-info {
     padding: ${px2rem(16)} ${px2rem(24)};
-    padding-top: 0;
+
+    ${({ isBNS }: { isBNS?: boolean }) =>
+      !isBNS &&
+      css`
+        padding-top: 0;
+      `}
 
     .card-title1 {
       font-style: normal;
@@ -54,6 +60,7 @@ export const Styled = styled(Link)`
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
+      max-width: 20ch;
     }
 
     .card-title2 {
@@ -65,7 +72,12 @@ export const Styled = styled(Link)`
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
-      margin-bottom: ${px2rem(12)};
+
+      ${({ isBNS }: { isBNS?: boolean }) =>
+        !isBNS &&
+        css`
+          margin-bottom: ${px2rem(12)};
+        `}
     }
 
     .card-title3 {

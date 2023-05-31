@@ -15,6 +15,7 @@ import { useRouter } from 'next/router';
 import { ROUTE_PATH } from '@/constants/route-path';
 import ModalMint from './ModalMint';
 import ModalTransfer from './ModalTransfer';
+import { BNS_CONTRACT } from '@/configs';
 
 const LIMIT = 32;
 
@@ -102,6 +103,10 @@ const Collection = () => {
                 inscriptions.map((item, index) => {
                   return (
                     <NFTCard
+                      isBNS={
+                        collection?.contract.toLocaleLowerCase() ===
+                        BNS_CONTRACT.toLocaleLowerCase()
+                      }
                       key={index.toString()}
                       href={`/token?contract=${collection?.contract}&id=${item.tokenId}`}
                       image={item?.image}

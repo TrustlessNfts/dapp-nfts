@@ -16,7 +16,6 @@ const LIMIT_PAGE = 32;
 const Collections = () => {
   const [isFetching, setIsFetching] = useState(false);
   const [collections, setCollections] = useState<ICollection[]>([]);
-
   const [isShowAll, setIsShowAll] = useState(false);
 
   useEffect(() => {
