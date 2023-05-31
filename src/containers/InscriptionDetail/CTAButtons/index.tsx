@@ -1,17 +1,14 @@
 import Button from '@/components/Button';
 import Text from '@/components/Text';
 import { StyledCTAButtons } from './CTAButtons.styled';
-import { TransactionEventType } from '@/enums/transaction';
 
 type Props = {
   isOwner: boolean;
-  setTransactionType: (type: TransactionEventType | null) => void;
   setShowModal: (show: boolean) => void;
 };
 
-const CTAButtons = ({ isOwner, setTransactionType, setShowModal }: Props) => {
-  const handleShowModal = (type: TransactionEventType) => {
-    setTransactionType(type);
+const CTAButtons = ({ isOwner, setShowModal }: Props) => {
+  const handleShowModal = () => {
     setShowModal(true);
   };
 
@@ -23,7 +20,7 @@ const CTAButtons = ({ isOwner, setTransactionType, setShowModal }: Props) => {
             background={'white'}
             bg="white"
             className="cta-btn"
-            onClick={() => handleShowModal(TransactionEventType.BUY)}
+            onClick={() => handleShowModal()}
           >
             <Text
               size="medium"
@@ -38,7 +35,7 @@ const CTAButtons = ({ isOwner, setTransactionType, setShowModal }: Props) => {
             background={'white'}
             bg="white"
             className="cta-btn"
-            onClick={() => handleShowModal(TransactionEventType.OFFER)}
+            onClick={() => handleShowModal()}
           >
             <Text
               size="medium"

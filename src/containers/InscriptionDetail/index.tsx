@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import Accordion from '@/components/Accordion';
 import NFTDisplayBox from '@/components/NFTDisplayBox';
 import { ARTIFACT_CONTRACT, CDN_URL } from '@/configs';
@@ -18,8 +17,6 @@ import { getUserSelector } from '@/state/user/selector';
 import { shortenAddress } from '@/utils';
 import IconSVG from '@/components/IconSVG';
 import { onClickCopy } from '@/utils/commons';
-import InscriptionModal from './Modal';
-import { TransactionEventType } from '@/enums/transaction';
 
 const Inscription = () => {
   const router = useRouter();
@@ -30,9 +27,7 @@ const Inscription = () => {
     id: string;
   };
 
-  const [transactionType, setTransactionType] =
-    useState<TransactionEventType | null>(null);
-  const [showModal, setShowModal] = useState(false);
+  const [_showModal, setShowModal] = useState(false);
   const [inscription, setInscription] = useState<IInscription | undefined>();
 
   const isOwner = useMemo(
@@ -89,7 +84,6 @@ const Inscription = () => {
       </StyledDetailList>
     );
   }, [inscription]);
-  // console.log('🚀 ~ Inscription ~ inscription:', inscription);
 
   const renderAttributeList = useMemo(() => {
     const attributesList = inscription?.attributes?.sort((a, b) =>
@@ -154,7 +148,6 @@ const Inscription = () => {
               )}
               <CTAButtons
                 isOwner={isOwner}
-                setTransactionType={setTransactionType}
                 setShowModal={setShowModal}
               />
             </div>
@@ -173,7 +166,6 @@ const Inscription = () => {
                 <OfferList
                   offers={inscription.makeOffers}
                   isOwner={isOwner}
-                  setTransactionType={setTransactionType}
                   setShowModal={setShowModal}
                 />
               </Accordion>
@@ -181,11 +173,6 @@ const Inscription = () => {
           </div>
         </div>
       </Container>
-      <InscriptionModal
-        show={showModal}
-        handleClose={() => setShowModal(false)}
-        type={transactionType}
-      />
     </>
   );
 };

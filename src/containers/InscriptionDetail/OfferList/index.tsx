@@ -7,20 +7,17 @@ import { StyledOfferList } from './OfferList.styled';
 import Button from '@/components/Button';
 import { useSelector } from 'react-redux';
 import { getUserSelector } from '@/state/user/selector';
-import { TransactionEventType } from '@/enums/transaction';
 
 type Props = {
   offers: IInscriptionOffer[];
   isOwner: boolean;
-  setTransactionType: (type: TransactionEventType | null) => void;
   setShowModal: (show: boolean) => void;
 };
 
-const OfferList = ({ offers, isOwner, setTransactionType, setShowModal }: Props) => {
+const OfferList = ({ offers, isOwner, setShowModal }: Props) => {
   const { tcAddress: userTcWallet } = useSelector(getUserSelector);
 
-  const handleShowModal = (type: TransactionEventType) => {
-    setTransactionType(type);
+  const handleShowModal = () => {
     setShowModal(true);
   };
 
@@ -56,7 +53,7 @@ const OfferList = ({ offers, isOwner, setTransactionType, setShowModal }: Props)
                 bg="transparent"
                 background="transparent"
                 className="accept-btn"
-                onClick={() => handleShowModal(TransactionEventType.ACCEPT_OFFER)}
+                onClick={() => handleShowModal()}
               >
                 Accept
               </Button>
@@ -67,7 +64,7 @@ const OfferList = ({ offers, isOwner, setTransactionType, setShowModal }: Props)
                   bg="transparent"
                   background="transparent"
                   className="cancel-btn"
-                  onClick={() => handleShowModal(TransactionEventType.CANCEL_OFFER)}
+                  onClick={() => handleShowModal()}
                 >
                   Cancel
                 </Button>
@@ -75,7 +72,7 @@ const OfferList = ({ offers, isOwner, setTransactionType, setShowModal }: Props)
                   bg="transparent"
                   background="transparent"
                   className="offer-btn"
-                  onClick={() => handleShowModal(TransactionEventType.OFFER)}
+                  onClick={() => handleShowModal()}
                 >
                   Make Again
                 </Button>

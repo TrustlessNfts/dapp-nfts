@@ -1,6 +1,6 @@
 import { NextPage } from 'next';
 import Layout from '@/layouts';
-import Inscription from '@/containers/InscriptionItem';
+import Inscription from '@/containers/InscriptionDetail';
 
 const InscriptionPage: NextPage = () => {
   return (
