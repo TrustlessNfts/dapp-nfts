@@ -10,3 +10,15 @@ export enum TransactionEventType {
   MINT = 'mint',
   NONE = 'none',
 }
+
+export enum TokenActivityType {
+  'Mint',
+  'Listing',
+  'Cancel listing',
+  'Sale',
+  'Transfer',
+  'Make offer',
+  'Cancel offer',
+  'Accept offer',
+  'Purchase',
+}
