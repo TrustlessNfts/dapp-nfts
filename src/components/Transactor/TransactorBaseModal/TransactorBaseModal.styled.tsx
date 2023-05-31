@@ -26,7 +26,7 @@ export const StyledOfferModal = styled(MainModal)`
     line-height: ${px2rem(26)};
     color: #1c1c1c;
     padding: ${px2rem(8)} ${px2rem(12)};
-    border: 1px solid rgba(0,0,0,.102);
+    border: 1px solid rgba(0, 0, 0, 0.102);
     border-radius: 4px;
     width: 100%;
   }
@@ -35,7 +35,7 @@ export const StyledOfferModal = styled(MainModal)`
     font-weight: 400;
     font-size: ${px2rem(14)};
     line-height: 1.5;
-    color: rgba(0,0,0,.6);
+    color: rgba(0, 0, 0, 0.6);
     margin-bottom: ${px2rem(6)};
     text-transform: uppercase;
   }
@@ -47,7 +47,7 @@ export const StyledOfferModal = styled(MainModal)`
 
 export const SubmitButton = styled.button`
   padding: ${px2rem(12)};
-  background: linear-gradient(90deg,#9796f0 0%,#fbc7d4 100%);
+  background: linear-gradient(90deg, #9796f0 0%, #fbc7d4 100%);
   border-radius: 100px;
   color: #1c1c1c;
   font-weight: 500;
@@ -55,4 +55,8 @@ export const SubmitButton = styled.button`
   line-height: 1.5;
   width: 100%;
   text-align: center;
+
+  &.secondary {
+    background: #fff;
+  }
 `;

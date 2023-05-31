@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import TransactorBaseModal from '../TransactorBaseModal';
 import { IInscription } from '@/interfaces/api/inscription';
 import Text from '@/components/Text';
+import EstimatedFee from '@/components/EstimatedFee';
+import { TRANSFER_TX_SIZE } from '@/configs';
+import { SubmitButton } from '../TransactorBaseModal/TransactorBaseModal.styled';
 
 interface IProps {
   show: boolean;
@@ -18,10 +21,19 @@ const ModalCancelOffer = ({ show, handleClose, inscription }: IProps) => {
       show={show}
       handleClose={handleClose}
     >
-      <Text>
+      <p>
         This will cancel your offer. You will also be asked to confirm this
         cancelation from your wallet
-      </Text>
+      </p>
+      <div className="form-item">
+        <EstimatedFee txSize={TRANSFER_TX_SIZE} />
+      </div>
+      <div className="action-wrapper">
+        <SubmitButton onClick={handleClose}>Close</SubmitButton>
+        <SubmitButton className="secondary" disabled={processing} type="submit">
+          {processing ? 'Processing...' : 'Yes'}
+        </SubmitButton>
+      </div>
     </TransactorBaseModal>
   );
 };
