@@ -1,5 +1,5 @@
 import React, { PropsWithChildren } from 'react';
-import { StyledOfferModal } from './OfferModal.styled';
+import { StyledOfferModal } from './TransactorBaseModal.styled';
 import { Modal } from 'react-bootstrap';
 import IconSVG from '@/components/IconSVG';
 import { CDN_URL } from '@/configs';
@@ -15,16 +15,16 @@ const TransactorBaseModal: React.FC<IProps> = (props: IProps) => {
 
   return (
     <StyledOfferModal show={show} onHide={handleClose} centered size={'lg'}>
-      <Modal.Header>
+      <Modal.Header closeButton={false}>
         <IconSVG
           className="cursor-pointer"
           onClick={handleClose}
           src={`${CDN_URL}/icons/ic-close-1.svg`}
-          maxWidth={'22px'}
+          maxWidth={'16'}
         />
       </Modal.Header>
       <Modal.Body>
-        <h3 className="font-medium">{title}</h3>
+        <h3 className="font-medium modalTitle">{title}</h3>
         {children}
       </Modal.Body>
     </StyledOfferModal>

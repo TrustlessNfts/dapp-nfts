@@ -27,11 +27,10 @@ const Inscription = () => {
     id: string;
   };
 
-  const [_showModal, setShowModal] = useState(false);
   const [inscription, setInscription] = useState<IInscription | undefined>();
 
   const isOwner = useMemo(
-    () => userTcWallet === inscription?.owner,
+    () => userTcWallet?.toLowerCase() === inscription?.owner?.toLowerCase(),
     [inscription?.owner, userTcWallet],
   );
 
@@ -112,7 +111,7 @@ const Inscription = () => {
   if (!inscription) {
     return <></>;
   }
-  
+
   return (
     <>
       <Container>
@@ -137,7 +136,7 @@ const Inscription = () => {
               )}
               <p className="title">
                 {contract.toLocaleLowerCase() ===
-                ARTIFACT_CONTRACT.toLocaleLowerCase()
+                  ARTIFACT_CONTRACT.toLocaleLowerCase()
                   ? `Artifact #${inscription?.tokenId}`
                   : collectionName}
               </p>
@@ -148,7 +147,7 @@ const Inscription = () => {
               )}
               <CTAButtons
                 isOwner={isOwner}
-                setShowModal={setShowModal}
+                inscription={inscription}
               />
             </div>
 
@@ -166,7 +165,6 @@ const Inscription = () => {
                 <OfferList
                   offers={inscription.makeOffers}
                   isOwner={isOwner}
-                  setShowModal={setShowModal}
                 />
               </Accordion>
             )}

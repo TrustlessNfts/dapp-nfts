@@ -11,18 +11,12 @@ import { getUserSelector } from '@/state/user/selector';
 type Props = {
   offers: IInscriptionOffer[];
   isOwner: boolean;
-  setShowModal: (show: boolean) => void;
 };
 
-const OfferList = ({ offers, isOwner, setShowModal }: Props) => {
+const OfferList = ({ offers, isOwner }: Props) => {
   const { tcAddress: userTcWallet } = useSelector(getUserSelector);
 
-  const handleShowModal = () => {
-    setShowModal(true);
-  };
-
   const tableData = offers?.map((offer) => {
-    // const { amount, userAAddress, userBAddress, type, offeringId } = activity;
     const { buyer, offeringId, createdAt, price } = offer;
 
     const isOfferer = userTcWallet === buyer;
@@ -53,7 +47,6 @@ const OfferList = ({ offers, isOwner, setShowModal }: Props) => {
                 bg="transparent"
                 background="transparent"
                 className="accept-btn"
-                onClick={() => handleShowModal()}
               >
                 Accept
               </Button>
@@ -64,7 +57,6 @@ const OfferList = ({ offers, isOwner, setShowModal }: Props) => {
                   bg="transparent"
                   background="transparent"
                   className="cancel-btn"
-                  onClick={() => handleShowModal()}
                 >
                   Cancel
                 </Button>
@@ -72,7 +64,6 @@ const OfferList = ({ offers, isOwner, setShowModal }: Props) => {
                   bg="transparent"
                   background="transparent"
                   className="offer-btn"
-                  onClick={() => handleShowModal()}
                 >
                   Make Again
                 </Button>
