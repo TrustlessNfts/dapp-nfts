@@ -1,3 +1,4 @@
+import { commonTheme } from '@/theme/colors';
 import px2rem from '@/utils/px2rem';
 import styled from 'styled-components';
 
@@ -10,14 +11,14 @@ const Container = styled.div`
   .content {
     display: flex;
     flex-direction: row;
-    gap: ${px2rem(60)};
+    gap: ${px2rem(120)};
     margin-top: ${px2rem(60)};
     width: 100%;
   }
 
   .left-container {
-    width: 40%;
-
+    /* width: 40%; */
+    flex: 1;
     .thumbnail {
       width: 100%;
       aspect-ratio: 1 / 1;
@@ -25,17 +26,27 @@ const Container = styled.div`
   }
 
   .right-container {
-    width: 60%;
+    /* width: 60%; */
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+    gap: ${px2rem(40)};
 
     .header {
       display: flex;
       flex-direction: column;
-      margin-bottom: ${px2rem(40)};
       text-decoration: none;
+
+      .creator {
+        color: ${commonTheme.text['black-20']};
+        font-size: ${px2rem(24)};
+        line-height: ${px2rem(36)};
+      }
 
       .title {
         font-style: normal;
-        font-weight: 600;
+        font-weight: 700;
         font-size: ${px2rem(34)};
         line-height: ${px2rem(44)};
         color: #ffffff;
@@ -47,6 +58,12 @@ const Container = styled.div`
         font-size: ${px2rem(24)};
         line-height: ${px2rem(34)};
         color: #b6b6b6;
+      }
+
+      .token-name {
+        font-size: ${px2rem(28)};
+        line-height: ${px2rem(42)};
+        color: ${commonTheme.text['black-10']};
       }
     }
 
@@ -87,9 +104,15 @@ const Container = styled.div`
       }
     }
 
+    .properties-wrapper {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(${px2rem(200)}, 1fr));
+      gap: ${px2rem(12)};
+    }
+
     .properties-item {
-      background-color: #303030;
-      border-radius: 8px;
+      background-color: #2e2e2e;
+      border-radius: 4px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -102,7 +125,7 @@ const Container = styled.div`
       font-size: 13px;
       letter-spacing: 0.05em;
       text-transform: uppercase;
-      color: #1a73e8;
+      color: ${commonTheme.yellow.a};
       text-align: center;
     }
 
@@ -250,4 +273,52 @@ const Information = styled.div`
   }
 `;
 
-export { Container, Information };
+const StyledDetailList = styled.div`
+  color: white;
+  font-size: ${px2rem(18)};
+  line-height: ${px2rem(28)};
+  display: flex;
+  flex-direction: column;
+  gap: ${px2rem(12)};
+
+  .list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: ${px2rem(12)};
+    border-bottom: 1px solid ${commonTheme.text['black-80']};
+
+    span:first-child {
+      color: ${commonTheme.text['black-20']};
+    }
+  }
+`;
+
+const StyledTableList = styled.div`
+  .tableHead {
+    text-transform: uppercase;
+    background-color: #1e1e22;
+    border-top: 1px solid #353945;
+    border-bottom: 1px solid #353945;
+
+    .tableHead_item {
+      color: white;
+      font-size: ${px2rem(12)};
+
+      &:not(:first-child) {
+        padding-left: ${px2rem(20)};
+      }
+    }
+  }
+
+  .tableData {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    .tableData_item {
+      padding-top: ${px2rem(12)};
+      padding-bottom: ${px2rem(12)};
+    }
+  }
+`;
+
+export { Container, Information, StyledDetailList, StyledTableList };

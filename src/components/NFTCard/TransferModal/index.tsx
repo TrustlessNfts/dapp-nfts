@@ -8,10 +8,13 @@ import useContractOperation from '@/hooks/contract-operations/useContractOperati
 import toast from 'react-hot-toast';
 import { Formik } from 'formik';
 import useTransferERC721Token from '@/hooks/contract-operations/nft/useTransferERC721Token';
-import { CDN_URL, TC_WEB_URL } from '@/configs';
-import { showError } from '@/utils/toast';
-import { DappsTabs } from '@/enums/tabs';
-import { ERROR_CODE } from '@/constants/error';
+import { CDN_URL } from '@/configs';
+import { showToastError } from '@/utils/toast';
+import logger from '@/services/logger';
+import { useSelector } from 'react-redux';
+import { getUserSelector } from '@/state/user/selector';
+import { useRouter } from 'next/router';
+import { ROUTE_PATH } from '@/constants/route-path';
 
 type Props = {
   show: boolean;
@@ -25,6 +28,8 @@ interface IFormValue {
 }
 
 const TransferModal = (props: Props) => {
+  const user = useSelector(getUserSelector);
+  const router = useRouter();
   const { show = false, handleClose, contractAddress, tokenId } = props;
   const { run } = useContractOperation({
     operation: useTransferERC721Token,
@@ -42,8 +47,13 @@ const TransferModal = (props: Props) => {
   };
 
   const handleSubmit = async (values: IFormValue): Promise<void> => {
+    if (!user.tcAddress) {
+      router.push(ROUTE_PATH.CONNECT_WALLET);
+      return;
+    }
+
     if (!tokenId || !contractAddress) {
-      showError({
+      showToastError({
         message: 'Token information not found',
       });
       setIsProcessing(false);
@@ -56,24 +66,16 @@ const TransferModal = (props: Props) => {
       await run({
         tokenId: tokenId,
         to: toAddress,
+        from: user.tcAddress,
         contractAddress: contractAddress,
       });
       toast.success('Transaction has been created. Please wait for few minutes.');
       handleClose();
     } catch (err) {
-      if ((err as Error).message === ERROR_CODE.PENDING) {
-        showError({
-          message:
-            'You have some pending transactions. Please complete all of them before moving on.',
-          url: `${TC_WEB_URL}/?tab=${DappsTabs.TRANSACTION}`,
-          linkText: 'Go to Wallet',
-        });
-      } else {
-        showError({
-          message: (err as Error).message,
-        });
-      }
-      console.log(err);
+      showToastError({
+        message: (err as Error).message,
+      })
+      logger.error(err);
     } finally {
       setIsProcessing(false);
     }

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { NETWORKS } from 'tc-connect';
 
 // App configs
 export const APP_ENV: string = process.env.NEXT_PUBLIC_MODE!;
@@ -12,7 +13,12 @@ export const ARTIFACT_CONTRACT: string = process.env.NEXT_PUBLIC_ARTIFACT_CONTRA
 export const BNS_CONTRACT: string = process.env.NEXT_PUBLIC_BNS_CONTRACT!;
 export const BFS_ADDRESS: string = process.env.NEXT_PUBLIC_BFS_CONTRACT!;
 
-export const TC_WEB_URL: string = process.env.NEXT_PUBLIC_TC_WEB_URL!;
+export const TC_WEB_WALLET_URL: string = process.env.NEXT_PUBLIC_TC_WEB_WALLET_URL!;
+export const TC_WALLET_CONNECT_URL = process.env.NEXT_PUBLIC_WALLET_CONNECT_URL!;
+export const CURRENT_TC_NETWORK = NETWORKS.find((network) => network.BTCNetwork === 'mainnet')!;
 export const TRANSFER_TX_SIZE = 1000!;
+export const TC_BRIDGE_URL = 'https://trustlessbridge.io';
+export const TC_DAPP_STORE = 'https://trustless.computer';
+export const TC_GAS_STATION = 'https://tcgasstation.com';
 
 /* eslint-enable @typescript-eslint/no-non-null-assertion */

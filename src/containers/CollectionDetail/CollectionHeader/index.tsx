@@ -20,7 +20,7 @@ const CollectionHeader = (props: ICollectionHeader) => {
   const user = useSelector(getUserSelector);
 
   const isOwner =
-    user?.walletAddress?.toLowerCase() === collection?.creator.toLowerCase();
+    user?.tcAddress?.toLowerCase() === collection?.creator.toLowerCase();
 
   return (
     <Container>
@@ -40,7 +40,7 @@ const CollectionHeader = (props: ICollectionHeader) => {
                   href={`${TC_EXPLORER}/address/${collection?.contract}`}
                   target="_blank"
                 >
-                  <img src={`${CDN_URL}/icons/ic-tc-explorer-24x24.svg`} />
+                  <img src={`${CDN_URL}/icons/ic-tc-explorer-24x24.svg`} alt='tc-explorer'/>
                 </a>
                 {collection.social.website && (
                   <a

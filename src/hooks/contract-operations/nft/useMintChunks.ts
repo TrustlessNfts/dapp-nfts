@@ -1,61 +1,49 @@
-import ERC721ABIJson from '@/abis/erc721.json';
-import { ERROR_CODE } from '@/constants/error';
-import { AssetsContext } from '@/contexts/assets-context';
-import { TransactionEventType } from '@/enums/transaction';
 import { ContractOperationHook, DAppType } from '@/interfaces/contract-operation';
-import { getContract } from '@/utils';
-import { useWeb3React } from '@web3-react/core';
-import BigNumber from 'bignumber.js';
-import { Transaction } from 'ethers';
-import { useCallback, useContext } from 'react';
-import * as TC_SDK from 'trustless-computer-sdk';
+import ERC721ABIJson from '@/abis/erc721.json';
+import { useCallback } from 'react';
+import { TransactionEventType } from '@/enums/transaction';
+import { IRequestSignResp } from 'tc-connect';
+import logger from '@/services/logger';
+import { ethers } from "ethers";
+import connector from '@/connectors/tc-connector';
 
 export interface IMintChunksParams {
   chunks: Buffer;
   contractAddress: string;
-  selectFee: number;
+  owner: string;
 }
 
 const useMintChunks: ContractOperationHook<
   IMintChunksParams,
-  Transaction | null
+  IRequestSignResp | null
 > = () => {
-  const { account, provider } = useWeb3React();
-  const { btcBalance, feeRate } = useContext(AssetsContext);
 
   const call = useCallback(
-    async (params: IMintChunksParams): Promise<Transaction | null> => {
-      const { chunks, contractAddress, selectFee } = params;
-      if (account && provider && contractAddress) {
-        const contract = getContract(
-          contractAddress,
-          ERC721ABIJson.abi,
-          provider,
-          account,
-        );
-        console.log({
-          tcTxSizeByte: Buffer.byteLength(chunks),
-          feeRatePerByte: selectFee,
-          contractAddress,
-        });
-        const estimatedFee = TC_SDK.estimateInscribeFee({
-          tcTxSizeByte: Buffer.byteLength(chunks),
-          feeRatePerByte: selectFee,
-        });
-        const balanceInBN = new BigNumber(btcBalance);
-        if (balanceInBN.isLessThan(estimatedFee.totalFee)) {
-          throw Error(ERROR_CODE.INSUFFICIENT_BALANCE);
-        }
-        const transaction = await contract
-          .connect(provider.getSigner())
-          .mintChunks(account, [chunks]);
+    async (params: IMintChunksParams): Promise<IRequestSignResp | null> => {
+      const { chunks, contractAddress, owner } = params;
+      const ContractInterface = new ethers.Interface(ERC721ABIJson.abi);
+      const encodeAbi = ContractInterface.encodeFunctionData("mintChunks", [
+        owner,
+        [chunks]
+      ]);
 
-        return transaction;
-      }
+      const response = await connector.requestSign({
+        target: "_blank",
+        calldata: encodeAbi,
+        to: contractAddress,
+        value: "",
+        redirectURL: window.location.href,
+        isInscribe: true,
+        gasPrice: undefined,
+        gasLimit: undefined,
+        functionType: 'Mint Chunks',
+        functionName: 'mintChunks(address,bytes[])',
+      });
 
-      return null;
+      logger.debug(response);
+      return response;
     },
-    [account, provider, btcBalance, feeRate],
+    [],
   );
 
   return {

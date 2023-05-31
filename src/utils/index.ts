@@ -1,5 +1,4 @@
 export * from './address';
-export * from './chain';
 export * from './contract';
 export * from './dimensions';
 export * from './helpers';
@@ -13,4 +12,3 @@ export * from './validate';
 export * from './string';
 export * from './units';
 export * from './file';
-export * from './xverse-wallet-storage';
