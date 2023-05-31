@@ -64,7 +64,7 @@ const useListTokenForSale: ContractOperationHook<
         gasLimit: '500000',
         isExecuteTransaction: false,
         functionType: 'List Token For Sale',
-        functionName: 'listToken(tuple)',
+        functionName: 'listToken((address,uint256,address,address,uint256,bool,uint256) listingData)',
       });
 
       logger.debug(response);

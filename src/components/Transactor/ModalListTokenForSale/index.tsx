@@ -68,6 +68,7 @@ const ModalListTokenForSale: React.FC<IProps> = ({
 
   const handleSubmit = async (values: IFormValues) => {
     if (processing || !inscription) return;
+    logger.debug(values);
 
     try {
       setProcessing(true);
@@ -81,8 +82,8 @@ const ModalListTokenForSale: React.FC<IProps> = ({
         logger.debug(inscription.collectionAddress);
 
         await setApprovalForAll({
-          marketplaceAddress: TC_MARKETPLACE_CONTRACT,
-          collectionAddress: inscription.collectionAddress,
+          operatorAddress: TC_MARKETPLACE_CONTRACT,
+          contractAddress: inscription.collectionAddress,
         })
 
         setCacheApprovalPermission(`${TC_MARKETPLACE_CONTRACT}_${inscription.collectionAddress}`);

@@ -1,5 +1,5 @@
 import EstimatedFee from '@/components/EstimatedFee';
-import { TRANSFER_TX_SIZE } from '@/configs';
+import { TC_MARKETPLACE_CONTRACT, TRANSFER_TX_SIZE } from '@/configs';
 import { TOKEN_OPTIONS, WETH_ADDRESS } from '@/constants/marketplace';
 import { IInscription } from '@/interfaces/api/inscription';
 import { Formik } from 'formik';
@@ -7,11 +7,26 @@ import React, { useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import TransactorBaseModal from '../TransactorBaseModal';
 import { SubmitButton } from '../TransactorBaseModal/TransactorBaseModal.styled';
+import { isNaN } from 'lodash';
+import logger from '@/services/logger';
+import { showToastError, showToastSuccess } from '@/utils/toast';
+import useGetAllowanceAmount, { IGetAllowanceAmountParams } from '@/hooks/contract-operations/erc20/useGetAllowanceAmount';
+import useContractOperation from '@/hooks/contract-operations/useContractOperation';
+import useApproveTokenAmount, { IApproveTokenAmountParams } from '@/hooks/contract-operations/erc20/useApproveTokenAmount';
+import { IRequestSignResp } from 'tc-connect';
+import { checkCacheApprovalTokenPermission, setCacheApprovalTokenPermission } from '@/utils/marketplace-storage';
+import { MAX_HEX_VALUE } from '@/constants/common';
+import useMakeTokenOffer, { IMakeTokenOfferParams } from '@/hooks/contract-operations/marketplace/useMakeTokenOffer';
 
 interface IProps {
   show: boolean;
   handleClose: () => void;
   inscription: IInscription;
+}
+
+interface IFormValues {
+  price: string;
+  erc20Token: string;
 }
 
 const ModalMakeOffer: React.FC<IProps> = ({
@@ -20,14 +35,94 @@ const ModalMakeOffer: React.FC<IProps> = ({
   inscription,
 }: IProps) => {
   const [processing, setProcessing] = useState(false);
+  const { run: getAllowanceAmount } = useContractOperation<
+    IGetAllowanceAmountParams,
+    number
+  >({
+    operation: useGetAllowanceAmount,
+  });
+  const { run: approveTokenAmount } = useContractOperation<
+    IApproveTokenAmountParams,
+    IRequestSignResp | null
+  >({
+    operation: useApproveTokenAmount,
+  });
+  const { run: makeOffer } = useContractOperation<
+    IMakeTokenOfferParams,
+    IRequestSignResp | null
+  >({
+    operation: useMakeTokenOffer,
+  });
 
-  const validateForm = () => {};
+  const validateForm = (values: IFormValues) => {
+    const errors: Record<string, string> = {};
 
-  const handleSubmit = () => {};
+    if (!values.price) {
+      errors.price = 'Price is required.';
+    } else if (isNaN(values.price) || Number(values.price) <= 0) {
+      errors.price = 'Invalid number. Must be a numeric and greater than 0.';
+    }
+
+    return errors;
+  }
+
+  const handleSubmit = async (values: IFormValues) => {
+    if (processing || !inscription) return;
+    logger.debug(values);
+
+    try {
+      setProcessing(true);
+      const allowanceAmount = await getAllowanceAmount({
+        contractAddress: values.erc20Token,
+        operatorAddress: TC_MARKETPLACE_CONTRACT
+      });
+      const hasApprovalCache = checkCacheApprovalTokenPermission(`${TC_MARKETPLACE_CONTRACT}_${values.erc20Token}`);
+      if (!allowanceAmount && !hasApprovalCache) {
+        logger.debug(TC_MARKETPLACE_CONTRACT);
+        logger.debug(inscription.collectionAddress);
+
+        await approveTokenAmount({
+          tokenAddress: values.erc20Token,
+          consumerAddress: TC_MARKETPLACE_CONTRACT,
+          amount: MAX_HEX_VALUE
+        });
+
+        setCacheApprovalTokenPermission(`${TC_MARKETPLACE_CONTRACT}_${values.erc20Token}`);
+      }
+
+      logger.debug({
+        collectionAddress: inscription.collectionAddress,
+        erc20Token: values.erc20Token,
+        price: values.price,
+        durationTime: 0,
+        tokenID: inscription.tokenId,
+      });
+
+      await makeOffer({
+        collectionAddress: inscription.collectionAddress,
+        erc20Token: values.erc20Token,
+        price: values.price.toString(),
+        durationTime: 0,
+        tokenID: inscription.tokenId,
+      })
+
+      showToastSuccess({
+        message: 'Made token offer successfully.'
+      })
+      handleClose();
+    } catch (err: unknown) {
+      logger.error(err);
+      showToastError({
+        message: (err as Error).message
+      })
+    } finally {
+      setProcessing(false);
+    }
+  };
 
   return (
     <TransactorBaseModal
-      title={'Offer detail'}
+      title={'Make offer'}
       show={show}
       handleClose={handleClose}
     >

@@ -60,9 +60,10 @@ const useMakeTokenOffer: ContractOperationHook<
         redirectURL: window.location.href,
         isInscribe: true,
         gasPrice: undefined,
-        gasLimit: undefined,
+        gasLimit: '500000',
+        isExecuteTransaction: false,
         functionType: 'Make Token Offer',
-        functionName: 'makeOffer(tuple)',
+        functionName: 'makeOffer((address,uint256,address,address,uint256,bool,uint256) makeOfferData)',
       });
 
       logger.debug(response);

@@ -10,8 +10,8 @@ import { getUserSelector } from '@/state/user/selector';
 import { useSelector } from 'react-redux';
 
 export interface ISetApprovalForAllParams {
-  marketplaceAddress: string;
-  collectionAddress: string;
+  operatorAddress: string;
+  contractAddress: string;
 }
 
 const useSetApprovalForAll: ContractOperationHook<
@@ -23,13 +23,13 @@ const useSetApprovalForAll: ContractOperationHook<
   const call = useCallback(
     async (params: ISetApprovalForAllParams): Promise<IRequestSignResp | null> => {
       const {
-        collectionAddress,
-        marketplaceAddress
+        contractAddress,
+        operatorAddress
       } = params;
 
       const ContractInterface = new ethers.Interface(ERC721ABIJson.abi);
       const encodeAbi = ContractInterface.encodeFunctionData("setApprovalForAll", [
-        marketplaceAddress,
+        operatorAddress,
         true
       ]);
 
@@ -37,7 +37,7 @@ const useSetApprovalForAll: ContractOperationHook<
         from: user.tcAddress,
         target: "_blank",
         calldata: encodeAbi,
-        to: collectionAddress,
+        to: contractAddress,
         value: "",
         redirectURL: window.location.href,
         isInscribe: false,
