@@ -12,32 +12,29 @@ interface IProps {
   inscription: IInscription;
 }
 
-const ModalCancelOffer = ({ show, handleClose, inscription }: IProps) => {
+const ModalAcceptOffer = ({ show, handleClose, inscription }: IProps) => {
   const [processing, setProcessing] = useState(false);
 
   return (
     <TransactorBaseModal
-      title={'Cancel offer?'}
+      title={'Accept this offer'}
       show={show}
       handleClose={handleClose}
     >
       <p>
-        This will cancel your offer. You will also be asked to confirm this
-        cancelation from your wallet
+        You will accept this token offer. You will also be asked to confirm this
+        acceptance from your wallet.
       </p>
       <div className="form-item">
         <EstimatedFee txSize={TRANSFER_TX_SIZE} />
       </div>
       <div className="action-wrapper">
-        <div className="multi-btn">
-          <SubmitButton onClick={handleClose}>Close</SubmitButton>
-          <SubmitButton className="secondary" disabled={processing} type="submit">
-            {processing ? 'Processing...' : 'Yes'}
-          </SubmitButton>
-        </div>
+        <SubmitButton disabled={processing} type="submit">
+          {processing ? 'Processing...' : 'Confirm'}
+        </SubmitButton>
       </div>
     </TransactorBaseModal>
   );
 };
 
-export default ModalCancelOffer;
+export default ModalAcceptOffer;

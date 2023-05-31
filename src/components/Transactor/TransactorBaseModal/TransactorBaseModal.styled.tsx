@@ -42,6 +42,16 @@ export const StyledOfferModal = styled(MainModal)`
 
   .action-wrapper {
     margin-top: ${px2rem(24)};
+
+    .multi-btn {
+      display: flex;
+      gap: ${px2rem(12)};
+      align-items: center;
+    }
+  }
+
+  p {
+    color: #1c1c1c;
   }
 `;
 

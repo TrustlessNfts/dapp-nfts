@@ -1,5 +1,5 @@
-import px2rem from "@/utils/px2rem";
-import styled from "styled-components";
+import px2rem from '@/utils/px2rem';
+import styled from 'styled-components';
 
 export const Wrapper = styled.div`
   .est-fee {
@@ -30,4 +30,4 @@ export const Wrapper = styled.div`
       font-size: ${px2rem(12)};
     }
   }
-`
+`;
