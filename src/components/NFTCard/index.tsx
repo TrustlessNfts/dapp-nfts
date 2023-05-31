@@ -17,9 +17,11 @@ export interface INFTCard {
   title2?: string;
   title3?: string;
   owner?: string;
+  isBNS?: boolean;
 }
 
 const NFTCard = ({
+  isBNS = false,
   href,
   image,
   thumbnail,
@@ -46,24 +48,28 @@ const NFTCard = ({
   };
 
   const isOwner = useMemo(() => {
-    return user?.tcAddress && user?.tcAddress?.toLowerCase() === owner?.toLowerCase();
+    return (
+      user?.tcAddress && user?.tcAddress?.toLowerCase() === owner?.toLowerCase()
+    );
   }, [owner, user]);
 
   return (
     <>
-      <Styled href={href}>
+      <Styled href={href} isBNS={isBNS}>
         <div className="card-content">
-          <div className="card-image">
-            <NFTDisplayBox
-              collectionID={contract}
-              contentClass="image"
-              thumbnail={thumbnail}
-              src={image}
-              tokenID={tokenId}
-              type={contentType}
-            />
-            <a className="overlay" href={href} />
-          </div>
+          {!isBNS && (
+            <div className="card-image">
+              <NFTDisplayBox
+                collectionID={contract}
+                contentClass="image"
+                thumbnail={thumbnail}
+                src={image}
+                tokenID={tokenId}
+                type={contentType}
+              />
+              <a className="overlay" href={href} />
+            </div>
+          )}
           <div className="card-info">
             {title1 && <p className="card-title1">{title1}</p>}
             {title2 && <p className="card-title2">{title2}</p>}
