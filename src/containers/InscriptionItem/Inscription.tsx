@@ -64,7 +64,7 @@ const Inscription = () => {
   }, [inscription]);
 
   const renderAttributeList = useMemo(() => {
-    const attributesList = inscription?.attributes.sort((a, b) =>
+    const attributesList = inscription?.attributes?.sort((a, b) =>
       a.traitType.localeCompare(b.traitType),
     );
 
@@ -87,6 +87,10 @@ const Inscription = () => {
     [inscription?.collection?.name, inscription?.tokenId],
   );
 
+  if (!inscription) {
+    return <></>;
+  }
+  
   return (
     <Container>
       <div className="content">
@@ -119,7 +123,7 @@ const Inscription = () => {
           </div>
 
           <Accordion header="Artifact Details">{renderDetailsList}</Accordion>
-          {inscription?.attributes && inscription?.attributes.length > 0 && (
+          {(inscription?.attributes && inscription?.attributes.length > 0) && (
             <Accordion header="Attribute">{renderAttributeList}</Accordion>
           )}
           {inscription?.activities && inscription?.activities.length > 0 && (
