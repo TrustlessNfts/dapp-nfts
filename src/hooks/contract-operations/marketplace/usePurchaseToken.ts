@@ -7,6 +7,8 @@ import logger from '@/services/logger';
 import { ethers } from "ethers";
 import connector from '@/connectors/tc-connector';
 import { TC_MARKETPLACE_CONTRACT } from '@/configs';
+import { getUserSelector } from '@/state/user/selector';
+import { useSelector } from 'react-redux';
 
 export interface IPurchaseTokenParams {
   offerId: string;
@@ -16,6 +18,8 @@ const usePurchaseToken: ContractOperationHook<
 IPurchaseTokenParams,
   IRequestSignResp | null
 > = () => {
+  const user = useSelector(getUserSelector);
+
   const call = useCallback(
     async (params: IPurchaseTokenParams): Promise<IRequestSignResp | null> => {
       const {
@@ -29,6 +33,7 @@ IPurchaseTokenParams,
       ]);
 
       const response = await connector.requestSign({
+        from: user.tcAddress,
         target: "_blank",
         calldata: encodeAbi,
         to: TC_MARKETPLACE_CONTRACT,

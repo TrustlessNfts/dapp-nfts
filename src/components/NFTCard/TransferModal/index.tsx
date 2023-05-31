@@ -66,7 +66,6 @@ const TransferModal = (props: Props) => {
       await run({
         tokenId: tokenId,
         to: toAddress,
-        from: user.tcAddress,
         contractAddress: contractAddress,
       });
       toast.success('Transaction has been created. Please wait for few minutes.');

@@ -6,6 +6,8 @@ import { IRequestSignResp } from 'tc-connect';
 import logger from '@/services/logger';
 import { ethers } from "ethers";
 import connector from '@/connectors/tc-connector';
+import { getUserSelector } from '@/state/user/selector';
+import { useSelector } from 'react-redux';
 
 export interface IApproveTokenAmountParams {
   tokenAddress: string;
@@ -17,6 +19,8 @@ const useApproveTokenAmount: ContractOperationHook<
 IApproveTokenAmountParams,
   IRequestSignResp | null
 > = () => {
+  const user = useSelector(getUserSelector);
+
   const call = useCallback(
     async (params: IApproveTokenAmountParams): Promise<IRequestSignResp | null> => {
       const {
@@ -32,6 +36,7 @@ IApproveTokenAmountParams,
       ]);
 
       const response = await connector.requestSign({
+        from: user.tcAddress,
         target: "_blank",
         calldata: encodeAbi,
         to: tokenAddress,

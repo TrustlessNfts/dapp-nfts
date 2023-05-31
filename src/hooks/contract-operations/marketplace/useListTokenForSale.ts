@@ -9,6 +9,8 @@ import connector from '@/connectors/tc-connector';
 import Web3 from 'web3';
 import { ROOT_ADDRESS } from '@/constants/common';
 import { TC_MARKETPLACE_CONTRACT } from '@/configs';
+import { useSelector } from 'react-redux';
+import { getUserSelector } from '@/state/user/selector';
 
 export interface IListTokenForSaleParams {
   collectionAddress: string;
@@ -16,13 +18,14 @@ export interface IListTokenForSaleParams {
   erc20Token?: string;
   durationTime: number; // Unix timestamp
   price: string;
-  seller: string;
 }
 
 const useListTokenForSale: ContractOperationHook<
   IListTokenForSaleParams,
   IRequestSignResp | null
 > = () => {
+  const user = useSelector(getUserSelector);
+
   const call = useCallback(
     async (params: IListTokenForSaleParams): Promise<IRequestSignResp | null> => {
       const {
@@ -31,7 +34,6 @@ const useListTokenForSale: ContractOperationHook<
         price,
         erc20Token,
         durationTime,
-        seller
       } = params;
 
       const payload = JSON.parse(
@@ -41,7 +43,7 @@ const useListTokenForSale: ContractOperationHook<
           _price: Web3.utils.toWei(price),
           _erc20Token: erc20Token ?? ROOT_ADDRESS,
           _closed: false,
-          _seller: seller,
+          _seller: user.tcAddress ?? '',
           _durationTime: durationTime,
         })
       )

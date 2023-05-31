@@ -10,6 +10,8 @@ import connector from '@/connectors/tc-connector';
 import { IRequestSignResp } from 'tc-connect';
 import Web3 from 'web3';
 import { AbiItem } from 'web3-utils'
+import { getUserSelector } from '@/state/user/selector';
+import { useSelector } from 'react-redux';
 
 export interface ICreateNFTCollectionParams {
   name: string;
@@ -20,6 +22,8 @@ const useCreateNFTCollection: ContractOperationHook<
   ICreateNFTCollectionParams,
   IRequestSignResp | null
 > = () => {
+  const user = useSelector(getUserSelector);
+
   const call = useCallback(async (
     params: ICreateNFTCollectionParams,
   ): Promise<IRequestSignResp | null> => {
@@ -34,6 +38,7 @@ const useCreateNFTCollection: ContractOperationHook<
       ]
     }).encodeABI();
     const response = await connector.requestSign({
+      from: user.tcAddress,
       target: "_blank",
       calldata: encodeABI,
       to: "",

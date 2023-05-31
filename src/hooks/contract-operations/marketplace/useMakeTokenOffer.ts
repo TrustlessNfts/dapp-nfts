@@ -8,6 +8,8 @@ import { ethers } from "ethers";
 import connector from '@/connectors/tc-connector';
 import Web3 from 'web3';
 import { TC_MARKETPLACE_CONTRACT } from '@/configs';
+import { useSelector } from 'react-redux';
+import { getUserSelector } from '@/state/user/selector';
 
 export interface IMakeTokenOfferParams {
   collectionAddress: string;
@@ -15,13 +17,14 @@ export interface IMakeTokenOfferParams {
   price: string;
   erc20Token?: string;
   durationTime: number; // Unix timestamp
-  buyer: string;
 }
 
 const useMakeTokenOffer: ContractOperationHook<
   IMakeTokenOfferParams,
   IRequestSignResp | null
 > = () => {
+  const user = useSelector(getUserSelector);
+
   const call = useCallback(
     async (params: IMakeTokenOfferParams): Promise<IRequestSignResp | null> => {
       const {
@@ -30,14 +33,13 @@ const useMakeTokenOffer: ContractOperationHook<
         price,
         erc20Token,
         durationTime,
-        buyer
       } = params;
 
       const payload = JSON.parse(
         JSON.stringify({
           _collectionContract: collectionAddress,
           _tokenId: Web3.utils.toHex(tokenID),
-          _buyer: buyer,
+          _buyer: user.tcAddress ?? '',
           _price: Web3.utils.toWei(price),
           _erc20Token: erc20Token,
           _closed: false,

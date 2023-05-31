@@ -6,6 +6,8 @@ import { IRequestSignResp } from 'tc-connect';
 import logger from '@/services/logger';
 import { ethers } from "ethers";
 import connector from '@/connectors/tc-connector';
+import { getUserSelector } from '@/state/user/selector';
+import { useSelector } from 'react-redux';
 
 export interface ITransferERC721CollectionParams {
   to: string;
@@ -16,6 +18,7 @@ const useTransferERC721Collection: ContractOperationHook<
   ITransferERC721CollectionParams,
   IRequestSignResp | null
 > = () => {
+  const user = useSelector(getUserSelector);
 
   const call = useCallback(
     async (params: ITransferERC721CollectionParams): Promise<IRequestSignResp | null> => {
@@ -26,6 +29,7 @@ const useTransferERC721Collection: ContractOperationHook<
       ]);
 
       const response = await connector.requestSign({
+        from: user.tcAddress,
         target: "_blank",
         calldata: encodeAbi,
         to: contractAddress,

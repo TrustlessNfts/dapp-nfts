@@ -6,28 +6,32 @@ import { IRequestSignResp } from 'tc-connect';
 import logger from '@/services/logger';
 import { ethers } from "ethers";
 import connector from '@/connectors/tc-connector';
+import { getUserSelector } from '@/state/user/selector';
+import { useSelector } from 'react-redux';
 
 export interface IMintBatchChunksParams {
   listOfChunks: Array<Buffer>;
   contractAddress: string;
-  owner: string;
 }
 
 const useMintBatchChunks: ContractOperationHook<
   IMintBatchChunksParams,
   IRequestSignResp | null
 > = () => {
+  const user = useSelector(getUserSelector);
+
   const call = useCallback(
     async (params: IMintBatchChunksParams): Promise<IRequestSignResp | null> => {
-      const { listOfChunks, contractAddress, owner } = params;
+      const { listOfChunks, contractAddress } = params;
       const chunks = listOfChunks.map((item) => [item]);
       const ContractInterface = new ethers.Interface(ERC721ABIJson.abi);
       const encodeAbi = ContractInterface.encodeFunctionData("mintBatchChunks", [
-        owner,
+        user.tcAddress,
         chunks
       ]);
 
       const response = await connector.requestSign({
+        from: user.tcAddress,
         target: "_blank",
         calldata: encodeAbi,
         to: contractAddress,

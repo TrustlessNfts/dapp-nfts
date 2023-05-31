@@ -203,7 +203,6 @@ const ModalMint = (props: Props) => {
       await mintSingle({
         contractAddress: collection.contract,
         chunks: chunks,
-        owner: user.tcAddress,
       });
       showToastSuccess({
         message: 'Transaction has been created. Please wait for few minutes.'
@@ -257,7 +256,6 @@ const ModalMint = (props: Props) => {
         await mintBatch({
           contractAddress: collection.contract,
           listOfChunks: batch,
-          owner: user.tcAddress
         });
       }
       toast.success('Transaction has been created. Please wait for few minutes.');
