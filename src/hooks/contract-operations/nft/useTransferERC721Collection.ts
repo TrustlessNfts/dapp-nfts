@@ -1,15 +1,11 @@
-import ERC721ABIJson from '@/abis/erc721.json';
-import { TRANSFER_TX_SIZE } from '@/configs';
-import { ERROR_CODE } from '@/constants/error';
-import { AssetsContext } from '@/contexts/assets-context';
-import { TransactionEventType } from '@/enums/transaction';
 import { ContractOperationHook, DAppType } from '@/interfaces/contract-operation';
-import { getContract } from '@/utils';
-import { useWeb3React } from '@web3-react/core';
-import BigNumber from 'bignumber.js';
-import { Transaction } from 'ethers';
-import { useCallback, useContext } from 'react';
-import * as TC_SDK from 'trustless-computer-sdk';
+import ERC721ABIJson from '@/abis/erc721.json';
+import { useCallback } from 'react';
+import { TransactionEventType } from '@/enums/transaction';
+import { IRequestSignResp } from 'tc-connect';
+import logger from '@/services/logger';
+import { ethers } from "ethers";
+import connector from '@/connectors/tc-connector';
 
 export interface ITransferERC721CollectionParams {
   to: string;
@@ -18,45 +14,34 @@ export interface ITransferERC721CollectionParams {
 
 const useTransferERC721Collection: ContractOperationHook<
   ITransferERC721CollectionParams,
-  Transaction | null
+  IRequestSignResp | null
 > = () => {
-  const { account, provider } = useWeb3React();
-  const { btcBalance, feeRate } = useContext(AssetsContext);
 
   const call = useCallback(
-    async (params: ITransferERC721CollectionParams): Promise<Transaction | null> => {
+    async (params: ITransferERC721CollectionParams): Promise<IRequestSignResp | null> => {
       const { to, contractAddress } = params;
-      if (account && provider && contractAddress) {
-        const contract = getContract(
-          contractAddress,
-          ERC721ABIJson.abi,
-          provider,
-          account,
-        );
-        console.log({
-          tcTxSizeByte: TRANSFER_TX_SIZE,
-          feeRatePerByte: feeRate.fastestFee,
-          contractAddress,
-        });
-        const estimatedFee = TC_SDK.estimateInscribeFee({
-          tcTxSizeByte: TRANSFER_TX_SIZE,
-          feeRatePerByte: feeRate.fastestFee,
-        });
-        const balanceInBN = new BigNumber(btcBalance);
-        if (balanceInBN.isLessThan(estimatedFee.totalFee)) {
-          throw Error(ERROR_CODE.INSUFFICIENT_BALANCE);
-        }
+      const ContractInterface = new ethers.Interface(ERC721ABIJson.abi);
+      const encodeAbi = ContractInterface.encodeFunctionData("transferOwnership", [
+        to,
+      ]);
 
-        const transaction = await contract
-          .connect(provider.getSigner())
-          .transferOwnership(to);
+      const response = await connector.requestSign({
+        target: "_blank",
+        calldata: encodeAbi,
+        to: contractAddress,
+        value: "",
+        redirectURL: window.location.href,
+        isInscribe: true,
+        gasPrice: undefined,
+        gasLimit: undefined,
+        functionType: 'Transfer Ownership',
+        functionName: 'transferOwnership(address)',
+      });
 
-        return transaction;
-      }
-
-      return null;
+      logger.debug(response);
+      return response;
     },
-    [account, provider, btcBalance, feeRate],
+    [],
   );
 
   return {

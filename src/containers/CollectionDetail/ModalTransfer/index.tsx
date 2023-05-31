@@ -6,17 +6,12 @@ import { Modal } from 'react-bootstrap';
 import { StyledModalUpload, Title, WrapInput } from './ModalTransfer.styled';
 import IconSVG from '@/components/IconSVG';
 import { useState } from 'react';
-import toast from 'react-hot-toast';
-import { CDN_URL, TC_WEB_URL } from '@/configs';
+import { CDN_URL } from '@/configs';
 import { validateEVMAddress } from '@/utils';
-import { walletLinkSignTemplate } from '@/utils/configs';
 import useContractOperation from '@/hooks/contract-operations/useContractOperation';
 import useTransferERC721Collection, { ITransferERC721CollectionParams } from '@/hooks/contract-operations/nft/useTransferERC721Collection';
-import { Transaction } from 'ethers';
-import ToastConfirm from '@/components/ToastConfirm';
-import { showError } from '@/utils/toast';
-import { DappsTabs } from '@/enums/tabs';
-import { ERROR_CODE } from '@/constants/error';
+import { IRequestSignResp } from 'tc-connect';
+import { showToastError, showToastSuccess } from '@/utils/toast';
 
 type Props = {
   collection: ICollection;
@@ -33,11 +28,10 @@ const ModalTransfer = (props: Props) => {
   const { show = false, handleClose, collection, onUpdateSuccess } = props;
   const { run } = useContractOperation<
     ITransferERC721CollectionParams,
-    Transaction | null
+    IRequestSignResp | null
   >({
     operation: useTransferERC721Collection,
   });
-  const { dAppType, transactionType } = useTransferERC721Collection();
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
   const validateForm = (values: IFormValue): Record<string, string> => {
@@ -59,49 +53,20 @@ const ModalTransfer = (props: Props) => {
       setIsProcessing(true);
       const { receiverAddress } = values;
 
-      const tx = await run({
+      await run({
         contractAddress: collection.contract,
         to: receiverAddress,
       });
 
+      showToastSuccess({
+        message: 'Transfered successfully.'
+      })
       onUpdateSuccess();
-      toast.success(
-        () => (
-          <ToastConfirm
-            id="create-success"
-            url={walletLinkSignTemplate({
-              transactionType,
-              dAppType,
-              hash: Object(tx).hash,
-              isRedirect: true,
-            })}
-            message="Please go to your wallet to authorize the request for the Bitcoin transaction."
-            linkText="Go to wallet"
-          />
-        ),
-        {
-          duration: 50000,
-          position: 'top-right',
-          style: {
-            maxWidth: '900px',
-            borderLeft: '4px solid #00AA6C',
-          },
-        },
-      );
+      handleClose();
     } catch (err: unknown) {
-      console.log(err);
-      if ((err as Error).message === ERROR_CODE.PENDING) {
-        showError({
-          message:
-            'You have some pending transactions. Please complete all of them before moving on.',
-          url: `${TC_WEB_URL}/?tab=${DappsTabs.TRANSACTION}`,
-          linkText: 'Go to Wallet',
-        });
-      } else {
-        showError({
-          message: (err as Error).message,
-        });
-      }
+      showToastError({
+        message: (err as Error).message,
+      });
     } finally {
       setIsProcessing(false);
     }

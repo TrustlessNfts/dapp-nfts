@@ -1,7 +1,7 @@
 import Button from '@/components/Button';
 import IconSVG from '@/components/IconSVG';
 import Text from '@/components/Text';
-import { CDN_URL, TC_WEB_URL } from '@/configs';
+import { CDN_URL, TC_WEB_WALLET_URL } from '@/configs';
 import { MINT_TOOL_MAX_FILE_SIZE } from '@/constants/config';
 import { ERROR_CODE } from '@/constants/error';
 import {
@@ -15,7 +15,7 @@ import {
   StyledModalUpload,
   Title,
 } from '@/containers/Collections/ModalCreate/ModalCreate.styled';
-import { AssetsContext } from '@/contexts/assets-context';
+import { MempoolContext } from '@/contexts/mempool-context';
 import { DappsTabs } from '@/enums/tabs';
 import useMintBatchChunks, {
   IMintBatchChunksParams,
@@ -31,14 +31,19 @@ import {
   isERC721SupportedExt,
   unzipFile,
 } from '@/utils';
-import { showError } from '@/utils/toast';
+import { showToastError } from '@/utils/toast';
 import { formatBTCPrice } from '@trustless-computer/dapp-core';
 import { Buffer } from 'buffer';
-import { Transaction } from 'ethers';
 import { useContext, useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import toast from 'react-hot-toast';
 import * as TC_SDK from 'trustless-computer-sdk';
+import { IRequestSignResp } from 'tc-connect';
+import { useSelector } from 'react-redux';
+import { getUserSelector } from '@/state/user/selector';
+import { useRouter } from 'next/router';
+import { ROUTE_PATH } from '@/constants/route-path';
+import logger from '@/services/logger';
 
 type Props = {
   show: boolean;
@@ -59,14 +64,11 @@ enum optionFees {
 }
 
 const ModalMint = (props: Props) => {
+  const user = useSelector(getUserSelector);
+  const router = useRouter();
   const { show = false, handleClose, collection, onUpdateSuccess } = props;
-  // const [isProcessing, _] = useState(false);
   const [uploadType, setUploadType] = useState(UploadType.Single);
   const [isMinting, setIsMinting] = useState(false);
-  const [selectFee, setSelectFee] = useState<number>(0);
-  const [activeFee, setActiveFee] = useState(optionFees.fastest);
-
-  // const [estBTCFee, setEstBTCFee] = useState('0');
   const [estBTCFee, setEstBTCFee] = useState({
     economy: '0',
     faster: '0',
@@ -74,17 +76,17 @@ const ModalMint = (props: Props) => {
   });
   const [file, setFile] = useState<File | null>(null);
   // const [listFiles, setListFiles] = useState<Array<Array<Buffer>> | null>();
-  const { feeRate } = useContext(AssetsContext);
+  const { feeRate } = useContext(MempoolContext);
 
   const { run: mintSingle } = useContractOperation<
     IMintChunksParams,
-    Transaction | null
+    IRequestSignResp | null
   >({
     operation: useMintChunks,
   });
   const { run: mintBatch } = useContractOperation<
     IMintBatchChunksParams,
-    Transaction | null
+    IRequestSignResp | null
   >({
     operation: useMintBatchChunks,
   });
@@ -108,10 +110,9 @@ const ModalMint = (props: Props) => {
       const chunks = Buffer.from(JSON.stringify(obj));
       const chunksSizeInKb = Buffer.byteLength(chunks) / 1000;
       if (chunksSizeInKb > BLOCK_CHAIN_FILE_LIMIT * 1000) {
-        showError({
-          message: `File size error, maximum file size is ${
-            BLOCK_CHAIN_FILE_LIMIT * 1000
-          }kb.`,
+        showToastError({
+          message: `File size error, maximum file size is ${BLOCK_CHAIN_FILE_LIMIT * 1000
+            }kb.`,
         });
         return [];
       }
@@ -120,16 +121,12 @@ const ModalMint = (props: Props) => {
         listOfChunks.push([...currentChunks]);
         currentChunks = [];
         currentBatchSize = 0;
-        console.log('batch number', listOfChunks.length);
       }
       currentBatchSize += chunksSizeInKb;
       currentChunks.push(chunks);
-      console.log('currentBatchSize', currentBatchSize);
     }
 
-    console.log('batch number', listOfChunks.length);
     listOfChunks.push([...currentChunks]);
-    console.log('listOfChunks', listOfChunks);
 
     return listOfChunks;
   };
@@ -186,8 +183,13 @@ const ModalMint = (props: Props) => {
   };
 
   const handleMintSingle = async (file: File): Promise<void> => {
+    if (!user.tcAddress) {
+      router.push(ROUTE_PATH.CONNECT_WALLET);
+      return;
+    }
+
     if (!collection?.contract) {
-      showError({
+      showToastError({
         message: 'Contract address not found.',
       });
       return;
@@ -198,32 +200,31 @@ const ModalMint = (props: Props) => {
       const obj = {
         image: await fileToBase64(file),
       };
-      console.log('json', JSON.stringify(obj));
       const chunks = Buffer.from(JSON.stringify(obj));
       await mintSingle({
         contractAddress: collection.contract,
         chunks: chunks,
-        selectFee,
+        owner: user.tcAddress,
       });
       toast.success('Transaction has been created. Please wait for few minutes.');
       onUpdateSuccess();
     } catch (err: unknown) {
-      console.log(err);
+      logger.error(err);
       if ((err as Error).message === ERROR_CODE.PENDING) {
-        showError({
+        showToastError({
           message:
             'You have some pending transactions. Please complete all of them before moving on.',
-          url: `${TC_WEB_URL}/?tab=${DappsTabs.TRANSACTION}`,
+          url: `${TC_WEB_WALLET_URL}/?tab=${DappsTabs.TRANSACTION}`,
           linkText: 'Go to Wallet',
         });
       } else if ((err as Error).message === ERROR_CODE.INSUFFICIENT_BALANCE) {
-        showError({
+        showToastError({
           message: `Your balance is insufficient. Please top up BTC to pay network fee.`,
-          url: `${TC_WEB_URL}`,
+          url: `${TC_WEB_WALLET_URL}`,
           linkText: 'Go to Wallet',
         });
       } else {
-        showError({
+        showToastError({
           message:
             (err as Error).message ||
             'Something went wrong. Please try again later.',
@@ -235,8 +236,13 @@ const ModalMint = (props: Props) => {
   };
 
   const handleMintBatch = async (file: File): Promise<void> => {
+    if (!user.tcAddress) {
+      router.push(ROUTE_PATH.CONNECT_WALLET);
+      return;
+    }
+
     if (!collection?.contract) {
-      showError({
+      showToastError({
         message: 'Contract address not found.',
       });
       return;
@@ -250,33 +256,16 @@ const ModalMint = (props: Props) => {
         await mintBatch({
           contractAddress: collection.contract,
           listOfChunks: batch,
-          selectFee,
+          owner: user.tcAddress
         });
       }
       toast.success('Transaction has been created. Please wait for few minutes.');
       onUpdateSuccess();
     } catch (err: unknown) {
-      if ((err as Error).message === ERROR_CODE.PENDING) {
-        showError({
-          message:
-            'You have some pending transactions. Please complete all of them before moving on.',
-          url: `${TC_WEB_URL}/?tab=${DappsTabs.TRANSACTION}`,
-          linkText: 'Go to Wallet',
-        });
-      } else if ((err as Error).message === ERROR_CODE.INSUFFICIENT_BALANCE) {
-        showError({
-          message: `Your balance is insufficient. Please top up BTC to pay network fee.`,
-          url: `${TC_WEB_URL}`,
-          linkText: 'Go to Wallet',
-        });
-      } else {
-        showError({
-          message:
-            (err as Error).message ||
-            'Something went wrong. Please try again later.',
-        });
-      }
-      console.log(err);
+      showToastError({
+        message: (err as Error).message
+      });
+      logger.error(err);
     } finally {
       setIsMinting(false);
     }
@@ -286,7 +275,7 @@ const ModalMint = (props: Props) => {
     const fileName = file.name;
     const fileExt = getFileExtensionByFileName(fileName);
     if (!isERC721SupportedExt(fileExt)) {
-      showError({
+      showToastError({
         message: 'Unsupported file extension.',
       });
       return;
@@ -297,10 +286,9 @@ const ModalMint = (props: Props) => {
     } else {
       const fileSizeInKb = file.size / 1000;
       if (fileSizeInKb > BLOCK_CHAIN_FILE_LIMIT * 1000) {
-        showError({
-          message: `File size error, maximum file size is ${
-            BLOCK_CHAIN_FILE_LIMIT * 1000
-          }kb.`,
+        showToastError({
+          message: `File size error, maximum file size is ${BLOCK_CHAIN_FILE_LIMIT * 1000
+            }kb.`,
         });
         return;
       }
@@ -320,11 +308,7 @@ const ModalMint = (props: Props) => {
   }) => {
     return (
       <div
-        className={`est-fee-item ${activeFee === title ? 'active' : ''}`}
-        onClick={() => {
-          setSelectFee(feeRate);
-          setActiveFee(title);
-        }}
+        className={`est-fee-item`}
       >
         <div>
           <Text fontWeight="medium" color="text2" size="regular">
@@ -340,9 +324,6 @@ const ModalMint = (props: Props) => {
       </div>
     );
   };
-  useEffect(() => {
-    setSelectFee(feeRate.fastestFee);
-  }, [feeRate.fastestFee]);
 
   useEffect(() => {
     handleEstFee();
@@ -438,7 +419,7 @@ const ModalMint = (props: Props) => {
           </ul>
           <div className="est-fee">
             <Text size="regular" fontWeight="medium" color="bg1" className="mb-8">
-              Select the network fee
+              Estimated network fee
             </Text>
             <div className="est-fee-options">
               {renderEstFee({

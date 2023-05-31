@@ -46,7 +46,7 @@ const NFTCard = ({
   };
 
   const isOwner = useMemo(() => {
-    return user?.walletAddress && user?.walletAddress?.toLowerCase() === owner?.toLowerCase();
+    return user?.tcAddress && user?.tcAddress?.toLowerCase() === owner?.toLowerCase();
   }, [owner, user]);
 
   return (
