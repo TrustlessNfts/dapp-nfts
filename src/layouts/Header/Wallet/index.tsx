@@ -1,5 +1,5 @@
 import IconSVG from '@/components/IconSVG';
-import { CDN_URL, TC_WEB_WALLET_URL } from '@/configs';
+import { CDN_URL, TC_BRIDGE_URL, TC_WEB_WALLET_URL } from '@/configs';
 import { AssetsContext } from '@/contexts/assets-context';
 import { getIsAuthenticatedSelector, getUserSelector } from '@/state/user/selector';
 import { formatEthPrice } from '@/utils/format';
@@ -104,14 +104,29 @@ const WalletHeader = () => {
         </div>
       </div>
       <div className="divider"></div>
+      <div
+        className="wallet-link"
+        onClick={() => window.open(`${TC_WEB_WALLET_URL}?tab=${DappsTabs.NFT}`)}
+      >
+        <IconSVG src={`${CDN_URL}/icons/ic-wallet.svg`} maxWidth="20" />
+        <Text size="medium">Wallet</Text>
+      </div>
+      <div
+        className="wallet-link"
+        onClick={() => window.open(`${TC_BRIDGE_URL}/btc`)}
+      >
+        <IconSVG src={`${CDN_URL}/icons/coin-convert-white.svg`} maxWidth="20" />
+        <Text size="medium">Wrap BTC</Text>
+      </div>
+      <div
+        className="wallet-link"
+        onClick={() => window.open(`${TC_BRIDGE_URL}/eth`)}
+      >
+        <IconSVG src={`${CDN_URL}/icons/coin-convert-white.svg`} maxWidth="20" />
+        <Text size="medium">Wrap ETH</Text>
+      </div>
+      <div className="divider"></div>
       <div className="cta">
-        <div
-          className="wallet-link"
-          onClick={() => window.open(`${TC_WEB_WALLET_URL}?tab=${DappsTabs.NFT}`)}
-        >
-          <IconSVG src={`${CDN_URL}/icons/ic-wallet.svg`} maxWidth="20" />
-          <Text size="medium">Wallet</Text>
-        </div>
         <div className="wallet-disconnect" onClick={disconnect}>
           <IconSVG src={`${CDN_URL}/icons/ic-logout.svg`} maxWidth="20" />
           <Text size="medium">Disconnect</Text>

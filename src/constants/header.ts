@@ -1,38 +1,31 @@
-import { ROUTE_PATH } from '@/constants/route-path';
+import { TC_BRIDGE_URL, TC_DAPP_STORE, TC_GAS_STATION, TC_WEB_WALLET_URL } from "@/configs";
 
 export const MENU_HEADER = [
   {
     id: 'menu-1',
-    name: 'Build',
-    route: ROUTE_PATH.HOME,
-    activePath: '',
+    name: 'Trustless',
+    route: TC_DAPP_STORE,
   },
   {
     id: 'menu-2',
-    name: 'Use',
-    route: ROUTE_PATH.USE_TRUSTLESS,
-    activePath: 'use-trustless-computer',
+    name: 'Get TC',
+    route: TC_GAS_STATION,
   },
   {
     id: 'menu-3',
-    name: 'Dapp Store',
-    route: ROUTE_PATH.DAPPS,
-    activePath: 'dapps',
+    name: 'Wallet',
+    route: TC_WEB_WALLET_URL,
   },
-  // {
-  //   id: 'menu-4',
-  //   name: 'Faucet',
-  //   route: ROUTE_PATH.FAUCET,
-  //   activePath: 'faucet',
-  // },
-  // {
-  //   id: 'menu-5',
-  //   name: 'Explorer',
-  //   route: 'https://explorer.trustless.computer',
-  //   activePath: 'explorer',
-  //   target: '_blank',
-  //   absolute: true,
-  // },
+  {
+    id: 'menu-4',
+    name: 'Wrap BTC',
+    route: `${TC_BRIDGE_URL}/btc`,
+  },
+  {
+    id: 'menu-5',
+    name: 'Wrap ETH',
+    route: `${TC_BRIDGE_URL}/eth`,
+  },
 ];
 
 export const MENU_MOBILE = [...MENU_HEADER];

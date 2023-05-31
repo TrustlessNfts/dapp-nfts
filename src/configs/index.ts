@@ -17,5 +17,8 @@ export const TC_WEB_WALLET_URL: string = process.env.NEXT_PUBLIC_TC_WEB_WALLET_U
 export const TC_WALLET_CONNECT_URL = process.env.NEXT_PUBLIC_WALLET_CONNECT_URL!;
 export const CURRENT_TC_NETWORK = NETWORKS.find((network) => network.BTCNetwork === 'mainnet')!;
 export const TRANSFER_TX_SIZE = 1000!;
+export const TC_BRIDGE_URL = 'https://trustlessbridge.io';
+export const TC_DAPP_STORE = 'https://trustless.computer';
+export const TC_GAS_STATION = 'https://tcgasstation.com';
 
 /* eslint-enable @typescript-eslint/no-non-null-assertion */
