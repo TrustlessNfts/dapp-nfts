@@ -1,7 +1,7 @@
 import Table from '@/components/Table';
 import { IInscriptionOffer } from '@/interfaces/api/inscription';
 import { shortenAddress } from '@/utils';
-import { formatEthPrice } from '@/utils/format';
+import { formatEthPrice, mappingERC20ToSymbol } from '@/utils/format';
 import React, { useState } from 'react';
 import { StyledOfferList } from './OfferList.styled';
 import Button from '@/components/Button';
@@ -22,7 +22,7 @@ const OfferList = ({ offers, isOwner }: Props) => {
   const [selectedOffer, setSelectedOffer] = useState<IInscriptionOffer | null>(null);
 
   const tableData = offers?.map((offer) => {
-    const { buyer, offeringId, createdAt, price } = offer;
+    const { buyer, offeringId, createdAt, price, erc20Token } = offer;
 
     const isOfferer = userTcWallet?.toLowerCase() === buyer.toLowerCase();
 
@@ -34,7 +34,7 @@ const OfferList = ({ offers, isOwner }: Props) => {
         price: (
           <div className={'offer-amount'}>
             {price > 0 ? `${formatEthPrice(price)}` : '-'}
-            {price > 0 && <span> TC</span>}
+            {price > 0 && <span> {mappingERC20ToSymbol(erc20Token)}</span>}
           </div>
         ),
         offerAt: (
