@@ -40,7 +40,10 @@ const CollectionHeader = (props: ICollectionHeader) => {
                   href={`${TC_EXPLORER}/address/${collection?.contract}`}
                   target="_blank"
                 >
-                  <img src={`${CDN_URL}/icons/ic-tc-explorer-24x24.svg`} alt='tc-explorer'/>
+                  <img
+                    src={`${CDN_URL}/icons/ic-tc-explorer-24x24.svg`}
+                    alt="tc-explorer"
+                  />
                 </a>
                 {collection.social.website && (
                   <a

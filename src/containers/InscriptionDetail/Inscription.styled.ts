@@ -291,10 +291,10 @@ const StyledDetailList = styled.div`
     span:first-child {
       color: ${commonTheme.text['black-20']};
     }
-    span:nth-child(2) {
+    div:nth-child(2) {
       display: inline-flex;
       gap: ${px2rem(8)};
-      svg {
+      .icon-copy {
         cursor: pointer;
       }
     }
