@@ -10,7 +10,7 @@ import * as TC_SDK from 'trustless-computer-sdk';
 
 export interface IAssetsContext {
   btcBalance: string;
-  juiceBalance: string;
+  tcBalance: string;
   currentAssets: ICollectedUTXOResp | undefined;
   assets: ICollectedUTXOResp | undefined;
   isLoadingAssets: boolean;
@@ -27,7 +27,7 @@ export interface IAssetsContext {
 
 const initialValue: IAssetsContext = {
   btcBalance: '0',
-  juiceBalance: '0',
+  tcBalance: '0',
   currentAssets: undefined,
   assets: undefined,
   isLoadingAssets: false,
@@ -61,7 +61,7 @@ export const AssetsProvider: React.FC<PropsWithChildren> = ({ children }: PropsW
   const [isLoadingAssets, setIsLoadingAssets] = useState<boolean>(false);
   const [isLoadedAssets, setIsLoadedAssets] = useState<boolean>(false);
   // const [btcBalance, setBtcBalance] = useState('0');
-  const [juiceBalance, setJuiceBalance] = useState('0');
+  const [tcBalance, settcBalance] = useState('0');
 
   // History
   const [history, setHistory] = useState<ITxHistory[]>([]);
@@ -138,10 +138,10 @@ export const AssetsProvider: React.FC<PropsWithChildren> = ({ children }: PropsW
     return '0';
   }, [currentAddress, currentAssets]);
 
-  const fetchJuiceBalance = async () => {
+  const fetchtcBalance = async () => {
     if (user?.walletAddress && provider) {
       const balance = await provider.getBalance(user.walletAddress);
-      setJuiceBalance(balance.toString());
+      settcBalance(balance.toString());
     }
   };
 
@@ -183,7 +183,7 @@ export const AssetsProvider: React.FC<PropsWithChildren> = ({ children }: PropsW
     }
 
     try {
-      fetchJuiceBalance();
+      fetchtcBalance();
     } catch (err) {
       console.log(err);
     }
@@ -221,13 +221,13 @@ export const AssetsProvider: React.FC<PropsWithChildren> = ({ children }: PropsW
       comingAmount,
       debounceFetchData,
       eth2btcRate,
-      juiceBalance,
+      tcBalance,
       fetchAssets,
       fetchFeeRate,
       getAvailableAssetsCreateTx,
     };
   }, [
-    juiceBalance,
+    tcBalance,
     btcBalance,
     currentAssets,
     assets,

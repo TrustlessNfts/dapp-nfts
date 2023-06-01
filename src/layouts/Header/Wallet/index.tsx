@@ -1,13 +1,10 @@
 import IconSVG from '@/components/IconSVG';
-import { CDN_URL, TC_WEB_URL } from '@/configs';
-import { ROUTE_PATH } from '@/constants/route-path';
+import { CDN_URL, TC_BRIDGE_URL, TC_WEB_URL } from '@/configs';
 import { AssetsContext } from '@/contexts/assets-context';
 import { getIsAuthenticatedSelector, getUserSelector } from '@/state/user/selector';
 import { formatEthPrice } from '@/utils/format';
 import { formatBTCPrice, formatLongAddress } from '@trustless-computer/dapp-core';
-import { useWeb3React } from '@web3-react/core';
 import copy from 'copy-to-clipboard';
-import { useRouter } from 'next/router';
 import { useContext, useRef, useState } from 'react';
 import { OverlayTrigger } from 'react-bootstrap';
 import { toast } from 'react-hot-toast';
@@ -18,15 +15,15 @@ import { WalletPopover } from './Wallet.styled';
 import Text from '@/components/Text';
 import { WalletContext } from '@/contexts/wallet-context';
 import { DappsTabs } from '@/enums/tabs';
+import { useRouter } from 'next/router';
+import { ROUTE_PATH } from '@/constants/route-path';
 
 const WalletHeader = () => {
   const router = useRouter();
-  const { account } = useWeb3React();
   const user = useSelector(getUserSelector);
-  const { onDisconnect } = useContext(WalletContext);
-
   const isAuthenticated = useSelector(getIsAuthenticatedSelector);
-  const { btcBalance, juiceBalance } = useContext(AssetsContext);
+  const { onDisconnect } = useContext(WalletContext);
+  const { btcBalance, tcBalance } = useContext(AssetsContext);
 
   const [show, setShow] = useState(false);
   const handleOnMouseEnter = () => {
@@ -72,7 +69,7 @@ const WalletHeader = () => {
             src={`${CDN_URL}/icons/ic-copy.svg`}
             color="white"
             maxWidth="16"
-            // type="stroke"
+          // type="stroke"
           ></IconSVG>
         </div>
       </div>
@@ -100,14 +97,29 @@ const WalletHeader = () => {
         </div>
       </div>
       <div className="divider"></div>
+      <div
+        className="wallet-link"
+        onClick={() => window.open(`${TC_WEB_URL}?tab=${DappsTabs.NFT}`)}
+      >
+        <IconSVG src={`${CDN_URL}/icons/ic-wallet.svg`} maxWidth="20" />
+        <Text size="medium">Wallet</Text>
+      </div>
+      <div
+        className="wallet-link"
+        onClick={() => window.open(`${TC_BRIDGE_URL}/btc`)}
+      >
+        <IconSVG src={`${CDN_URL}/icons/coin-convert-white.svg`} maxWidth="20" />
+        <Text size="medium">Wrap BTC</Text>
+      </div>
+      <div
+        className="wallet-link"
+        onClick={() => window.open(`${TC_BRIDGE_URL}/eth`)}
+      >
+        <IconSVG src={`${CDN_URL}/icons/coin-convert-white.svg`} maxWidth="20" />
+        <Text size="medium">Wrap ETH</Text>
+      </div>
+      <div className="divider"></div>
       <div className="cta">
-        <div
-          className="wallet-link"
-          onClick={() => window.open(`${TC_WEB_URL}?tab=${DappsTabs.NFT}`)}
-        >
-          <IconSVG src={`${CDN_URL}/icons/ic-wallet.svg`} maxWidth="20" />
-          <Text size="medium">Wallet</Text>
-        </div>
         <div className="wallet-disconnect" onClick={onDisconnect}>
           <IconSVG src={`${CDN_URL}/icons/ic-logout.svg`} maxWidth="20" />
           <Text size="medium">Disconnect</Text>
@@ -118,7 +130,7 @@ const WalletHeader = () => {
 
   return (
     <>
-      {account && isAuthenticated ? (
+      {user.walletAddress && isAuthenticated ? (
         <>
           <OverlayTrigger
             trigger={['hover', 'focus']}
@@ -138,10 +150,10 @@ const WalletHeader = () => {
                 <div className="balance">
                   <p>{formatBTCPrice(btcBalance)} BTC</p>
                   <span className="divider"></span>
-                  <p>{formatEthPrice(juiceBalance)} TC</p>
+                  <p>{formatEthPrice(tcBalance)} TC</p>
                 </div>
                 <div className="avatar">
-                  <Jazzicon diameter={32} seed={jsNumberForAddress(account)} />
+                  <Jazzicon diameter={32} seed={jsNumberForAddress(user.walletAddress)} />
                 </div>
               </WalletBalance>
             </div>

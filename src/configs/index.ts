@@ -18,5 +18,8 @@ export const TC_MARKETPLACE_CONTRACT =
   process.env.NEXT_PUBLIC_TC_MARKETPLACE_CONTRACT!;
 export const BTC_NETWORK =
   process.env.NEXT_PUBLIC_BTC_NETWORK!;
+export const TC_BRIDGE_URL = 'https://trustlessbridge.io';
+export const TC_DAPP_STORE = 'https://trustless.computer';
+export const TC_GAS_STATION = 'https://tcgasstation.com';
 
 /* eslint-enable @typescript-eslint/no-non-null-assertion */

@@ -16,7 +16,6 @@ const Wrapper = styled.div`
     height: ${px2rem(1)};
     margin-left: -${px2rem(32)};
     margin-right: -${px2rem(32)};
-    /* top: ${px2rem(80)}; */
     left: 0;
     right: 0;
     bottom: 0;
@@ -81,7 +80,7 @@ const Wrapper = styled.div`
 
   .hideMobile {
     @media screen and (max-width: 768px) {
-      display: none;
+      display: none !important;
     }
   }
 
@@ -141,21 +140,13 @@ const Wrapper = styled.div`
   }
 `;
 
-const StyledLink = styled(Link)<{ active: boolean; activeColor?: string }>`
+const StyledLink = styled(Link)`
   cursor: pointer;
   font-weight: 400;
   font-size: ${px2rem(16)};
   line-height: ${px2rem(28)};
   text-decoration: none !important;
-  color: ${({
-    theme,
-    active,
-    activeColor,
-  }: {
-    theme: DefaultTheme;
-    active: boolean;
-    activeColor?: string;
-  }) => (active ? activeColor || theme.white : theme.text2)};
+  color: ${({ theme }: { theme: DefaultTheme }) => theme.white};
   letter-spacing: -0.02em;
 
   :hover {
@@ -205,7 +196,7 @@ const WalletBalance = styled.div`
       width: 1px;
       height: 16px;
       background-color: ${({ theme }: { theme: DefaultTheme }) =>
-        theme.primary['5b']};
+    theme.primary['5b']};
     }
   }
 

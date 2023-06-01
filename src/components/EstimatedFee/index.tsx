@@ -1,9 +1,9 @@
-import { MempoolContext } from '@/contexts/mempool-context';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import * as TC_SDK from 'trustless-computer-sdk';
 import Text from '@/components/Text';
 import { formatBTCPrice } from '@/utils/format';
 import { Wrapper } from './EstimatedFee.styled';
+import { AssetsContext } from '@/contexts/assets-context';
 
 interface IProps {
   txSize: number;
@@ -16,7 +16,7 @@ enum optionFees {
 }
 
 const EstimatedFee: React.FC<IProps> = ({ txSize }: IProps): React.ReactElement => {
-  const { feeRate } = useContext(MempoolContext);
+  const { feeRate } = useContext(AssetsContext);
   const [estBTCFee, setEstBTCFee] = useState({
     economy: '0',
     faster: '0',

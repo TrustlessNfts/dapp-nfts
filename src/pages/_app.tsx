@@ -12,6 +12,7 @@ import { Toaster } from 'react-hot-toast';
 import '@/styles/index.scss';
 import ClientOnly from '@/components/Utils/ClientOnly';
 import { CDN_URL } from '@/configs';
+import NextNprogress from 'nextjs-progressbar';
 
 export default function App({ Component, pageProps }: AppProps) {
   const { seoInfo = {} } = pageProps;
@@ -62,6 +63,7 @@ export default function App({ Component, pageProps }: AppProps) {
             </Web3Provider>
           </ThemeProvider>
         </Provider>
+        <NextNprogress />
       </ClientOnly>
     </>
   );
