@@ -42,7 +42,7 @@ const EstimatedFee: React.FC<IProps> = ({ txSize }: IProps): React.ReactElement 
       faster: estimatedFasterFee.totalFee.toString(),
       economy: estimatedEconomyFee.totalFee.toString(),
     });
-  }, [txSize, setEstBTCFee]);
+  }, [txSize, setEstBTCFee, feeRate.fastestFee, feeRate.halfHourFee, feeRate.hourFee]);
 
   const renderEstFee = ({
     title,
