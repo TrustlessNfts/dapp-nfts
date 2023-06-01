@@ -13,4 +13,3 @@ export * from './validate';
 export * from './string';
 export * from './units';
 export * from './file';
-export * from './xverse-wallet-storage';

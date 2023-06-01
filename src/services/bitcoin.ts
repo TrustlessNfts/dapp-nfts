@@ -1,14 +1,16 @@
-import { apiClient } from '@/services';
 import {
   BINANCE_PAIR,
   FeeRateName,
   ICollectedUTXOResp,
-  IFeeRate,
   IPendingUTXO,
   ITokenPriceResp,
 } from '@/interfaces/api/bitcoin';
 import BigNumber from 'bignumber.js';
 import * as TC_SDK from 'trustless-computer-sdk';
+import logger from './logger';
+import { IMempoolFeeRate } from '@/interfaces/mempool';
+import { camelCaseKeys } from '@trustless-computer/dapp-core';
+import { apiClient } from '.';
 import { TC_NETWORK_RPC } from '@/configs';
 
 const BINANCE_API_URL = 'https://api.binance.com/api/v3';
@@ -59,24 +61,28 @@ export const getPendingUTXOs = async (btcAddress: string): Promise<IPendingUTXO[
   return pendingUTXOs;
 };
 
-export const getFeeRate = async (): Promise<IFeeRate> => {
+export const getFeeRate = async (): Promise<IMempoolFeeRate> => {
   try {
     const res = await fetch('https://mempool.space/api/v1/fees/recommended');
-    const fee: IFeeRate = await res.json();
+    const fee: IMempoolFeeRate = await res.json();
     if (fee[FeeRateName.fastestFee] <= 10) {
       return {
-        [FeeRateName.fastestFee]: 15,
-        [FeeRateName.halfHourFee]: 10,
-        [FeeRateName.hourFee]: 5,
+        fastestFee: 25,
+        halfHourFee: 20,
+        hourFee: 15,
+        economyFee: 10,
+        minimumFee: 5,
       };
     }
-    return fee;
+    return camelCaseKeys(fee);
   } catch (err: unknown) {
-    console.log(err);
+    logger.error(err);
     return {
-      [FeeRateName.fastestFee]: 25,
-      [FeeRateName.halfHourFee]: 20,
-      [FeeRateName.hourFee]: 15,
+      fastestFee: 25,
+      halfHourFee: 20,
+      hourFee: 15,
+      economyFee: 10,
+      minimumFee: 5,
     };
   }
 };

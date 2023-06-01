@@ -1,18 +1,15 @@
 import { API_URL } from '@/configs';
 import { IPagingParams } from '@/interfaces/api/query';
-import { swrFetcher } from '@/utils/swr';
 import queryString from 'query-string';
+import { apiClient } from '..';
+import { camelCaseKeys } from '@/utils';
 
 const API_PATH = '/token-explorer';
 
-//TODO:  add type
 export const getTokens = async (params: IPagingParams): Promise<unknown> => {
   const qs = '?' + queryString.stringify(params);
-
-  return swrFetcher(`${API_URL}${API_PATH}/tokens${qs}`, {
-    method: 'GET',
-    error: 'Fail to get tokens data',
-  });
+  const res = await apiClient.get(`${API_URL}${API_PATH}/tokens${qs}`);
+  return Object(camelCaseKeys(res));
 };
 
 export const getTokensByWallet = async (
@@ -21,8 +18,6 @@ export const getTokensByWallet = async (
   } & IPagingParams,
 ): Promise<unknown> => {
   const qs = '?' + queryString.stringify(params);
-  return swrFetcher(`${API_URL}${API_PATH}/tokens${qs}`, {
-    method: 'GET',
-    error: 'Fail to get tokens data',
-  });
+  const res = await apiClient.get(`${API_URL}${API_PATH}/tokens${qs}`);
+  return Object(camelCaseKeys(res));
 };

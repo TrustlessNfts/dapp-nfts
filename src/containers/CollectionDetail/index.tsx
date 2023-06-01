@@ -41,6 +41,7 @@ const Collection = () => {
       const data = await getCollectionDetail({ contractAddress: contract });
       setCollection(data);
     } catch (error) {
+      console.log(error)
       router.push(ROUTE_PATH.NOT_FOUND);
     }
   };
@@ -103,7 +104,7 @@ const Collection = () => {
                   return (
                     <NFTCard
                       key={index.toString()}
-                      href={`/inscription?contract=${collection?.contract}&id=${item.tokenId}`}
+                      href={`${ROUTE_PATH.INSCRIPTION}?contract=${collection?.contract}&id=${item.tokenId}`}
                       image={item?.image}
                       contract={collection?.contract}
                       tokenId={item.tokenId}

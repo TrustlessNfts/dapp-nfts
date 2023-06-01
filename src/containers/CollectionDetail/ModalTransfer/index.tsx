@@ -14,7 +14,7 @@ import useContractOperation from '@/hooks/contract-operations/useContractOperati
 import useTransferERC721Collection, { ITransferERC721CollectionParams } from '@/hooks/contract-operations/nft/useTransferERC721Collection';
 import { Transaction } from 'ethers';
 import ToastConfirm from '@/components/ToastConfirm';
-import { showError } from '@/utils/toast';
+import { showToastError } from '@/utils/toast';
 import { DappsTabs } from '@/enums/tabs';
 import { ERROR_CODE } from '@/constants/error';
 
@@ -91,14 +91,14 @@ const ModalTransfer = (props: Props) => {
     } catch (err: unknown) {
       console.log(err);
       if ((err as Error).message === ERROR_CODE.PENDING) {
-        showError({
+        showToastError({
           message:
             'You have some pending transactions. Please complete all of them before moving on.',
           url: `${TC_WEB_URL}/?tab=${DappsTabs.TRANSACTION}`,
           linkText: 'Go to Wallet',
         });
       } else {
-        showError({
+        showToastError({
           message: (err as Error).message,
         });
       }

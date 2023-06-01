@@ -3,7 +3,7 @@ export const ROUTE_PATH = {
   HOME: '/',
   DAPPS: '/dapps',
   COLLECTION: '/collection',
-  INSCRIPTION: '/inscription',
+  INSCRIPTION: '/token',
   FAUCET: '/faucet',
   USE_TRUSTLESS: '/use-trustless-computer',
   WALLET: '/wallet',

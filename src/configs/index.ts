@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 // App configs
-export const APP_ENV: string = process.env.NEXT_PUBLIC_MODE!;
+export const APP_ENV: string = process.env.NEXT_PUBLIC_APP_ENV!;
 export const API_URL: string = process.env.NEXT_PUBLIC_API_URL!;
 export const TC_NETWORK_RPC: string = process.env.NEXT_PUBLIC_TC_NETWORK_RPC!;
 export const CDN_URL: string = process.env.NEXT_PUBLIC_CDN_URL!;
@@ -14,5 +14,9 @@ export const BFS_ADDRESS: string = process.env.NEXT_PUBLIC_BFS_CONTRACT!;
 
 export const TC_WEB_URL: string = process.env.NEXT_PUBLIC_TC_WEB_URL!;
 export const TRANSFER_TX_SIZE = 1000!;
+export const TC_MARKETPLACE_CONTRACT =
+  process.env.NEXT_PUBLIC_TC_MARKETPLACE_CONTRACT!;
+export const BTC_NETWORK =
+  process.env.NEXT_PUBLIC_BTC_NETWORK!;
 
 /* eslint-enable @typescript-eslint/no-non-null-assertion */

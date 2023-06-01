@@ -16,7 +16,7 @@ import {
   isERC721SupportedExt,
   unzipFile,
 } from '@/utils';
-import { showError } from '@/utils/toast';
+import { showToastError } from '@/utils/toast';
 import { Buffer } from 'buffer';
 import { Formik } from 'formik';
 import { useContext, useEffect, useState } from 'react';
@@ -89,7 +89,7 @@ const ModalCreate = (props: Props) => {
   };
 
   // const onSizeError = (): void => {
-  //   showError({
+  //   showToastError({
   //     message: `File size error, maximum file size is ${
   //       MINT_TOOL_MAX_FILE_SIZE * 1000
   //     }KB.`,
@@ -195,7 +195,7 @@ const ModalCreate = (props: Props) => {
         const fileName = file.name;
         const fileExt = getFileExtensionByFileName(fileName);
         if (!isERC721SupportedExt(fileExt)) {
-          showError({
+          showToastError({
             message: 'Unsupported file extension.',
           });
           return;
@@ -241,20 +241,20 @@ const ModalCreate = (props: Props) => {
       handleClose();
     } catch (err) {
       if ((err as Error).message === ERROR_CODE.PENDING) {
-        showError({
+        showToastError({
           message:
             'You have some pending transactions. Please complete all of them before moving on.',
           url: `${TC_WEB_URL}/?tab=${DappsTabs.TRANSACTION}`,
           linkText: 'Go to Wallet',
         });
       } else if ((err as Error).message === ERROR_CODE.INSUFFICIENT_BALANCE) {
-        showError({
+        showToastError({
           message: `Your balance is insufficient. Please top up BTC to pay network fee.`,
           url: `${TC_WEB_URL}`,
           linkText: 'Go to Wallet',
         });
       } else {
-        showError({
+        showToastError({
           message: (err as Error).message,
         });
       }
@@ -317,7 +317,7 @@ const ModalCreate = (props: Props) => {
             setListFiles(listOfChunks);
           })
           .catch((err) => {
-            showError({
+            showToastError({
               message: (err as Error).message,
             });
           })
@@ -330,7 +330,7 @@ const ModalCreate = (props: Props) => {
             setListFiles(listOfChunks);
           })
           .catch((err) => {
-            showError({
+            showToastError({
               message: (err as Error).message,
             });
           })

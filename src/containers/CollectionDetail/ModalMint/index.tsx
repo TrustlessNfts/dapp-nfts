@@ -31,7 +31,7 @@ import {
   isERC721SupportedExt,
   unzipFile,
 } from '@/utils';
-import { showError } from '@/utils/toast';
+import { showToastError } from '@/utils/toast';
 import { formatBTCPrice } from '@trustless-computer/dapp-core';
 import { Buffer } from 'buffer';
 import { Transaction } from 'ethers';
@@ -108,7 +108,7 @@ const ModalMint = (props: Props) => {
       const chunks = Buffer.from(JSON.stringify(obj));
       const chunksSizeInKb = Buffer.byteLength(chunks) / 1000;
       if (chunksSizeInKb > BLOCK_CHAIN_FILE_LIMIT * 1000) {
-        showError({
+        showToastError({
           message: `File size error, maximum file size is ${
             BLOCK_CHAIN_FILE_LIMIT * 1000
           }kb.`,
@@ -187,7 +187,7 @@ const ModalMint = (props: Props) => {
 
   const handleMintSingle = async (file: File): Promise<void> => {
     if (!collection?.contract) {
-      showError({
+      showToastError({
         message: 'Contract address not found.',
       });
       return;
@@ -210,20 +210,20 @@ const ModalMint = (props: Props) => {
     } catch (err: unknown) {
       console.log(err);
       if ((err as Error).message === ERROR_CODE.PENDING) {
-        showError({
+        showToastError({
           message:
             'You have some pending transactions. Please complete all of them before moving on.',
           url: `${TC_WEB_URL}/?tab=${DappsTabs.TRANSACTION}`,
           linkText: 'Go to Wallet',
         });
       } else if ((err as Error).message === ERROR_CODE.INSUFFICIENT_BALANCE) {
-        showError({
+        showToastError({
           message: `Your balance is insufficient. Please top up BTC to pay network fee.`,
           url: `${TC_WEB_URL}`,
           linkText: 'Go to Wallet',
         });
       } else {
-        showError({
+        showToastError({
           message:
             (err as Error).message ||
             'Something went wrong. Please try again later.',
@@ -236,7 +236,7 @@ const ModalMint = (props: Props) => {
 
   const handleMintBatch = async (file: File): Promise<void> => {
     if (!collection?.contract) {
-      showError({
+      showToastError({
         message: 'Contract address not found.',
       });
       return;
@@ -257,20 +257,20 @@ const ModalMint = (props: Props) => {
       onUpdateSuccess();
     } catch (err: unknown) {
       if ((err as Error).message === ERROR_CODE.PENDING) {
-        showError({
+        showToastError({
           message:
             'You have some pending transactions. Please complete all of them before moving on.',
           url: `${TC_WEB_URL}/?tab=${DappsTabs.TRANSACTION}`,
           linkText: 'Go to Wallet',
         });
       } else if ((err as Error).message === ERROR_CODE.INSUFFICIENT_BALANCE) {
-        showError({
+        showToastError({
           message: `Your balance is insufficient. Please top up BTC to pay network fee.`,
           url: `${TC_WEB_URL}`,
           linkText: 'Go to Wallet',
         });
       } else {
-        showError({
+        showToastError({
           message:
             (err as Error).message ||
             'Something went wrong. Please try again later.',
@@ -286,7 +286,7 @@ const ModalMint = (props: Props) => {
     const fileName = file.name;
     const fileExt = getFileExtensionByFileName(fileName);
     if (!isERC721SupportedExt(fileExt)) {
-      showError({
+      showToastError({
         message: 'Unsupported file extension.',
       });
       return;
@@ -297,7 +297,7 @@ const ModalMint = (props: Props) => {
     } else {
       const fileSizeInKb = file.size / 1000;
       if (fileSizeInKb > BLOCK_CHAIN_FILE_LIMIT * 1000) {
-        showError({
+        showToastError({
           message: `File size error, maximum file size is ${
             BLOCK_CHAIN_FILE_LIMIT * 1000
           }kb.`,

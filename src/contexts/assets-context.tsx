@@ -133,7 +133,6 @@ export const AssetsProvider: React.FC<PropsWithChildren> = ({ children }: PropsW
         utxos: currentAssets?.txrefs || [],
         inscriptions: currentAssets?.inscriptions_by_outputs || {},
       });
-      // setBtcBalance(balance.toString());
       return balance.toString();
     }
     return '0';
@@ -188,12 +187,6 @@ export const AssetsProvider: React.FC<PropsWithChildren> = ({ children }: PropsW
     } catch (err) {
       console.log(err);
     }
-
-    // try {
-    //   fetchBTCBalance();
-    // } catch (err) {
-    //   console.log(err);
-    // }
   };
 
   useEffect(() => {

@@ -9,8 +9,8 @@ export interface UserState {
 
 export const initialState: UserState = {
   selectedWallet: undefined,
-  walletAddressBtcTaproot: undefined,
-  walletAddress: undefined,
+  walletAddressBtcTaproot: '',
+  walletAddress: '',
 };
 
 const userSlice = createSlice({
