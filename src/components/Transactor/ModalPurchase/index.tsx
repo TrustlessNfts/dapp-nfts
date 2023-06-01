@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import TransactorBaseModal from '../TransactorBaseModal';
 import { IInscription } from '@/interfaces/api/inscription';
 import EstimatedFee from '@/components/EstimatedFee';
-import { TRANSFER_TX_SIZE } from '@/configs';
+import { TC_MARKETPLACE_CONTRACT, TRANSFER_TX_SIZE } from '@/configs';
 import { SubmitButton } from '../TransactorBaseModal/TransactorBaseModal.styled';
 import { formatEthPrice, mappingERC20ToSymbol } from '@/utils/format';
 import usePurchaseToken, { IPurchaseTokenParams } from '@/hooks/contract-operations/marketplace/usePurchaseToken';
@@ -14,6 +14,10 @@ import { useSelector } from 'react-redux';
 import { getUserSelector } from '@/state/user/selector';
 import { useRouter } from 'next/router';
 import { ROUTE_PATH } from '@/constants/route-path';
+import useApproveTokenAmount, { IApproveTokenAmountParams } from '@/hooks/contract-operations/erc20/useApproveTokenAmount';
+import useGetAllowanceAmount, { IGetAllowanceAmountParams } from '@/hooks/contract-operations/erc20/useGetAllowanceAmount';
+import { MAX_HEX_VALUE } from '@/constants/common';
+import { checkCacheApprovalTokenPermission, setCacheApprovalTokenPermission } from '@/utils/marketplace-storage';
 
 interface IProps {
   show: boolean;
@@ -25,6 +29,18 @@ const ModalPurchase = ({ show, handleClose, inscription }: IProps) => {
   const user = useSelector(getUserSelector);
   const router = useRouter();
   const [processing, setProcessing] = useState(false);
+  const { run: getAllowanceAmount } = useContractOperation<
+    IGetAllowanceAmountParams,
+    number
+  >({
+    operation: useGetAllowanceAmount,
+  });
+  const { run: approveTokenAmount } = useContractOperation<
+    IApproveTokenAmountParams,
+    IRequestSignResp | null
+  >({
+    operation: useApproveTokenAmount,
+  });
   const { run: purchaseToken } = useContractOperation<
     IPurchaseTokenParams,
     IRequestSignResp | null
@@ -38,7 +54,7 @@ const ModalPurchase = ({ show, handleClose, inscription }: IProps) => {
 
   const hanlePurchaseToken = async (): Promise<void> => {
     if (processing) return;
-    
+
     if (!user.tcAddress) {
       router.push(ROUTE_PATH.CONNECT_WALLET);
       return;
@@ -46,6 +62,23 @@ const ModalPurchase = ({ show, handleClose, inscription }: IProps) => {
 
     try {
       setProcessing(true);
+      const allowanceAmount = await getAllowanceAmount({
+        contractAddress: listingInfo.erc20Token,
+        operatorAddress: TC_MARKETPLACE_CONTRACT
+      });
+      const hasApprovalCache = checkCacheApprovalTokenPermission(`${TC_MARKETPLACE_CONTRACT}_${listingInfo.erc20Token}`);
+      if (!allowanceAmount && !hasApprovalCache) {
+        logger.debug(TC_MARKETPLACE_CONTRACT);
+        logger.debug(inscription.collectionAddress);
+
+        await approveTokenAmount({
+          tokenAddress: listingInfo.erc20Token,
+          consumerAddress: TC_MARKETPLACE_CONTRACT,
+          amount: MAX_HEX_VALUE
+        });
+
+        setCacheApprovalTokenPermission(`${TC_MARKETPLACE_CONTRACT}_${listingInfo.erc20Token}`);
+      }
       await purchaseToken({
         offerId: listingInfo.offeringId,
       })
