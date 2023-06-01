@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import TransactorBaseModal from '../TransactorBaseModal';
 import { IInscriptionOffer } from '@/interfaces/api/inscription';
 import EstimatedFee from '@/components/EstimatedFee';
-import { TRANSFER_TX_SIZE } from '@/configs';
+import { TC_MARKETPLACE_CONTRACT, TRANSFER_TX_SIZE } from '@/configs';
 import { SubmitButton } from '../TransactorBaseModal/TransactorBaseModal.styled';
 import { ROUTE_PATH } from '@/constants/route-path';
 import useContractOperation from '@/hooks/contract-operations/useContractOperation';
@@ -13,6 +13,9 @@ import { useRouter } from 'next/router';
 import { useSelector } from 'react-redux';
 import { IRequestSignResp } from 'tc-connect';
 import useAcceptTokenOffer, { IAcceptTokenOfferParams } from '@/hooks/contract-operations/marketplace/useAcceptTokenOffer';
+import useSetApprovalForAll, { ISetApprovalForAllParams } from '@/hooks/contract-operations/marketplace/useSetApprovalForAll';
+import useIsApprovedForAll, { IIsApprovedForAllParams } from '@/hooks/contract-operations/nft/useIsApprovedForAll';
+import { checkCacheApprovalPermission, setCacheApprovalPermission } from '@/utils/marketplace-storage';
 
 interface IProps {
   show: boolean;
@@ -24,6 +27,18 @@ const ModalAcceptOffer = ({ show, handleClose, inscription }: IProps) => {
   const user = useSelector(getUserSelector);
   const router = useRouter();
   const [processing, setProcessing] = useState(false);
+  const { run: isTokenApproved } = useContractOperation<
+    IIsApprovedForAllParams,
+    boolean
+  >({
+    operation: useIsApprovedForAll,
+  });
+  const { run: setApprovalForAll } = useContractOperation<
+    ISetApprovalForAllParams,
+    IRequestSignResp | null
+  >({
+    operation: useSetApprovalForAll,
+  });
   const { run: acceptTokenOffer } = useContractOperation<
     IAcceptTokenOfferParams,
     IRequestSignResp | null
@@ -41,6 +56,24 @@ const ModalAcceptOffer = ({ show, handleClose, inscription }: IProps) => {
 
     try {
       setProcessing(true);
+
+      const isApproved = await isTokenApproved({
+        contractAddress: inscription.collectionContract,
+        operatorAddress: TC_MARKETPLACE_CONTRACT
+      });
+      const hasApprovalCache = checkCacheApprovalPermission(`${TC_MARKETPLACE_CONTRACT}_${inscription.collectionContract}`);
+      if (!isApproved && !hasApprovalCache) {
+        logger.debug(TC_MARKETPLACE_CONTRACT);
+        logger.debug(inscription.collectionContract);
+
+        await setApprovalForAll({
+          operatorAddress: TC_MARKETPLACE_CONTRACT,
+          contractAddress: inscription.collectionContract,
+        })
+
+        setCacheApprovalPermission(`${TC_MARKETPLACE_CONTRACT}_${inscription.collectionContract}`);
+      }
+      
       await acceptTokenOffer({
         offerId: inscription.offeringId,
       })
