@@ -50,7 +50,7 @@ const useCreateNFTCollection: ContractOperationHook<
 
     logger.debug(response);
     return response;
-  }, []);
+  }, [user.tcAddress]);
 
   return {
     call: call,

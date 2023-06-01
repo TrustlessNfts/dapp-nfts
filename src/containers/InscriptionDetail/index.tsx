@@ -82,7 +82,7 @@ const Inscription = () => {
         )}
       </StyledDetailList>
     );
-  }, [inscription]);
+  }, [inscription, isOwner]);
 
   const renderAttributeList = useMemo(() => {
     const attributesList = inscription?.attributes?.sort((a, b) =>

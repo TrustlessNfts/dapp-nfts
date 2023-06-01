@@ -140,7 +140,7 @@ const ModalListTokenForSale: React.FC<IProps> = ({
                 name='erc20Token'
                 id='erc20Token'>
                 {TOKEN_OPTIONS.map(item => (
-                  <option value={item.value}>{item.label}</option>
+                  <option key={item.value} value={item.value}>{item.label}</option>
                 ))}
               </Form.Select>
             </div>

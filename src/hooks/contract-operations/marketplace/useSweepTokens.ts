@@ -10,26 +10,24 @@ import { TC_MARKETPLACE_CONTRACT } from '@/configs';
 import { getUserSelector } from '@/state/user/selector';
 import { useSelector } from 'react-redux';
 
-export interface ICancelTokenOfferParams {
-  offerId: string;
+export interface ISweetTokensParams {
+  offerIds: Array<string>;
+  totalPrice: string;
 }
 
-const useCancelTokenOffer: ContractOperationHook<
-ICancelTokenOfferParams,
+const usePurchaseToken: ContractOperationHook<
+  ISweetTokensParams,
   IRequestSignResp | null
 > = () => {
   const user = useSelector(getUserSelector);
 
   const call = useCallback(
-    async (params: ICancelTokenOfferParams): Promise<IRequestSignResp | null> => {
-      const {
-        offerId
-      } = params;
-      const offerIdBytes32 = '0x' + offerId;
-
+    async (params: ISweetTokensParams): Promise<IRequestSignResp | null> => {
+      const { offerIds, totalPrice } = params;
+      const offerIdInByte32List = offerIds.map(offerId => '0x' + offerId);
       const ContractInterface = new ethers.Interface(MarketplaceABIJson.abi);
-      const encodeAbi = ContractInterface.encodeFunctionData("cancelMakeOffer", [
-        offerIdBytes32
+      const encodeAbi = ContractInterface.encodeFunctionData("sweep", [
+        offerIdInByte32List
       ]);
 
       const response = await connector.requestSign({
@@ -37,13 +35,13 @@ ICancelTokenOfferParams,
         target: "_blank",
         calldata: encodeAbi,
         to: TC_MARKETPLACE_CONTRACT,
-        value: "",
+        value: totalPrice,
         redirectURL: window.location.href,
         isInscribe: true,
         gasPrice: undefined,
         gasLimit: undefined,
-        functionType: 'Cancel Token Offer',
-        functionName: 'cancelMakeOffer(bytes32)',
+        functionType: 'Sweep',
+        functionName: 'sweep(bytes32[])',
       });
 
       logger.debug(response);
@@ -59,4 +57,4 @@ ICancelTokenOfferParams,
   };
 };
 
-export default useCancelTokenOffer;
+export default usePurchaseToken;

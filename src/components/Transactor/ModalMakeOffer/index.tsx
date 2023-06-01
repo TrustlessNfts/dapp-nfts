@@ -149,7 +149,7 @@ const ModalMakeOffer: React.FC<IProps> = ({
                 id="erc20Token"
               >
                 {TOKEN_OPTIONS.map((item) => (
-                  <option value={item.value}>{item.label}</option>
+                  <option key={item.value} value={item.value}>{item.label}</option>
                 ))}
               </Form.Select>
             </div>
@@ -166,6 +166,9 @@ const ModalMakeOffer: React.FC<IProps> = ({
                 id="price"
                 placeholder="Set a price"
               />
+              {(touched.price && errors.price) && (
+                <p className='form-control-error'>{errors.price}</p>
+              )}
             </div>
             <div className="form-item">
               <EstimatedFee txSize={TRANSFER_TX_SIZE} />

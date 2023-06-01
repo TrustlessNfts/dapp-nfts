@@ -19,11 +19,12 @@ const OfferList = ({ offers, isOwner }: Props) => {
   const { tcAddress: userTcWallet } = useSelector(getUserSelector);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showAcceptModal, setShowAcceptModal] = useState(false);
+  const [selectedOffer, setSelectedOffer] = useState<IInscriptionOffer | null>(null);
 
   const tableData = offers?.map((offer) => {
     const { buyer, offeringId, createdAt, price } = offer;
 
-    const isOfferer = userTcWallet === buyer;
+    const isOfferer = userTcWallet?.toLowerCase() === buyer.toLowerCase();
 
     const dateFormatter = Intl.DateTimeFormat('sv-SE');
 
@@ -46,32 +47,31 @@ const OfferList = ({ offers, isOwner }: Props) => {
         ),
         action: (
           <div className={'offer-action'}>
-            {/* {isOwner && ( */}
-            <Button
-              bg="transparent"
-              background="transparent"
-              className="accept-btn"
-              onClick={() => setShowAcceptModal(true)}
-            >
-              Accept
-            </Button>
-            {/* )} */}
+            {isOwner && (
+              <Button
+                bg="transparent"
+                background="transparent"
+                className="accept-btn"
+                onClick={() => {
+                  setShowAcceptModal(true)
+                  setSelectedOffer(offer)
+                }}
+              >
+                Accept
+              </Button>
+            )}
             {isOfferer && (
               <>
                 <Button
                   bg="transparent"
                   background="transparent"
                   className="cancel-btn"
-                  onClick={() => setShowCancelModal(true)}
+                  onClick={() => {
+                    setShowCancelModal(true)
+                    setSelectedOffer(offer)
+                  }}
                 >
                   Cancel
-                </Button>
-                <Button
-                  bg="transparent"
-                  background="transparent"
-                  className="offer-btn"
-                >
-                  Make Again
                 </Button>
               </>
             )}
@@ -94,11 +94,19 @@ const OfferList = ({ offers, isOwner }: Props) => {
       </StyledOfferList>
       <ModalCancelOffer
         show={showCancelModal}
-        handleClose={() => setShowCancelModal(false)}
+        handleClose={() => {
+          setShowCancelModal(false);
+          setSelectedOffer(null);
+        }}
+        inscription={selectedOffer}
       />
       <ModalAcceptOffer
         show={showAcceptModal}
-        handleClose={() => setShowAcceptModal(false)}
+        handleClose={() => {
+          setShowAcceptModal(false);
+          setSelectedOffer(null);
+        }}
+        inscription={selectedOffer}
       />
     </>
   );

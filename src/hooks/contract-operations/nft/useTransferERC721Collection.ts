@@ -45,7 +45,7 @@ const useTransferERC721Collection: ContractOperationHook<
       logger.debug(response);
       return response;
     },
-    [],
+    [user.tcAddress],
   );
 
   return {

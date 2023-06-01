@@ -50,7 +50,7 @@ const useSetApprovalForAll: ContractOperationHook<
       logger.debug(response);
       return response;
     },
-    [],
+    [user.tcAddress],
   );
 
   return {

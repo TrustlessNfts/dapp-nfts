@@ -49,7 +49,7 @@ IAcceptTokenOfferParams,
       logger.debug(response);
       return response;
     },
-    [],
+    [user.tcAddress],
   );
 
   return {
