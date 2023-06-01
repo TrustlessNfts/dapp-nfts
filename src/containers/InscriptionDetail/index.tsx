@@ -17,6 +17,7 @@ import { getUserSelector } from '@/state/user/selector';
 import { shortenAddress } from '@/utils';
 import IconSVG from '@/components/IconSVG';
 import { onClickCopy } from '@/utils/commons';
+import Link from 'next/link';
 
 const Inscription = () => {
   const router = useRouter();
@@ -56,19 +57,30 @@ const Inscription = () => {
       <StyledDetailList>
         <div className="list-item">
           <span>Owner</span>
-          <span>
-            {isOwner ? 'You' : shortenAddress(owner)}
+          <div>
+            <Link
+              href={`https://explorer.trustless.computer/address/${owner}`}
+              target="_blank"
+            >
+              {isOwner ? 'You' : shortenAddress(owner)}
+            </Link>
             <IconSVG
               onClick={() => onClickCopy(owner)}
               src={`${CDN_URL}/icons/ic-copy.svg`}
               color="white"
               maxWidth="16"
+              className="icon-copy"
             ></IconSVG>
-          </span>
+          </div>
         </div>
         <div className="list-item">
           <span>Contract</span>
-          <span>{collectionAddress}</span>
+          <Link
+            href={`https://explorer.trustless.computer/address/${collectionAddress}`}
+            target="_blank"
+          >
+            {shortenAddress(collectionAddress)}
+          </Link>
         </div>
         <div className="list-item">
           <span>Content type</span>
@@ -134,12 +146,14 @@ const Inscription = () => {
                   {shortenAddress(inscription?.collection?.creator)}
                 </p>
               )}
-              <p className="title">
-                {contract.toLocaleLowerCase() ===
-                  ARTIFACT_CONTRACT.toLocaleLowerCase()
+              <Link
+                href={`${ROUTE_PATH.COLLECTION}?contract=${contract}`}
+                className="title"
+              >
+                {contract.toLocaleLowerCase() === ARTIFACT_CONTRACT.toLocaleLowerCase()
                   ? `Artifact #${inscription?.tokenId}`
                   : collectionName}
-              </p>
+              </Link>
               {inscription?.name !== collectionName && (
                 <div className="token-name">
                   <p>{inscription?.name}</p>
@@ -151,6 +165,14 @@ const Inscription = () => {
               />
             </div>
 
+            {inscription?.makeOffers && inscription?.makeOffers.length > 0 && (
+              <Accordion header="Offers">
+                <OfferList
+                  offers={inscription.makeOffers}
+                  isOwner={isOwner}
+                />
+              </Accordion>
+            )}
             <Accordion header="Artifact Details">{renderDetailsList}</Accordion>
             {inscription?.attributes && inscription?.attributes.length > 0 && (
               <Accordion header="Attribute">{renderAttributeList}</Accordion>
@@ -158,14 +180,6 @@ const Inscription = () => {
             {inscription?.activities && inscription?.activities.length > 0 && (
               <Accordion header="Activities">
                 <ActivityList activities={inscription.activities} />
-              </Accordion>
-            )}
-            {inscription?.makeOffers && inscription?.makeOffers.length > 0 && (
-              <Accordion header="Offers">
-                <OfferList
-                  offers={inscription.makeOffers}
-                  isOwner={isOwner}
-                />
               </Accordion>
             )}
           </div>

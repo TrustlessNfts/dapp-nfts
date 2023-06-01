@@ -39,22 +39,30 @@ const ActivityList = ({ activities }: Props) => {
         ),
         seller: (
           <div className={'activity-address'}>
-            <Link
-              href={`https://explorer.trustless.computer/address/${userAAddress}`}
-              target="_blank"
-            >
-              {userAAddress ? shortenAddress(userAAddress) : '-'}
-            </Link>
+            {userAAddress ?
+              <Link
+                href={`https://explorer.trustless.computer/address/${userAAddress}`}
+                target="_blank"
+              >
+                {shortenAddress(userAAddress)}
+              </Link>
+              : (
+                <span>-</span>
+              )}
           </div>
         ),
         buyer: (
           <div className={'activity-address'}>
-            <Link
-              href={`https://explorer.trustless.computer/address/${userBAddress}`}
-              target="_blank"
-            >
-              {userBAddress ? shortenAddress(userBAddress) : '-'}
-            </Link>
+            {userBAddress ?
+              <Link
+                href={`https://explorer.trustless.computer/address/${userBAddress}`}
+                target="_blank"
+              >
+                {shortenAddress(userBAddress)}
+              </Link>
+              : (
+                <span>-</span>
+              )}
           </div>
         ),
       },

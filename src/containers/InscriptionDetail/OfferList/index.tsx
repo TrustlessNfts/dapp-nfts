@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 import { getUserSelector } from '@/state/user/selector';
 import ModalCancelOffer from '@/components/Transactor/ModalCancelOffer';
 import ModalAcceptOffer from '@/components/Transactor/ModalAcceptOffer';
+import Link from 'next/link';
 
 type Props = {
   offers: IInscriptionOffer[];
@@ -43,7 +44,18 @@ const OfferList = ({ offers, isOwner }: Props) => {
           </div>
         ),
         buyer: (
-          <div className={'offer-buyer'}>{buyer ? shortenAddress(buyer) : '-'}</div>
+          <div className={'offer-buyer'}>
+            {buyer ? (
+              <Link
+                href={`https://explorer.trustless.computer/address/${buyer}`}
+                target="_blank"
+              >
+                {shortenAddress(buyer)}
+              </Link>
+            ) : (
+              '-'
+            )}
+          </div>
         ),
         action: (
           <div className={'offer-action'}>

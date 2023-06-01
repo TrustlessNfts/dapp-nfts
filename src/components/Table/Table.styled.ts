@@ -23,7 +23,6 @@ export const StyledTable = styled.div`
         font-weight: 500;
         line-height: ${px2rem(24)};
         color: #b6b6b6;
-        position: sticky;
         top: 0;
         /* background-color: ${({ theme }: { theme: DefaultTheme }) => theme.white}; */
         z-index: 10;

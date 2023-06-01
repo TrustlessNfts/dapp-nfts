@@ -14,6 +14,7 @@ import ClientOnly from '@/components/Utils/ClientOnly';
 import { CDN_URL } from '@/configs';
 import { useEffect } from 'react';
 import { setupSDK } from '@/lib/sdk';
+import NextNprogress from 'nextjs-progressbar';
 
 export default function App({ Component, pageProps }: AppProps) {
   const { seoInfo = {} } = pageProps;
@@ -68,6 +69,7 @@ export default function App({ Component, pageProps }: AppProps) {
             </WalletProvider>
           </ThemeProvider>
         </Provider>
+        <NextNprogress />
       </ClientOnly>
     </>
   );
