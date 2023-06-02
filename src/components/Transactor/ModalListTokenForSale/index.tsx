@@ -17,6 +17,7 @@ import useIsApprovedForAll, { IIsApprovedForAllParams } from '@/hooks/contract-o
 import useSetApprovalForAll, { ISetApprovalForAllParams } from '@/hooks/contract-operations/marketplace/useSetApprovalForAll';
 import useListTokenForSale, { IListTokenForSaleParams } from '@/hooks/contract-operations/marketplace/useListTokenForSale';
 import { checkCacheApprovalPermission, setCacheApprovalPermission } from '@/utils/marketplace-storage';
+import { exponentialToDecimal } from '@/utils/format';
 
 interface IProps {
   show: boolean;
@@ -75,6 +76,7 @@ const ModalListTokenForSale: React.FC<IProps> = ({
 
     try {
       setProcessing(true);
+      const { price, erc20Token } = values;
       const isApproved = await isTokenApproved({
         contractAddress: inscription.collectionAddress,
         operatorAddress: TC_MARKETPLACE_CONTRACT
@@ -94,15 +96,16 @@ const ModalListTokenForSale: React.FC<IProps> = ({
 
       logger.debug({
         collectionAddress: inscription.collectionAddress,
-        erc20Token: values.erc20Token,
-        price: values.price,
+        erc20Token: erc20Token,
+        price: price,
         durationTime: 0,
         tokenID: inscription.tokenId,
       });
+      
       await listToken({
         collectionAddress: inscription.collectionAddress,
-        erc20Token: values.erc20Token,
-        price: values.price.toString(),
+        erc20Token: erc20Token,
+        price: exponentialToDecimal(Number(price)),
         durationTime: 0,
         tokenID: inscription.tokenId,
       })

@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import IconSVG from '@/components/IconSVG';
 import NFTCard from '@/components/NFTCard';
-import { ARTIFACT_CONTRACT, CDN_URL } from '@/configs';
+import { CDN_URL } from '@/configs';
 import { ICollection } from '@/interfaces/api/collection';
 import { getCollections } from '@/services/nft-explorer';
 import { shortenAddress } from '@/utils';
@@ -46,7 +46,7 @@ const Collections = () => {
   const debounceLoadMore = debounce(onLoadMoreCollections, 300);
 
   const showCollections = useMemo(
-    () => collections.filter(item => item.contract !== ARTIFACT_CONTRACT.toLocaleLowerCase()),
+    () => collections,
     [collections],
   );
 

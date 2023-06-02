@@ -11,23 +11,24 @@ export interface IGetTokenBalanceParams {
 
 const useTokenBalance: ContractOperationHook<
   IGetTokenBalanceParams,
-  number
+  string
 > = () => {
   const { account, provider } = useWeb3React();
 
   const call = useCallback(
-    async (params: IGetTokenBalanceParams): Promise<number> => {
+    async (params: IGetTokenBalanceParams): Promise<string> => {
       logger.debug('useTokenBalance', params);
+      
       if (account && provider) {
         const { contractAddress } = params;
         const contract = getContract(contractAddress, ERC20ABIJson.abi, provider, account);
-        const transaction = await contract.balanceOf(account, {
+        const balance = await contract.balanceOf(account, {
           from: account
         });
-        return transaction;
+        return balance.toString();
       }
 
-      return 0;
+      return '0';
     },
     [account, provider],
   );

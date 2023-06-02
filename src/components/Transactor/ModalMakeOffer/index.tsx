@@ -17,6 +17,10 @@ import { checkCacheApprovalTokenPermission, setCacheApprovalTokenPermission } fr
 import useMakeTokenOffer, { IMakeTokenOfferParams } from '@/hooks/contract-operations/marketplace/useMakeTokenOffer';
 import { MAX_HEX_VALUE } from '@/constants/common';
 import { Transaction } from 'ethers'
+import useTokenBalance, { IGetTokenBalanceParams } from '@/hooks/contract-operations/erc20/useTokenBalance';
+import BigNumber from 'bignumber.js';
+import { exponentialToDecimal, mappingERC20ToSymbol } from '@/utils/format';
+import Web3 from 'web3';
 
 interface IProps {
   show: boolean;
@@ -35,6 +39,13 @@ const ModalMakeOffer: React.FC<IProps> = ({
   inscription,
 }: IProps) => {
   const [processing, setProcessing] = useState(false);
+  const { run: getTokenBalance } = useContractOperation<
+    IGetTokenBalanceParams,
+    string
+  >({
+    operation: useTokenBalance,
+    inscribeable: false,
+  });
   const { run: getAllowanceAmount } = useContractOperation<
     IGetAllowanceAmountParams,
     number
@@ -75,36 +86,54 @@ const ModalMakeOffer: React.FC<IProps> = ({
 
     try {
       setProcessing(true);
+      const { price, erc20Token } = values;
+
       const allowanceAmount = await getAllowanceAmount({
-        contractAddress: values.erc20Token,
+        contractAddress: erc20Token,
         operatorAddress: TC_MARKETPLACE_CONTRACT
       });
-      const hasApprovalCache = checkCacheApprovalTokenPermission(`${TC_MARKETPLACE_CONTRACT}_${values.erc20Token}`);
+      const hasApprovalCache = checkCacheApprovalTokenPermission(`${TC_MARKETPLACE_CONTRACT}_${erc20Token}`);
       if (!allowanceAmount && !hasApprovalCache) {
         logger.debug(TC_MARKETPLACE_CONTRACT);
         logger.debug(inscription.collectionAddress);
 
         await approveTokenAmount({
-          tokenAddress: values.erc20Token,
+          tokenAddress: erc20Token,
           consumerAddress: TC_MARKETPLACE_CONTRACT,
           amount: MAX_HEX_VALUE
         });
 
-        setCacheApprovalTokenPermission(`${TC_MARKETPLACE_CONTRACT}_${values.erc20Token}`);
+        setCacheApprovalTokenPermission(`${TC_MARKETPLACE_CONTRACT}_${erc20Token}`);
+      }
+
+      // Check ERC20 balance
+      const tokenBalance = await getTokenBalance({
+        contractAddress: erc20Token,
+      });
+
+      const balanceBN = new BigNumber(tokenBalance);
+      const priceBN = new BigNumber(Web3.utils.toWei(exponentialToDecimal(Number(price))));
+      logger.debug(`${(balanceBN.dividedBy(1e18)).toString()} ${mappingERC20ToSymbol(erc20Token)}`);
+      if (balanceBN.isLessThan(priceBN)) {
+        logger.error('Insufficient balance');
+        showToastError({
+          message: `Insufficient ${mappingERC20ToSymbol(erc20Token)} balance. Require ${price} ${mappingERC20ToSymbol(erc20Token)}. You have ${(balanceBN.dividedBy(1e18)).toString()} ${mappingERC20ToSymbol(erc20Token)}.`
+        })
+        return;
       }
 
       logger.debug({
         collectionAddress: inscription.collectionAddress,
-        erc20Token: values.erc20Token,
-        price: values.price,
+        erc20Token: erc20Token,
+        price: price,
         durationTime: 0,
         tokenID: inscription.tokenId,
       });
 
       await makeOffer({
         collectionAddress: inscription.collectionAddress,
-        erc20Token: values.erc20Token,
-        price: values.price.toString(),
+        erc20Token: erc20Token,
+        price: exponentialToDecimal(Number(price)),
         durationTime: 0,
         tokenID: inscription.tokenId,
       })
