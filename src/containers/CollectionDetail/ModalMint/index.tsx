@@ -35,7 +35,7 @@ import { showToastError } from '@/utils/toast';
 import { formatBTCPrice } from '@trustless-computer/dapp-core';
 import { Buffer } from 'buffer';
 import { Transaction } from 'ethers';
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import toast from 'react-hot-toast';
 import * as TC_SDK from 'trustless-computer-sdk';
@@ -134,7 +134,7 @@ const ModalMint = (props: Props) => {
     return listOfChunks;
   };
 
-  const calculateEstFee = (fileSize: number) => {
+  const calculateEstFee = useCallback((fileSize: number) => {
     const estimatedFastestFee = TC_SDK.estimateInscribeFee({
       tcTxSizeByte: fileSize,
       feeRatePerByte: feeRate.fastestFee,
@@ -153,9 +153,9 @@ const ModalMint = (props: Props) => {
       faster: estimatedFasterFee.totalFee.toString(),
       economy: estimatedEconomyFee.totalFee.toString(),
     });
-  };
+  }, [feeRate, setEstBTCFee]);
 
-  const handleEstFee = async (): Promise<void> => {
+  const handleEstFee = useCallback(async (): Promise<void> => {
     if (!file) {
       setEstBTCFee({
         economy: '0',
@@ -183,7 +183,7 @@ const ModalMint = (props: Props) => {
 
       calculateEstFee(Buffer.byteLength(chunks));
     }
-  };
+  }, [calculateEstFee, file]);
 
   const handleMintSingle = async (file: File): Promise<void> => {
     if (!collection?.contract) {
@@ -346,7 +346,7 @@ const ModalMint = (props: Props) => {
 
   useEffect(() => {
     handleEstFee();
-  }, [file]);
+  }, [file, handleEstFee]);
 
   return (
     <StyledModalUpload show={show} onHide={handleClose} centered size="lg">

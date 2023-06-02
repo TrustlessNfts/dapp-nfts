@@ -5,7 +5,7 @@ import { getCollectionDetail, getCollectionNfts } from '@/services/nft-explorer'
 import { shortenAddress } from '@/utils';
 import Spinner from 'react-bootstrap/Spinner';
 import debounce from 'lodash/debounce';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Container, Grid } from './Collection.styled';
 import CollectionHeader from './CollectionHeader';
@@ -14,6 +14,7 @@ import { useRouter } from 'next/router';
 import { ROUTE_PATH } from '@/constants/route-path';
 import ModalMint from './ModalMint';
 import ModalTransfer from './ModalTransfer';
+import logger from '@/services/logger';
 
 const LIMIT = 32;
 
@@ -30,22 +31,16 @@ const Collection = () => {
   const [showModalMint, setShowModalMint] = useState(false);
   const [showModalTransfer, setShowModalTransfer] = useState(false);
 
-  useEffect(() => {
-    fetchCollectionDetail();
-    fetchInscriptions();
-  }, [contract]);
-
-  const fetchCollectionDetail = async () => {
+  const fetchCollectionDetail = useCallback(async () => {
     try {
       const data = await getCollectionDetail({ contractAddress: contract });
       setCollection(data);
     } catch (error) {
-      console.log(error)
-      router.push(ROUTE_PATH.NOT_FOUND);
+      logger.error(error)
     }
-  };
+  }, [setCollection, contract]);
 
-  const fetchInscriptions = async (page = 1) => {
+  const fetchInscriptions = useCallback(async (page = 1) => {
     try {
       setIsFetching(true);
       const data = await getCollectionNfts({
@@ -60,10 +55,11 @@ const Collection = () => {
         setInscriptions(data);
       }
     } catch (error) {
+      logger.error(error);
     } finally {
       setIsFetching(false);
     }
-  };
+  }, [contract, setInscriptions, owner]);
 
   const onLoadMoreCollections = () => {
     if (isFetching || inscriptions.length % LIMIT !== 0) return;
@@ -72,6 +68,12 @@ const Collection = () => {
   };
 
   const debounceLoadMore = debounce(onLoadMoreCollections, 300);
+
+  useEffect(() => {
+    if (!contract) return;
+    fetchCollectionDetail();
+    fetchInscriptions();
+  }, [contract, fetchCollectionDetail, fetchInscriptions])
 
   return (
     <Container>

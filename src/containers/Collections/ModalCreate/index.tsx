@@ -19,7 +19,7 @@ import {
 import { showToastError } from '@/utils/toast';
 import { Buffer } from 'buffer';
 import { Formik } from 'formik';
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import toast from 'react-hot-toast';
 import DropFile from './DropFile';
@@ -75,12 +75,10 @@ const ModalCreate = (props: Props) => {
     operation: useCreateNFTCollection,
   });
   const { dAppType, operationName } = useCreateNFTCollection();
-
   const [file, setFile] = useState<File | null>(null);
   const [isProcessingFile, setIsProcessingFile] = useState(false);
   const [selectFee, setSelectFee] = useState<number>(0);
   const [activeFee, setActiveFee] = useState(optionFees.fastest);
-
   const [showUploadField, setShowUploadField] = useState(false);
   const [listFiles, setListFiles] = useState<Array<Array<Buffer>> | null>();
 
@@ -96,7 +94,7 @@ const ModalCreate = (props: Props) => {
   //   });
   // };
 
-  const handleEstFee = async (
+  const handleEstFee = useCallback(async (
     listOfChunks: Array<Array<Buffer>> | null,
   ): Promise<void> => {
     const tcTxSizeBytes =
@@ -125,8 +123,7 @@ const ModalCreate = (props: Props) => {
       economy: estimatedEconomyFee.totalFee.toString(),
     });
 
-    // setEstBTCFee(estimatedFee.totalFee.toString());
-  };
+  }, [setEstBTCFee, feeRate]);
 
   const handleSingleFile = async (file: File): Promise<Array<Array<Buffer>>> => {
     const obj = {
@@ -153,8 +150,7 @@ const ModalCreate = (props: Props) => {
       const chunksSizeInKb = Buffer.byteLength(chunks) / 1000;
       if (chunksSizeInKb > BLOCK_CHAIN_FILE_LIMIT * 1000) {
         throw Error(
-          `File size error, maximum file size is ${
-            BLOCK_CHAIN_FILE_LIMIT * 1000
+          `File size error, maximum file size is ${BLOCK_CHAIN_FILE_LIMIT * 1000
           }kb.`,
         );
       }
@@ -343,7 +339,7 @@ const ModalCreate = (props: Props) => {
 
   useEffect(() => {
     handleEstFee(listFiles || null);
-  }, [listFiles]);
+  }, [listFiles, handleEstFee]);
 
   useEffect(() => {
     setSelectFee(feeRate.fastestFee);

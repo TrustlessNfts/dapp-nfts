@@ -6,7 +6,7 @@ import { IInscription } from '@/interfaces/api/inscription';
 import { getNFTDetail } from '@/services/nft-explorer';
 import { formatTimeStamp } from '@/utils/time';
 import { useRouter } from 'next/router';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Container, StyledDetailList } from './TokenDetail.styled';
 import ActivityList from './ActivityList';
 import OfferList from './OfferList';
@@ -17,6 +17,7 @@ import { shortenAddress } from '@/utils';
 import IconSVG from '@/components/IconSVG';
 import { onClickCopy } from '@/utils/commons';
 import Link from 'next/link';
+import logger from '@/services/logger';
 
 const Inscription = () => {
   const router = useRouter();
@@ -35,18 +36,22 @@ const Inscription = () => {
     [inscription?.owner, userTcWallet],
   );
 
-  useEffect(() => {
-    fetchInscriptionDetail();
-  }, []);
+  const fetchInscriptionDetail = useCallback(async () => {
+    if (!contract || !tokenId) return;
 
-  const fetchInscriptionDetail = async () => {
     try {
-      const data = await getNFTDetail({ contractAddress: contract, tokenId, });
+      const data = await getNFTDetail({ contractAddress: contract, tokenId: tokenId });
       setInscription(data);
     } catch (error) {
+      logger.error(error);
       router.push(ROUTE_PATH.NOT_FOUND);
     }
-  };
+  }, [contract, tokenId, setInscription, router]);
+
+  useEffect(() => {
+    fetchInscriptionDetail();
+  }, [fetchInscriptionDetail]);
+
 
   const renderDetailsList = useMemo(() => {
     if (!inscription) return null;

@@ -6,7 +6,7 @@ import { ICollection } from '@/interfaces/api/collection';
 import { getCollections } from '@/services/nft-explorer';
 import { shortenAddress } from '@/utils';
 import debounce from 'lodash/debounce';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Spinner from 'react-bootstrap/Spinner';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Container, Grid } from './List.styled';
@@ -21,11 +21,7 @@ const Collections = () => {
 
   const [isShowAll, setIsShowAll] = useState(false);
 
-  useEffect(() => {
-    fetchCollections();
-  }, [isShowAll]);
-
-  const fetchCollections = async (page = 1, isFetchMore = false) => {
+  const fetchCollections = useCallback(async (page = 1, isFetchMore = false) => {
     try {
       setIsFetching(true);
       const data = await getCollections(page, LIMIT_PAGE, isShowAll);
@@ -39,7 +35,7 @@ const Collections = () => {
     } finally {
       setIsFetching(false);
     }
-  };
+  }, [setIsFetching, isShowAll, setCollections]);
 
   const onLoadMoreCollections = () => {
     if (isFetching || collections.length % LIMIT_PAGE !== 0) return;
@@ -53,6 +49,10 @@ const Collections = () => {
     () => collections.filter(item => item.contract !== ARTIFACT_CONTRACT.toLocaleLowerCase()),
     [collections],
   );
+
+  useEffect(() => {
+    fetchCollections();
+  }, [isShowAll, fetchCollections]);
 
   return (
     <Container>
