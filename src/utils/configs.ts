@@ -1,13 +1,13 @@
 export const walletLinkSignTemplate = ({
-  transactionType,
+  operationName,
   dAppType,
   hash,
   isRedirect,
 }: {
-  transactionType: string;
+  operationName: string;
   dAppType: string;
   hash: string;
   isRedirect: boolean;
 }) => {
-  return `https://trustlesswallet.io/?function=sign&hash=${hash}&method=${transactionType}%20${dAppType}&dappURL=${window.location.origin}&isRedirect=${isRedirect}`;
+  return `https://trustlesswallet.io/?function=sign&hash=${hash}&method=${operationName}%20${dAppType}&dappURL=${window.location.origin}&isRedirect=${isRedirect}`;
 };

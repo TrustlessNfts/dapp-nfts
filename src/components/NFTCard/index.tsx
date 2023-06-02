@@ -1,10 +1,7 @@
-import { useSelector } from 'react-redux';
 import NFTDisplayBox from '../NFTDisplayBox';
 import { IMAGE_TYPE } from '../NFTDisplayBox/constant';
 import { Styled } from './NFTCard.styled';
-import { getUserSelector } from '@/state/user/selector';
-import React, { useMemo, useState } from 'react';
-import TransferModal from './TransferModal';
+import React, {  } from 'react';
 
 export interface INFTCard {
   href: string;
@@ -29,26 +26,7 @@ const NFTCard = ({
   title1,
   title2,
   title3,
-  owner,
 }: INFTCard) => {
-  const user = useSelector(getUserSelector);
-  const [showTransferModal, setShowTransferModal] = useState(false);
-
-  const hanldeOpenTransferModal = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    e.preventDefault();
-
-    setShowTransferModal(true);
-  };
-
-  const hanldeCloseTransferModal = () => {
-    setShowTransferModal(false);
-  };
-
-  const isOwner = useMemo(() => {
-    return user?.walletAddress && user?.walletAddress?.toLowerCase() === owner?.toLowerCase();
-  }, [owner, user]);
-
   return (
     <>
       <Styled href={href}>
@@ -69,21 +47,8 @@ const NFTCard = ({
             {title2 && <p className="card-title2">{title2}</p>}
             {title3 && <p className="card-title3">{title3}</p>}
           </div>
-          {isOwner && (
-            <div className="owner-actions">
-              <button onClick={hanldeOpenTransferModal} className="transfer-button">
-                Transfer
-              </button>
-            </div>
-          )}
         </div>
       </Styled>
-      <TransferModal
-        show={showTransferModal}
-        handleClose={hanldeCloseTransferModal}
-        contractAddress={contract}
-        tokenId={tokenId}
-      />
     </>
   );
 };

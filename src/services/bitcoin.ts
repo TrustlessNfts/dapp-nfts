@@ -1,6 +1,5 @@
 import {
   BINANCE_PAIR,
-  FeeRateName,
   ICollectedUTXOResp,
   IPendingUTXO,
   ITokenPriceResp,
@@ -65,7 +64,7 @@ export const getFeeRate = async (): Promise<IMempoolFeeRate> => {
   try {
     const res = await fetch('https://mempool.space/api/v1/fees/recommended');
     const fee: IMempoolFeeRate = await res.json();
-    if (fee[FeeRateName.fastestFee] <= 10) {
+    if (fee.fastestFee <= 10) {
       return {
         fastestFee: 25,
         halfHourFee: 20,
@@ -74,7 +73,7 @@ export const getFeeRate = async (): Promise<IMempoolFeeRate> => {
         minimumFee: 5,
       };
     }
-    return camelCaseKeys(fee);
+    return Object(camelCaseKeys(fee));
   } catch (err: unknown) {
     logger.error(err);
     return {

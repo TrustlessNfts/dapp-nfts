@@ -58,30 +58,30 @@ const EstimatedFee: React.FC<IProps> = ({ txSize }: IProps): React.ReactElement 
       <div
         className={`est-fee-item`}
       >
-        <div>
-          <Text fontWeight="medium" color="black" size="regular">
+        <div className='est-fee-item-header'>
+          <p className='est-fee-title'>
             {title}
-          </Text>
-          <Text color="border2" className="mb-10">
-            {feeRate} sats/vByte
-          </Text>
-          <p className="ext-price">
-            {formatBTCPrice(estFee)} <span>BTC</span>
+          </p>
+          <p className='est-fee-title'>
+            {formatBTCPrice(estFee)} BTC
           </p>
         </div>
-      </div>
+        <p className="ext-price">
+          {feeRate} sats/vByte
+        </p>
+      </div >
     );
   };
 
   useEffect(() => {
     calculateEstFee();
-  }, [txSize])
+  }, [txSize, calculateEstFee]);
 
   return (
     <Wrapper>
       <div className="est-fee">
         <Text size="regular" fontWeight="medium" color="bg1" className="mb-8">
-          Estimated network fee
+          Network fee estimate
         </Text>
         <div className="est-fee-options">
           {renderEstFee({

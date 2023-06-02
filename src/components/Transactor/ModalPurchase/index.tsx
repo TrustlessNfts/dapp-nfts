@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React, { useState } from 'react';
 import TransactorBaseModal from '../TransactorBaseModal';
 import { IInscription } from '@/interfaces/api/inscription';
@@ -13,11 +12,12 @@ import { useSelector } from 'react-redux';
 import { getUserSelector } from '@/state/user/selector';
 import { useRouter } from 'next/router';
 import { ROUTE_PATH } from '@/constants/route-path';
-// import usePurchaseToken, { IPurchaseTokenParams } from '@/hooks/contract-operations/marketplace/usePurchaseToken';
-// import useApproveTokenAmount, { IApproveTokenAmountParams } from '@/hooks/contract-operations/erc20/useApproveTokenAmount';
-// import useGetAllowanceAmount, { IGetAllowanceAmountParams } from '@/hooks/contract-operations/erc20/useGetAllowanceAmount';
+import usePurchaseToken, { IPurchaseTokenParams } from '@/hooks/contract-operations/marketplace/usePurchaseToken';
+import useApproveTokenAmount, { IApproveTokenAmountParams } from '@/hooks/contract-operations/erc20/useApproveTokenAmount';
+import useGetAllowanceAmount, { IGetAllowanceAmountParams } from '@/hooks/contract-operations/erc20/useGetAllowanceAmount';
 import { MAX_HEX_VALUE } from '@/constants/common';
 import { checkCacheApprovalTokenPermission, setCacheApprovalTokenPermission } from '@/utils/marketplace-storage';
+import { Transaction } from 'ethers'
 
 interface IProps {
   show: boolean;
@@ -29,24 +29,27 @@ const ModalPurchase = ({ show, handleClose, inscription }: IProps) => {
   const user = useSelector(getUserSelector);
   const router = useRouter();
   const [processing, setProcessing] = useState(false);
-  // const { run: getAllowanceAmount } = useContractOperation<
-  //   IGetAllowanceAmountParams,
-  //   number
-  // >({
-  //   operation: useGetAllowanceAmount,
-  // });
-  // const { run: approveTokenAmount } = useContractOperation<
-  //   IApproveTokenAmountParams,
-  //   IRequestSignResp | null
-  // >({
-  //   operation: useApproveTokenAmount,
-  // });
-  // const { run: purchaseToken } = useContractOperation<
-  //   IPurchaseTokenParams,
-  //   IRequestSignResp | null
-  // >({
-  //   operation: usePurchaseToken,
-  // });
+  const { run: getAllowanceAmount } = useContractOperation<
+    IGetAllowanceAmountParams,
+    number
+  >({
+    operation: useGetAllowanceAmount,
+    inscribeable: false,
+  });
+  const { run: approveTokenAmount } = useContractOperation<
+    IApproveTokenAmountParams,
+    Transaction | null
+  >({
+    operation: useApproveTokenAmount,
+    inscribeable: true,
+  });
+  const { run: purchaseToken } = useContractOperation<
+    IPurchaseTokenParams,
+    Transaction | null
+  >({
+    operation: usePurchaseToken,
+    inscribeable: true,
+  });
 
   if (!inscription.listingForSales) return <></>;
 
@@ -62,28 +65,29 @@ const ModalPurchase = ({ show, handleClose, inscription }: IProps) => {
 
     try {
       setProcessing(true);
-      // const allowanceAmount = await getAllowanceAmount({
-      //   contractAddress: listingInfo.erc20Token,
-      //   operatorAddress: TC_MARKETPLACE_CONTRACT
-      // });
-      // const hasApprovalCache = checkCacheApprovalTokenPermission(`${TC_MARKETPLACE_CONTRACT}_${listingInfo.erc20Token}`);
-      // if (!allowanceAmount && !hasApprovalCache) {
-      //   logger.debug(TC_MARKETPLACE_CONTRACT);
-      //   logger.debug(inscription.collectionAddress);
+      const allowanceAmount = await getAllowanceAmount({
+        contractAddress: listingInfo.erc20Token,
+        operatorAddress: TC_MARKETPLACE_CONTRACT
+      });
+      const hasApprovalCache = checkCacheApprovalTokenPermission(`${TC_MARKETPLACE_CONTRACT}_${listingInfo.erc20Token}`);
+      if (!allowanceAmount && !hasApprovalCache) {
+        logger.debug(TC_MARKETPLACE_CONTRACT);
+        logger.debug(inscription.collectionAddress);
 
-      //   await approveTokenAmount({
-      //     tokenAddress: listingInfo.erc20Token,
-      //     consumerAddress: TC_MARKETPLACE_CONTRACT,
-      //     amount: MAX_HEX_VALUE
-      //   });
+        await approveTokenAmount({
+          tokenAddress: listingInfo.erc20Token,
+          consumerAddress: TC_MARKETPLACE_CONTRACT,
+          amount: MAX_HEX_VALUE
+        });
 
-      //   setCacheApprovalTokenPermission(`${TC_MARKETPLACE_CONTRACT}_${listingInfo.erc20Token}`);
-      // }
-      // await purchaseToken({
-      //   offerId: listingInfo.offeringId,
-      // })
+        setCacheApprovalTokenPermission(`${TC_MARKETPLACE_CONTRACT}_${listingInfo.erc20Token}`);
+      }
+      await purchaseToken({
+        offerId: listingInfo.offeringId,
+      })
+      
       showToastSuccess({
-        message: 'Purchased successlly.'
+        message: 'Please go to your wallet to authorize the request for the Bitcoin transaction.'
       })
       handleClose();
     } catch (err: unknown) {

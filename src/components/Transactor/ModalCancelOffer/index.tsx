@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React, { useState } from 'react';
 import TransactorBaseModal from '../TransactorBaseModal';
 import { IInscriptionOffer } from '@/interfaces/api/inscription';
@@ -12,7 +11,8 @@ import { getUserSelector } from '@/state/user/selector';
 import { showToastSuccess, showToastError } from '@/utils/toast';
 import { useRouter } from 'next/router';
 import { useSelector } from 'react-redux';
-// import useCancelTokenOffer, { ICancelTokenOfferParams } from '@/hooks/contract-operations/marketplace/useCancelTokenOffer';
+import useCancelTokenOffer, { ICancelTokenOfferParams } from '@/hooks/contract-operations/marketplace/useCancelTokenOffer';
+import { Transaction } from 'ethers'
 
 interface IProps {
   show: boolean;
@@ -24,12 +24,13 @@ const ModalCancelOffer = ({ show, handleClose, inscription }: IProps) => {
   const user = useSelector(getUserSelector);
   const router = useRouter();
   const [processing, setProcessing] = useState(false);
-  // const { run: cancelTokenOffer } = useContractOperation<
-  //   ICancelTokenOfferParams,
-  //   IRequestSignResp | null
-  // >({
-  //   operation: useCancelTokenOffer,
-  // });
+  const { run: cancelTokenOffer } = useContractOperation<
+    ICancelTokenOfferParams,
+    Transaction | null
+  >({
+    operation: useCancelTokenOffer,
+    inscribeable: true,
+  });
 
   const handleCancelOffer = async () => {
     if (processing || !inscription) return;
@@ -41,11 +42,11 @@ const ModalCancelOffer = ({ show, handleClose, inscription }: IProps) => {
 
     try {
       setProcessing(true);
-      // await cancelTokenOffer({
-      //   offerId: inscription.offeringId,
-      // })
+      await cancelTokenOffer({
+        offerId: inscription.offeringId,
+      })
       showToastSuccess({
-        message: 'Canceled offer successlly.'
+        message: 'Please go to your wallet to authorize the request for the Bitcoin transaction.'
       })
       handleClose();
     } catch (err: unknown) {

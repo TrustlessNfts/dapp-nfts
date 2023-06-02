@@ -62,7 +62,7 @@ const useTransferERC721Collection: ContractOperationHook<
   return {
     call: call,
     dAppType: DAppType.ERC721,
-    transactionType: TransactionEventType.TRANSFER,
+    operationName: TransactionEventType.TRANSFER,
   };
 };
 

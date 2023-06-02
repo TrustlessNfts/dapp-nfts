@@ -74,7 +74,7 @@ const ModalCreate = (props: Props) => {
   >({
     operation: useCreateNFTCollection,
   });
-  const { dAppType, transactionType } = useCreateNFTCollection();
+  const { dAppType, operationName } = useCreateNFTCollection();
 
   const [file, setFile] = useState<File | null>(null);
   const [isProcessingFile, setIsProcessingFile] = useState(false);
@@ -219,7 +219,7 @@ const ModalCreate = (props: Props) => {
           <ToastConfirm
             id="create-success"
             url={walletLinkSignTemplate({
-              transactionType,
+              operationName,
               dAppType,
               hash: Object(tx).hash,
               isRedirect: true,

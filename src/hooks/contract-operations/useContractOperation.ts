@@ -1,16 +1,13 @@
 import { SupportedChainId } from '@/constants/chains';
 import { ROUTE_PATH } from '@/constants/route-path';
-import { AssetsContext } from '@/contexts/assets-context';
 import { ContractOperationHook } from '@/interfaces/contract-operation';
 import { getIsAuthenticatedSelector, getUserSelector } from '@/state/user/selector';
 import { capitalizeFirstLetter, switchChain } from '@/utils';
 import { useWeb3React } from '@web3-react/core';
 import { useRouter } from 'next/router';
-import { useContext } from 'react';
 import { useSelector } from 'react-redux';
-import useBitcoin from '../useBitcoin';
 import * as TC_SDK from 'trustless-computer-sdk';
-import { ERROR_CODE } from '@/constants/error';
+import logger from '@/services/logger';
 
 interface IParams<P, R> {
   operation: ContractOperationHook<P, R>;
@@ -30,17 +27,14 @@ const useContractOperation = <P, R>(
     chainId = SupportedChainId.TRUSTLESS_COMPUTER,
     inscribeable = true,
   } = args;
-  const { call, dAppType, transactionType } = operation();
-  const { feeRate } = useContext(AssetsContext);
+  const { call, dAppType, operationName } = operation();
   const { chainId: walletChainId } = useWeb3React();
   const isAuthenticated = useSelector(getIsAuthenticatedSelector);
   const user = useSelector(getUserSelector);
-  const { getUnInscribedTransactionByAddress } = useBitcoin();
   const router = useRouter();
 
   const checkAndSwitchChainIfNecessary = async (): Promise<void> => {
-    console.log('walletChainId', walletChainId);
-    console.log('chainId', chainId);
+    logger.debug('currentChainID', walletChainId);
 
     if (walletChainId !== chainId) {
       await switchChain(chainId);
@@ -62,50 +56,32 @@ const useContractOperation = <P, R>(
 
       if (!inscribeable) {
         // Make TC transaction
-        console.time('____metamaskCreateTxTime');
         const tx: R = await call({
           ...params,
         });
-        console.timeEnd('____metamaskCreateTxTime');
 
-        console.log('tcTX', tx);
+        logger.debug('tcTX', tx);
         return tx;
       }
 
-      // Check unInscribed transactions
-      console.time('____unInscribedTxIDsLoadTime');
-      const unInscribedTxIDs = await getUnInscribedTransactionByAddress(
-        user.walletAddress,
-      );
-      console.timeEnd('____unInscribedTxIDsLoadTime');
-
-      if (unInscribedTxIDs.length > 0) {
-        throw Error(ERROR_CODE.PENDING);
-      }
-
-      console.log('unInscribedTxIDs', unInscribedTxIDs);
-
-      console.time('____metamaskCreateTxTime');
+      // Make TC transaction
       const tx: R = await call({
         ...params,
       });
-      console.timeEnd('____metamaskCreateTxTime');
-
-      console.log('tcTX', tx);
-
-      console.log('feeRatePerByte', feeRate.fastestFee);
+      logger.debug('tcTX', tx);
 
       TC_SDK.signTransaction({
-        method: `${transactionType} ${dAppType}`,
+        method: `${operationName} ${dAppType}`,
         hash: Object(tx).hash,
-        dappURL: window.location.origin,
-        isRedirect: false,
+        dappURL: window.location.href,
+        isRedirect: true,
         target: '_self',
         isMainnet: true,
       });
 
       return tx;
-    } catch (err) {
+    } catch (err: unknown) {
+      logger.error(err)
       if (Object(err).reason) {
         throw Error(capitalizeFirstLetter(Object(err).reason));
       }

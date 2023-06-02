@@ -65,7 +65,8 @@
     "trustless-computer-sdk": "https://github.com/TrustlessComputer/tc-sdk#v0.1.38",
     "typescript": "5.0.4",
     "unzipit": "^1.4.2",
-    "use-async-effect": "^2.2.7"
+    "use-async-effect": "^2.2.7",
+    "web3": "^1.10.0"
   },
   "devDependencies": {
     "@babel/core": "^7.21.4",

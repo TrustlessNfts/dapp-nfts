@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React, { useState } from 'react';
 import TransactorBaseModal from '../TransactorBaseModal';
 import { IInscription } from '@/interfaces/api/inscription';
@@ -9,10 +8,11 @@ import { ROUTE_PATH } from '@/constants/route-path';
 import { getUserSelector } from '@/state/user/selector';
 import { useRouter } from 'next/router';
 import { useSelector } from 'react-redux';
-// import useCancelListingToken, { ICancelListingTokenParams } from '@/hooks/contract-operations/marketplace/useCancelListingToken';
+import useCancelListingToken, { ICancelListingTokenParams } from '@/hooks/contract-operations/marketplace/useCancelListingToken';
 import useContractOperation from '@/hooks/contract-operations/useContractOperation';
 import { showToastError, showToastSuccess } from '@/utils/toast';
 import logger from '@/services/logger';
+import { Transaction } from 'ethers'
 
 interface IProps {
   show: boolean;
@@ -24,12 +24,12 @@ const ModalCancelListing = ({ show, handleClose, inscription }: IProps) => {
   const user = useSelector(getUserSelector);
   const router = useRouter();
   const [processing, setProcessing] = useState(false);
-  // const { run: cancelListing } = useContractOperation<
-  //   ICancelListingTokenParams,
-  //   IRequestSignResp | null
-  // >({
-  //   operation: useCancelListingToken,
-  // });
+  const { run: cancelListing } = useContractOperation<
+    ICancelListingTokenParams,
+    Transaction | null
+  >({
+    operation: useCancelListingToken,
+  });
 
   if (!inscription.listingForSales) return <></>;
   const listingInfo = inscription?.listingForSales[0];
@@ -44,11 +44,11 @@ const ModalCancelListing = ({ show, handleClose, inscription }: IProps) => {
 
     try {
       setProcessing(true);
-      // await cancelListing({
-      //   offerId: listingInfo.offeringId,
-      // })
+      await cancelListing({
+        offerId: listingInfo.offeringId,
+      })
       showToastSuccess({
-        message: 'Canceled listing successlly.'
+        message: 'Please go to your wallet to authorize the request for the Bitcoin transaction.'
       })
       handleClose();
     } catch (err: unknown) {

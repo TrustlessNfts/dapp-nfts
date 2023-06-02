@@ -2,6 +2,7 @@ import { ROUTE_PATH } from '@/constants/route-path';
 import { SEO_IMAGE, SEO_TITLE } from '@/constants/seo';
 import CollectionDetail from '@/containers/CollectionDetail';
 import Layout from '@/layouts';
+import logger from '@/services/logger';
 import { getCollectionDetail } from '@/services/nft-explorer';
 import { GetServerSidePropsContext, NextPage } from 'next';
 
@@ -29,10 +30,10 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
           description: data.description || '',
           image: data.thumbnail || SEO_IMAGE,
         },
-      },
+      },  
     };
   } catch (err: unknown) {
-    console.log(err)
+    logger.error(err)
     return {
       redirect: {
         permanent: false,

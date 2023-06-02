@@ -81,7 +81,7 @@ const useCreateNFTCollection: ContractOperationHook<
   return {
     call: call,
     dAppType: DAppType.ERC721,
-    transactionType: TransactionEventType.CREATE,
+    operationName: TransactionEventType.CREATE,
   };
 };
 

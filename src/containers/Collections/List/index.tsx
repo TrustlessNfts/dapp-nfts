@@ -5,11 +5,13 @@ import { ARTIFACT_CONTRACT, CDN_URL } from '@/configs';
 import { ICollection } from '@/interfaces/api/collection';
 import { getCollections } from '@/services/nft-explorer';
 import { shortenAddress } from '@/utils';
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 import React, { useEffect, useMemo, useState } from 'react';
 import Spinner from 'react-bootstrap/Spinner';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Container, Grid } from './List.styled';
+import logger from '@/services/logger';
+import { ROUTE_PATH } from '@/constants/route-path';
 
 const LIMIT_PAGE = 32;
 
@@ -32,7 +34,8 @@ const Collections = () => {
       } else {
         setCollections(data);
       }
-    } catch (error) {
+    } catch (err: unknown) {
+      logger.error(err);
     } finally {
       setIsFetching(false);
     }
@@ -80,7 +83,7 @@ const Collections = () => {
               return (
                 <NFTCard
                   key={item.id}
-                  href={`/collection?contract=${item.contract}`}
+                  href={`${ROUTE_PATH.COLLECTION}/${item.contract}`}
                   thumbnail={item.thumbnail}
                   title1={item.name || shortenAddress(item.contract, 6)}
                   title2={shortenAddress(item.creator, 4)}

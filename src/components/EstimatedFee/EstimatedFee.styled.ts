@@ -8,26 +8,45 @@ export const Wrapper = styled.div`
   }
 
   .est-fee-options {
-    display: flex;
-    align-items: center;
-    gap: ${px2rem(10)};
+    background: #FAFAFA;
+    border-radius: 8px;
+    padding: ${px2rem(12)};
   }
 
   .est-fee-item {
-    flex: 1;
-    padding: ${px2rem(8)} ${px2rem(16)};
-    border: 1px solid #cecece;
-    border-radius: 8px;
-    display: grid;
-    place-items: center;
-    text-align: center;
+    padding-bottom: ${px2rem(8)};
+    padding-top: ${px2rem(8)};
+
+    &:first-child {
+      padding-top: 0;
+    }
+
+    &:last-child {
+      padding-bottom: 0;
+    }
+
+    &:not(:last-child) {
+      border-bottom: 1px solid #E9E9E9;
+    }
+  }
+
+  .est-fee-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .est-fee-title {
+    font-weight: 500;
+    font-size: ${px2rem(14)};
+    line-height: 150%;
+    margin-bottom: ${px2rem(4)};
   }
 
   .ext-price {
-    color: #9796f0;
-    font-size: ${px2rem(14)};
-    span {
-      font-size: ${px2rem(12)};
-    }
+    font-weight: 400;
+    font-size: ${px2rem(12)};
+    line-height: 150%;
+    color: #5B5B5B;
   }
 `;

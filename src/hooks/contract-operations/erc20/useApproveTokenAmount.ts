@@ -1,5 +1,5 @@
 import { ContractOperationHook, DAppType } from '@/interfaces/contract-operation';
-import ERC721ABIJson from '@/abis/erc721.json';
+import ERC20ABIJson from '@/abis/erc20.json';
 import { useWeb3React } from '@web3-react/core';
 import { useCallback, useContext } from 'react';
 import { Transaction } from 'ethers';
@@ -8,45 +8,46 @@ import BigNumber from 'bignumber.js';
 import * as TC_SDK from 'trustless-computer-sdk';
 import { formatBTCPrice } from '@/utils/format';
 import { getContract } from '@/utils';
-import { TransactionEventType } from '@/enums/transaction';
+import logger from '@/services/logger';
+import { TRANSFER_TX_SIZE } from '@/configs';
 
-export interface IMintBatchChunksParams {
-  listOfChunks: Array<Buffer>;
-  contractAddress: string;
-  selectFee: number;
+export interface IApproveTokenAmountParams {
+  tokenAddress: string;
+  consumerAddress: string;
+  amount: string;
 }
 
-const useMintBatchChunks: ContractOperationHook<
-  IMintBatchChunksParams,
+const useApproveTokenAmount: ContractOperationHook<
+  IApproveTokenAmountParams,
   Transaction | null
 > = () => {
   const { account, provider } = useWeb3React();
-  const { btcBalance } = useContext(AssetsContext);
+  const { btcBalance, feeRate } = useContext(AssetsContext);
 
   const call = useCallback(
-    async (params: IMintBatchChunksParams): Promise<Transaction | null> => {
-      const { listOfChunks, contractAddress, selectFee } = params;
-      console.log('useMintBatchChunks', params);
-      if (account && provider && contractAddress) {
+    async (params: IApproveTokenAmountParams): Promise<Transaction | null> => {
+      const { tokenAddress, consumerAddress, amount } = params;
+      logger.debug('useApproveTokenAmount', params);
+
+      if (account && provider) {
         const contract = getContract(
-          contractAddress,
-          ERC721ABIJson.abi,
+          tokenAddress,
+          ERC20ABIJson.abi,
           provider,
           account,
         );
-        const tcTxSizeByte = listOfChunks.reduce(
-          (prev, cur) => prev + Buffer.byteLength(cur),
-          0,
-        );
-        console.log({
-          tcTxSizeByte: tcTxSizeByte,
-          feeRatePerByte: selectFee,
-          contractAddress,
+        
+        logger.debug({
+          tcTxSizeByte: TRANSFER_TX_SIZE,
+          feeRatePerByte: feeRate.fastestFee,
+          tokenAddress,
         });
+
         const estimatedFee = TC_SDK.estimateInscribeFee({
-          tcTxSizeByte: tcTxSizeByte,
-          feeRatePerByte: selectFee,
+          tcTxSizeByte: TRANSFER_TX_SIZE,
+          feeRatePerByte: feeRate.fastestFee,
         });
+
         const balanceInBN = new BigNumber(btcBalance);
         if (balanceInBN.isLessThan(estimatedFee.totalFee)) {
           throw Error(
@@ -56,23 +57,22 @@ const useMintBatchChunks: ContractOperationHook<
           );
         }
 
-        const chunks = listOfChunks.map((item) => [item]);
         const transaction = await contract
           .connect(provider.getSigner())
-          .mintBatchChunks(account, chunks);
+          .approve(consumerAddress, amount);
         return transaction;
       }
 
       return null;
     },
-    [account, provider, btcBalance],
+    [account, provider, btcBalance, feeRate],
   );
 
   return {
     call: call,
-    dAppType: DAppType.ERC721,
-    operationName: TransactionEventType.MINT,
+    dAppType: DAppType.ERC20,
+    operationName: 'Approve Token Amount',
   };
 };
 
-export default useMintBatchChunks;
+export default useApproveTokenAmount;

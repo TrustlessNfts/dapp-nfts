@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React, { useState } from 'react';
 import TransactorBaseModal from '../TransactorBaseModal';
 import { IInscription } from '@/interfaces/api/inscription';
@@ -9,13 +8,14 @@ import { TOKEN_OPTIONS, WETH_ADDRESS } from '@/constants/marketplace';
 import { SubmitButton } from '../TransactorBaseModal/TransactorBaseModal.styled';
 import EstimatedFee from '@/components/EstimatedFee';
 import { TC_MARKETPLACE_CONTRACT, TRANSFER_TX_SIZE } from '@/configs';
-import { isNaN } from 'lodash';
+import isNaN from 'lodash/isNaN';
 import cs from 'classnames';
+import { Transaction } from 'ethers'
 import { showToastError, showToastSuccess } from '@/utils/toast';
 import useContractOperation from '@/hooks/contract-operations/useContractOperation';
-// import useIsApprovedForAll, { IIsApprovedForAllParams } from '@/hooks/contract-operations/nft/useIsApprovedForAll';
-// import useSetApprovalForAll, { ISetApprovalForAllParams } from '@/hooks/contract-operations/marketplace/useSetApprovalForAll';
-// import useListTokenForSale, { IListTokenForSaleParams } from '@/hooks/contract-operations/marketplace/useListTokenForSale';
+import useIsApprovedForAll, { IIsApprovedForAllParams } from '@/hooks/contract-operations/nft/useIsApprovedForAll';
+import useSetApprovalForAll, { ISetApprovalForAllParams } from '@/hooks/contract-operations/marketplace/useSetApprovalForAll';
+import useListTokenForSale, { IListTokenForSaleParams } from '@/hooks/contract-operations/marketplace/useListTokenForSale';
 import { checkCacheApprovalPermission, setCacheApprovalPermission } from '@/utils/marketplace-storage';
 
 interface IProps {
@@ -35,24 +35,27 @@ const ModalListTokenForSale: React.FC<IProps> = ({
   inscription,
 }: IProps) => {
   const [processing, setProcessing] = useState(false);
-  // const { run: isTokenApproved } = useContractOperation<
-  //   IIsApprovedForAllParams,
-  //   boolean
-  // >({
-  //   operation: useIsApprovedForAll,
-  // });
-  // const { run: setApprovalForAll } = useContractOperation<
-  //   ISetApprovalForAllParams,
-  //   IRequestSignResp | null
-  // >({
-  //   operation: useSetApprovalForAll,
-  // });
-  // const { run: listToken } = useContractOperation<
-  //   IListTokenForSaleParams,
-  //   IRequestSignResp | null
-  // >({
-  //   operation: useListTokenForSale,
-  // });
+  const { run: isTokenApproved } = useContractOperation<
+    IIsApprovedForAllParams,
+    boolean
+  >({
+    operation: useIsApprovedForAll,
+    inscribeable: false,
+  });
+  const { run: setApprovalForAll } = useContractOperation<
+    ISetApprovalForAllParams,
+    Transaction | null
+  >({
+    operation: useSetApprovalForAll,
+    inscribeable: false
+  });
+  const { run: listToken } = useContractOperation<
+    IListTokenForSaleParams,
+    Transaction | null
+  >({
+    operation: useListTokenForSale,
+    inscribeable: true,
+  });
 
   const validateForm = (values: IFormValues) => {
     const errors: Record<string, string> = {};
@@ -72,22 +75,22 @@ const ModalListTokenForSale: React.FC<IProps> = ({
 
     try {
       setProcessing(true);
-      // const isApproved = await isTokenApproved({
-      //   contractAddress: inscription.collectionAddress,
-      //   operatorAddress: TC_MARKETPLACE_CONTRACT
-      // });
-      // const hasApprovalCache = checkCacheApprovalPermission(`${TC_MARKETPLACE_CONTRACT}_${inscription.collectionAddress}`);
-      // if (!isApproved && !hasApprovalCache) {
-      //   logger.debug(TC_MARKETPLACE_CONTRACT);
-      //   logger.debug(inscription.collectionAddress);
+      const isApproved = await isTokenApproved({
+        contractAddress: inscription.collectionAddress,
+        operatorAddress: TC_MARKETPLACE_CONTRACT
+      });
+      const hasApprovalCache = checkCacheApprovalPermission(`${TC_MARKETPLACE_CONTRACT}_${inscription.collectionAddress}`);
+      if (!isApproved && !hasApprovalCache) {
+        logger.debug(TC_MARKETPLACE_CONTRACT);
+        logger.debug(inscription.collectionAddress);
 
-      //   await setApprovalForAll({
-      //     operatorAddress: TC_MARKETPLACE_CONTRACT,
-      //     contractAddress: inscription.collectionAddress,
-      //   })
+        await setApprovalForAll({
+          operatorAddress: TC_MARKETPLACE_CONTRACT,
+          contractAddress: inscription.collectionAddress,
+        })
 
-      //   setCacheApprovalPermission(`${TC_MARKETPLACE_CONTRACT}_${inscription.collectionAddress}`);
-      // }
+        setCacheApprovalPermission(`${TC_MARKETPLACE_CONTRACT}_${inscription.collectionAddress}`);
+      }
 
       logger.debug({
         collectionAddress: inscription.collectionAddress,
@@ -96,16 +99,16 @@ const ModalListTokenForSale: React.FC<IProps> = ({
         durationTime: 0,
         tokenID: inscription.tokenId,
       });
-      // await listToken({
-      //   collectionAddress: inscription.collectionAddress,
-      //   erc20Token: values.erc20Token,
-      //   price: values.price.toString(),
-      //   durationTime: 0,
-      //   tokenID: inscription.tokenId,
-      // })
+      await listToken({
+        collectionAddress: inscription.collectionAddress,
+        erc20Token: values.erc20Token,
+        price: values.price.toString(),
+        durationTime: 0,
+        tokenID: inscription.tokenId,
+      })
 
       showToastSuccess({
-        message: 'Listed for sale successfully.'
+        message: 'Please go to your wallet to authorize the request for the Bitcoin transaction.'
       })
       handleClose();
     } catch (err: unknown) {

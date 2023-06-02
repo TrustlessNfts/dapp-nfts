@@ -1,4 +1,3 @@
-/* eslint-disable */
 import EstimatedFee from '@/components/EstimatedFee';
 import { TC_MARKETPLACE_CONTRACT, TRANSFER_TX_SIZE } from '@/configs';
 import { TOKEN_OPTIONS, WETH_ADDRESS } from '@/constants/marketplace';
@@ -8,15 +7,16 @@ import React, { useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import TransactorBaseModal from '../TransactorBaseModal';
 import { SubmitButton } from '../TransactorBaseModal/TransactorBaseModal.styled';
-import { isNaN } from 'lodash';
+import isNaN from 'lodash/isNaN';
 import logger from '@/services/logger';
 import { showToastError, showToastSuccess } from '@/utils/toast';
 import useContractOperation from '@/hooks/contract-operations/useContractOperation';
-// import useGetAllowanceAmount, { IGetAllowanceAmountParams } from '@/hooks/contract-operations/erc20/useGetAllowanceAmount';
-// import useApproveTokenAmount, { IApproveTokenAmountParams } from '@/hooks/contract-operations/erc20/useApproveTokenAmount';
-// import { checkCacheApprovalTokenPermission, setCacheApprovalTokenPermission } from '@/utils/marketplace-storage';
-// import useMakeTokenOffer, { IMakeTokenOfferParams } from '@/hooks/contract-operations/marketplace/useMakeTokenOffer';
+import useGetAllowanceAmount, { IGetAllowanceAmountParams } from '@/hooks/contract-operations/erc20/useGetAllowanceAmount';
+import useApproveTokenAmount, { IApproveTokenAmountParams } from '@/hooks/contract-operations/erc20/useApproveTokenAmount';
+import { checkCacheApprovalTokenPermission, setCacheApprovalTokenPermission } from '@/utils/marketplace-storage';
+import useMakeTokenOffer, { IMakeTokenOfferParams } from '@/hooks/contract-operations/marketplace/useMakeTokenOffer';
 import { MAX_HEX_VALUE } from '@/constants/common';
+import { Transaction } from 'ethers'
 
 interface IProps {
   show: boolean;
@@ -35,24 +35,27 @@ const ModalMakeOffer: React.FC<IProps> = ({
   inscription,
 }: IProps) => {
   const [processing, setProcessing] = useState(false);
-  // const { run: getAllowanceAmount } = useContractOperation<
-  //   IGetAllowanceAmountParams,
-  //   number
-  // >({
-  //   operation: useGetAllowanceAmount,
-  // });
-  // const { run: approveTokenAmount } = useContractOperation<
-  //   IApproveTokenAmountParams,
-  //   IRequestSignResp | null
-  // >({
-  //   operation: useApproveTokenAmount,
-  // });
-  // const { run: makeOffer } = useContractOperation<
-  //   IMakeTokenOfferParams,
-  //   IRequestSignResp | null
-  // >({
-  //   operation: useMakeTokenOffer,
-  // });
+  const { run: getAllowanceAmount } = useContractOperation<
+    IGetAllowanceAmountParams,
+    number
+  >({
+    operation: useGetAllowanceAmount,
+    inscribeable: false,
+  });
+  const { run: approveTokenAmount } = useContractOperation<
+    IApproveTokenAmountParams,
+    Transaction | null
+  >({
+    operation: useApproveTokenAmount,
+    inscribeable: true,
+  });
+  const { run: makeOffer } = useContractOperation<
+    IMakeTokenOfferParams,
+    Transaction | null
+  >({
+    operation: useMakeTokenOffer,
+    inscribeable: true,
+  });
 
   const validateForm = (values: IFormValues) => {
     const errors: Record<string, string> = {};
@@ -72,42 +75,42 @@ const ModalMakeOffer: React.FC<IProps> = ({
 
     try {
       setProcessing(true);
-      // const allowanceAmount = await getAllowanceAmount({
-      //   contractAddress: values.erc20Token,
-      //   operatorAddress: TC_MARKETPLACE_CONTRACT
-      // });
-      // const hasApprovalCache = checkCacheApprovalTokenPermission(`${TC_MARKETPLACE_CONTRACT}_${values.erc20Token}`);
-      // if (!allowanceAmount && !hasApprovalCache) {
-      //   logger.debug(TC_MARKETPLACE_CONTRACT);
-      //   logger.debug(inscription.collectionAddress);
+      const allowanceAmount = await getAllowanceAmount({
+        contractAddress: values.erc20Token,
+        operatorAddress: TC_MARKETPLACE_CONTRACT
+      });
+      const hasApprovalCache = checkCacheApprovalTokenPermission(`${TC_MARKETPLACE_CONTRACT}_${values.erc20Token}`);
+      if (!allowanceAmount && !hasApprovalCache) {
+        logger.debug(TC_MARKETPLACE_CONTRACT);
+        logger.debug(inscription.collectionAddress);
 
-      //   await approveTokenAmount({
-      //     tokenAddress: values.erc20Token,
-      //     consumerAddress: TC_MARKETPLACE_CONTRACT,
-      //     amount: MAX_HEX_VALUE
-      //   });
+        await approveTokenAmount({
+          tokenAddress: values.erc20Token,
+          consumerAddress: TC_MARKETPLACE_CONTRACT,
+          amount: MAX_HEX_VALUE
+        });
 
-      //   setCacheApprovalTokenPermission(`${TC_MARKETPLACE_CONTRACT}_${values.erc20Token}`);
-      // }
+        setCacheApprovalTokenPermission(`${TC_MARKETPLACE_CONTRACT}_${values.erc20Token}`);
+      }
 
-      // logger.debug({
-      //   collectionAddress: inscription.collectionAddress,
-      //   erc20Token: values.erc20Token,
-      //   price: values.price,
-      //   durationTime: 0,
-      //   tokenID: inscription.tokenId,
-      // });
+      logger.debug({
+        collectionAddress: inscription.collectionAddress,
+        erc20Token: values.erc20Token,
+        price: values.price,
+        durationTime: 0,
+        tokenID: inscription.tokenId,
+      });
 
-      // await makeOffer({
-      //   collectionAddress: inscription.collectionAddress,
-      //   erc20Token: values.erc20Token,
-      //   price: values.price.toString(),
-      //   durationTime: 0,
-      //   tokenID: inscription.tokenId,
-      // })
+      await makeOffer({
+        collectionAddress: inscription.collectionAddress,
+        erc20Token: values.erc20Token,
+        price: values.price.toString(),
+        durationTime: 0,
+        tokenID: inscription.tokenId,
+      })
 
       showToastSuccess({
-        message: 'Made token offer successfully.'
+        message: 'Please go to your wallet to authorize the request for the Bitcoin transaction.'
       })
       handleClose();
     } catch (err: unknown) {

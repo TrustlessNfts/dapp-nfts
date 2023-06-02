@@ -37,7 +37,7 @@ const ModalTransfer = (props: Props) => {
   >({
     operation: useTransferERC721Collection,
   });
-  const { dAppType, transactionType } = useTransferERC721Collection();
+  const { dAppType, operationName } = useTransferERC721Collection();
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
   const validateForm = (values: IFormValue): Record<string, string> => {
@@ -70,7 +70,7 @@ const ModalTransfer = (props: Props) => {
           <ToastConfirm
             id="create-success"
             url={walletLinkSignTemplate({
-              transactionType,
+              operationName,
               dAppType,
               hash: Object(tx).hash,
               isRedirect: true,

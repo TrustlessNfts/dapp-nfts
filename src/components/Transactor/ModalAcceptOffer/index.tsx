@@ -1,8 +1,8 @@
-/* eslint-disable */
 import React, { useState } from 'react';
 import TransactorBaseModal from '../TransactorBaseModal';
 import { IInscriptionOffer } from '@/interfaces/api/inscription';
 import EstimatedFee from '@/components/EstimatedFee';
+import { Transaction } from 'ethers';
 import { TC_MARKETPLACE_CONTRACT, TRANSFER_TX_SIZE } from '@/configs';
 import { SubmitButton } from '../TransactorBaseModal/TransactorBaseModal.styled';
 import { ROUTE_PATH } from '@/constants/route-path';
@@ -12,9 +12,9 @@ import { getUserSelector } from '@/state/user/selector';
 import { showToastSuccess, showToastError } from '@/utils/toast';
 import { useRouter } from 'next/router';
 import { useSelector } from 'react-redux';
-// import useAcceptTokenOffer, { IAcceptTokenOfferParams } from '@/hooks/contract-operations/marketplace/useAcceptTokenOffer';
-// import useSetApprovalForAll, { ISetApprovalForAllParams } from '@/hooks/contract-operations/marketplace/useSetApprovalForAll';
-// import useIsApprovedForAll, { IIsApprovedForAllParams } from '@/hooks/contract-operations/nft/useIsApprovedForAll';
+import useAcceptTokenOffer, { IAcceptTokenOfferParams } from '@/hooks/contract-operations/marketplace/useAcceptTokenOffer';
+import useSetApprovalForAll, { ISetApprovalForAllParams } from '@/hooks/contract-operations/marketplace/useSetApprovalForAll';
+import useIsApprovedForAll, { IIsApprovedForAllParams } from '@/hooks/contract-operations/nft/useIsApprovedForAll';
 import { checkCacheApprovalPermission, setCacheApprovalPermission } from '@/utils/marketplace-storage';
 
 interface IProps {
@@ -27,24 +27,27 @@ const ModalAcceptOffer = ({ show, handleClose, inscription }: IProps) => {
   const user = useSelector(getUserSelector);
   const router = useRouter();
   const [processing, setProcessing] = useState(false);
-  // const { run: isTokenApproved } = useContractOperation<
-  //   IIsApprovedForAllParams,
-  //   boolean
-  // >({
-  //   operation: useIsApprovedForAll,
-  // });
-  // const { run: setApprovalForAll } = useContractOperation<
-  //   ISetApprovalForAllParams,
-  //   IRequestSignResp | null
-  // >({
-  //   operation: useSetApprovalForAll,
-  // });
-  // const { run: acceptTokenOffer } = useContractOperation<
-  //   IAcceptTokenOfferParams,
-  //   IRequestSignResp | null
-  // >({
-  //   operation: useAcceptTokenOffer,
-  // });
+  const { run: isTokenApproved } = useContractOperation<
+    IIsApprovedForAllParams,
+    boolean
+  >({
+    operation: useIsApprovedForAll,
+    inscribeable: false,
+  });
+  const { run: setApprovalForAll } = useContractOperation<
+    ISetApprovalForAllParams,
+    Transaction | null
+  >({
+    operation: useSetApprovalForAll,
+    inscribeable: false
+  });
+  const { run: acceptTokenOffer } = useContractOperation<
+    IAcceptTokenOfferParams,
+    Transaction | null
+  >({
+    operation: useAcceptTokenOffer,
+    inscribeable: true,
+  });
 
   const handleAcceptOffer = async () => {
     if (processing || !inscription) return;
@@ -57,28 +60,28 @@ const ModalAcceptOffer = ({ show, handleClose, inscription }: IProps) => {
     try {
       setProcessing(true);
 
-      // const isApproved = await isTokenApproved({
-      //   contractAddress: inscription.collectionContract,
-      //   operatorAddress: TC_MARKETPLACE_CONTRACT
-      // });
-      // const hasApprovalCache = checkCacheApprovalPermission(`${TC_MARKETPLACE_CONTRACT}_${inscription.collectionContract}`);
-      // if (!isApproved && !hasApprovalCache) {
-      //   logger.debug(TC_MARKETPLACE_CONTRACT);
-      //   logger.debug(inscription.collectionContract);
+      const isApproved = await isTokenApproved({
+        contractAddress: inscription.collectionContract,
+        operatorAddress: TC_MARKETPLACE_CONTRACT
+      });
+      const hasApprovalCache = checkCacheApprovalPermission(`${TC_MARKETPLACE_CONTRACT}_${inscription.collectionContract}`);
+      if (!isApproved && !hasApprovalCache) {
+        logger.debug(TC_MARKETPLACE_CONTRACT);
+        logger.debug(inscription.collectionContract);
 
-      //   await setApprovalForAll({
-      //     operatorAddress: TC_MARKETPLACE_CONTRACT,
-      //     contractAddress: inscription.collectionContract,
-      //   })
+        await setApprovalForAll({
+          operatorAddress: TC_MARKETPLACE_CONTRACT,
+          contractAddress: inscription.collectionContract,
+        })
 
-      //   setCacheApprovalPermission(`${TC_MARKETPLACE_CONTRACT}_${inscription.collectionContract}`);
-      // }
+        setCacheApprovalPermission(`${TC_MARKETPLACE_CONTRACT}_${inscription.collectionContract}`);
+      }
       
-      // await acceptTokenOffer({
-      //   offerId: inscription.offeringId,
-      // })
+      await acceptTokenOffer({
+        offerId: inscription.offeringId,
+      })
       showToastSuccess({
-        message: 'Accepted offer successlly.'
+        message: 'Please go to your wallet to authorize the request for the Bitcoin transaction.'
       })
       handleClose();
     } catch (err: unknown) {

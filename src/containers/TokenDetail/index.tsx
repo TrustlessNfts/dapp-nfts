@@ -6,7 +6,6 @@ import { IInscription } from '@/interfaces/api/inscription';
 import { getNFTDetail } from '@/services/nft-explorer';
 import { formatTimeStamp } from '@/utils/time';
 import { useRouter } from 'next/router';
-import queryString from 'query-string';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Container, StyledDetailList } from './TokenDetail.styled';
 import ActivityList from './ActivityList';
@@ -24,9 +23,9 @@ const Inscription = () => {
   const user = useSelector(getUserSelector);
   const userTcWallet = user?.walletAddress;
 
-  const { contract, id } = queryString.parse(location.search) as {
+  const { contract, tokenId } = router.query as {
     contract: string;
-    id: string;
+    tokenId: string;
   };
 
   const [inscription, setInscription] = useState<IInscription | undefined>();
@@ -42,7 +41,7 @@ const Inscription = () => {
 
   const fetchInscriptionDetail = async () => {
     try {
-      const data = await getNFTDetail({ contractAddress: contract, tokenId: id });
+      const data = await getNFTDetail({ contractAddress: contract, tokenId, });
       setInscription(data);
     } catch (error) {
       router.push(ROUTE_PATH.NOT_FOUND);
@@ -148,7 +147,7 @@ const Inscription = () => {
                 </p>
               )}
               <Link
-                href={`${ROUTE_PATH.COLLECTION}?contract=${contract}`}
+                href={`${ROUTE_PATH.COLLECTION}/${contract}`}
                 className="title"
               >
                 {contract.toLocaleLowerCase() === ARTIFACT_CONTRACT.toLocaleLowerCase()

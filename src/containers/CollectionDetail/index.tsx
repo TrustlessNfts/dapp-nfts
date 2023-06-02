@@ -4,8 +4,7 @@ import { IInscription } from '@/interfaces/api/inscription';
 import { getCollectionDetail, getCollectionNfts } from '@/services/nft-explorer';
 import { shortenAddress } from '@/utils';
 import Spinner from 'react-bootstrap/Spinner';
-import { debounce } from 'lodash';
-import queryString from 'query-string';
+import debounce from 'lodash/debounce';
 import React, { useEffect, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Container, Grid } from './Collection.styled';
@@ -20,7 +19,7 @@ const LIMIT = 32;
 
 const Collection = () => {
   const router = useRouter();
-  const { contract, owner } = queryString.parse(location.search) as {
+  const { contract, owner } = router.query as {
     contract: string;
     owner?: string;
   };
@@ -104,7 +103,7 @@ const Collection = () => {
                   return (
                     <NFTCard
                       key={index.toString()}
-                      href={`${ROUTE_PATH.INSCRIPTION}?contract=${collection?.contract}&id=${item.tokenId}`}
+                      href={`${ROUTE_PATH.COLLECTION}/${collection?.contract}/token/${item.tokenId}`}
                       image={item?.image}
                       contract={collection?.contract}
                       tokenId={item.tokenId}

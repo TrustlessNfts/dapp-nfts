@@ -1,4 +1,3 @@
-import { TransactionEventType } from '@/enums/transaction';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import BigNumber from 'bignumber.js';
 
@@ -13,7 +12,7 @@ export enum DAppType {
 export type ContractOperationHook<P, R> = (arg?: any) => {
   call: (args: P) => Promise<R>;
   dAppType: DAppType;
-  transactionType: TransactionEventType;
+  operationName: string;
 };
 
 export type DeployContractResponse = {

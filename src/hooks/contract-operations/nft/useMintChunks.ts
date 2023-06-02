@@ -21,7 +21,7 @@ const useMintChunks: ContractOperationHook<
   Transaction | null
 > = () => {
   const { account, provider } = useWeb3React();
-  const { btcBalance, feeRate } = useContext(AssetsContext);
+  const { btcBalance } = useContext(AssetsContext);
 
   const call = useCallback(
     async (params: IMintChunksParams): Promise<Transaction | null> => {
@@ -55,13 +55,13 @@ const useMintChunks: ContractOperationHook<
 
       return null;
     },
-    [account, provider, btcBalance, feeRate],
+    [account, provider, btcBalance],
   );
 
   return {
     call: call,
     dAppType: DAppType.ERC721,
-    transactionType: TransactionEventType.MINT,
+    operationName: TransactionEventType.MINT,
   };
 };
 

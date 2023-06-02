@@ -1,5 +1,5 @@
 import { ContractOperationHook, DAppType } from '@/interfaces/contract-operation';
-import ERC721ABIJson from '@/abis/erc721.json';
+import MarketplaceABIJson from '@/abis/marketplace.json';
 import { useWeb3React } from '@web3-react/core';
 import { useCallback, useContext } from 'react';
 import { Transaction } from 'ethers';
@@ -8,45 +8,44 @@ import BigNumber from 'bignumber.js';
 import * as TC_SDK from 'trustless-computer-sdk';
 import { formatBTCPrice } from '@/utils/format';
 import { getContract } from '@/utils';
-import { TransactionEventType } from '@/enums/transaction';
+import logger from '@/services/logger';
+import { TC_MARKETPLACE_CONTRACT, TRANSFER_TX_SIZE } from '@/configs';
 
-export interface IMintBatchChunksParams {
-  listOfChunks: Array<Buffer>;
-  contractAddress: string;
-  selectFee: number;
+export interface ICancelTokenOfferParams {
+  offerId: string;
 }
 
-const useMintBatchChunks: ContractOperationHook<
-  IMintBatchChunksParams,
+const useCancelTokenOffer: ContractOperationHook<
+  ICancelTokenOfferParams,
   Transaction | null
 > = () => {
   const { account, provider } = useWeb3React();
-  const { btcBalance } = useContext(AssetsContext);
+  const { btcBalance, feeRate } = useContext(AssetsContext);
 
   const call = useCallback(
-    async (params: IMintBatchChunksParams): Promise<Transaction | null> => {
-      const { listOfChunks, contractAddress, selectFee } = params;
-      console.log('useMintBatchChunks', params);
-      if (account && provider && contractAddress) {
+    async (params: ICancelTokenOfferParams): Promise<Transaction | null> => {
+      logger.debug('useCancelTokenOffer', params);
+      const { offerId } = params;
+
+      if (account && provider) {
         const contract = getContract(
-          contractAddress,
-          ERC721ABIJson.abi,
+          TC_MARKETPLACE_CONTRACT,
+          MarketplaceABIJson.abi,
           provider,
           account,
         );
-        const tcTxSizeByte = listOfChunks.reduce(
-          (prev, cur) => prev + Buffer.byteLength(cur),
-          0,
-        );
-        console.log({
-          tcTxSizeByte: tcTxSizeByte,
-          feeRatePerByte: selectFee,
-          contractAddress,
+
+        logger.debug({
+          tcTxSizeByte: TRANSFER_TX_SIZE,
+          feeRatePerByte: feeRate.fastestFee,
+          contractAddress: TC_MARKETPLACE_CONTRACT,
         });
+
         const estimatedFee = TC_SDK.estimateInscribeFee({
-          tcTxSizeByte: tcTxSizeByte,
-          feeRatePerByte: selectFee,
+          tcTxSizeByte: TRANSFER_TX_SIZE,
+          feeRatePerByte: feeRate.fastestFee,
         });
+
         const balanceInBN = new BigNumber(btcBalance);
         if (balanceInBN.isLessThan(estimatedFee.totalFee)) {
           throw Error(
@@ -56,23 +55,25 @@ const useMintBatchChunks: ContractOperationHook<
           );
         }
 
-        const chunks = listOfChunks.map((item) => [item]);
+        const offerIdBytes32 = '0x' + offerId;
+
         const transaction = await contract
           .connect(provider.getSigner())
-          .mintBatchChunks(account, chunks);
+          .cancelMakeOffer(offerIdBytes32);
+
         return transaction;
       }
 
       return null;
     },
-    [account, provider, btcBalance],
+    [account, provider, btcBalance, feeRate],
   );
 
   return {
     call: call,
     dAppType: DAppType.ERC721,
-    operationName: TransactionEventType.MINT,
+    operationName: 'Cancel Token Offer',
   };
 };
 
-export default useMintBatchChunks;
+export default useCancelTokenOffer;
