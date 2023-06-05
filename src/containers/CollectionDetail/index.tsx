@@ -15,6 +15,7 @@ import { ROUTE_PATH } from '@/constants/route-path';
 import ModalMint from './ModalMint';
 import ModalTransfer from './ModalTransfer';
 import logger from '@/services/logger';
+import { BNS_CONTRACT } from '@/configs';
 
 const LIMIT = 32;
 
@@ -104,6 +105,10 @@ const Collection = () => {
                 inscriptions.map((item, index) => {
                   return (
                     <NFTCard
+                      isBNS={
+                        collection?.contract.toLocaleLowerCase() ===
+                        BNS_CONTRACT.toLocaleLowerCase()
+                      }
                       key={index.toString()}
                       href={`${ROUTE_PATH.COLLECTION}/${collection?.contract}/token/${item.tokenId}`}
                       image={item?.image}

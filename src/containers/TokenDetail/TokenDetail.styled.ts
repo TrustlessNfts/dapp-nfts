@@ -142,6 +142,16 @@ const Container = styled.div`
     }
   }
 
+  .bns-wrapper {
+    padding: ${px2rem(24)};
+    color: #ffffff;
+    font-size: ${px2rem(20)};
+    line-height: 1.5;
+    font-weight: 500;
+    border: 1px solid #ffffff;
+    border-radius: 8px;
+  }
+
   @media screen and (max-width: 768px) {
     padding: 0px 0px;
 

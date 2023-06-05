@@ -21,7 +21,6 @@ const CollectionsTab: React.FC = (): React.ReactElement => {
 
   const fetchCollections = async (p?: number, query?: string) => {
     try {
-      console.log(query)
       setLoading(true);
       const page = p || Math.floor(collections.length / FETCH_LIMIT) + 1;
       const res = await getCollectionList({

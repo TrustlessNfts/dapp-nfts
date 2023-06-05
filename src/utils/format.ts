@@ -1,7 +1,7 @@
+import { WETH_ADDRESS, WBTC_ADDRESS } from '@/constants/marketplace';
+import { ROOT_ADDRESS } from '@/constants/common';
 import Web3 from 'web3';
 import BigNumber from 'bignumber.js';
-import { ROOT_ADDRESS } from '@/constants/common';
-import { WBTC_ADDRESS, WETH_ADDRESS } from '@/constants/marketplace';
 
 export const exponentialToDecimal = (exponential: number): string => {
   let decimal = exponential.toString().toLowerCase();

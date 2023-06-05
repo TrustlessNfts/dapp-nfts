@@ -1,6 +1,6 @@
 import Accordion from '@/components/Accordion';
 import NFTDisplayBox from '@/components/NFTDisplayBox';
-import { ARTIFACT_CONTRACT, CDN_URL } from '@/configs';
+import { ARTIFACT_CONTRACT, BNS_CONTRACT, CDN_URL } from '@/configs';
 import { ROUTE_PATH } from '@/constants/route-path';
 import { IInscription } from '@/interfaces/api/inscription';
 import { getNFTDetail } from '@/services/nft-explorer';
@@ -36,6 +36,11 @@ const Inscription = () => {
     [inscription?.owner, userTcWallet],
   );
 
+  const isBNS = useMemo(() => inscription?.collectionAddress.toLocaleLowerCase() ===
+    BNS_CONTRACT.toLocaleLowerCase(),
+    [inscription]
+  );
+
   const fetchInscriptionDetail = useCallback(async () => {
     if (!contract || !tokenId) return;
 
@@ -51,7 +56,6 @@ const Inscription = () => {
   useEffect(() => {
     fetchInscriptionDetail();
   }, [fetchInscriptionDetail]);
-
 
   const renderDetailsList = useMemo(() => {
     if (!inscription) return null;
@@ -134,7 +138,7 @@ const Inscription = () => {
       <Container>
         <div className="content">
           <div className="left-container">
-            {inscription && (
+            {(inscription && !isBNS) && (
               <NFTDisplayBox
                 collectionID={inscription?.collectionAddress}
                 contentClass="thumbnail"
@@ -142,6 +146,9 @@ const Inscription = () => {
                 tokenID={inscription?.tokenId}
                 type={inscription?.contentType}
               />
+            )}
+            {(inscription && isBNS) && (
+              <div className='bns-wrapper'>{inscription.name}</div>
             )}
           </div>
           <div className="right-container">
