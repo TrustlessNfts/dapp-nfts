@@ -20,23 +20,23 @@ const CollectionsTab: React.FC = (): React.ReactElement => {
 
   const handleSearch = useCallback(debounce(inputVal => fetchCollections(1, inputVal), 500), []);
 
-  const fetchCollections = async (p = 1, query = '') => {
+  const fetchCollections = async (p?: number, query?: string) => {
     try {
       setLoading(true);
-      const page = p || Math.floor(collections.length / FETCH_LIMIT) + 1;
+      const page = p || (Math.floor(collections.length / FETCH_LIMIT) + 1);
       const res = await getCollectionList({
         page: page,
         name: query || searchTerm,
-        limit: 32,
+        limit: FETCH_LIMIT,
         sort: -1,
         sort_by: 'volume'
       });
-      if (!res.length) {
+      if (res.length < FETCH_LIMIT) {
         setHasMore(false);
       } else {
         setHasMore(true);
       }
-      setSearchTerm(query);
+      setSearchTerm(query || '');
       if (page === 1) {
         setCollections(res);
       } else {
