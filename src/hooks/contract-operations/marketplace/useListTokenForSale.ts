@@ -80,9 +80,13 @@ const useListTokenForSale: ContractOperationHook<
           })
         )
 
+        logger.debug('contract payload', payload);
+
         const transaction = await contract
           .connect(provider.getSigner())
-          .listToken(payload);
+          .listToken(payload, {
+            gasLimit: '500000'
+          });
 
         return transaction;
       }
