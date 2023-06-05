@@ -22,10 +22,10 @@ const useGetAllowanceAmount: ContractOperationHook<
       if (account && provider) {
         const { operatorAddress, contractAddress } = params;
         const contract = getContract(contractAddress, ERC20ABIJson.abi, provider, account);
-        const transaction = await contract.allowance(account, operatorAddress, {
+        const allowance = await contract.allowance(account, operatorAddress, {
           from: account
         });
-        return transaction;
+        return allowance.toString();
       }
 
       return 0;

@@ -18,6 +18,7 @@ import useGetAllowanceAmount, { IGetAllowanceAmountParams } from '@/hooks/contra
 import { MAX_HEX_VALUE } from '@/constants/common';
 import { checkCacheApprovalTokenPermission, setCacheApprovalTokenPermission } from '@/utils/marketplace-storage';
 import { Transaction } from 'ethers'
+import BigNumber from 'bignumber.js';
 
 interface IProps {
   show: boolean;
@@ -41,7 +42,7 @@ const ModalPurchase = ({ show, handleClose, inscription }: IProps) => {
     Transaction | null
   >({
     operation: useApproveTokenAmount,
-    inscribeable: true,
+    inscribeable: false,
   });
   const { run: purchaseToken } = useContractOperation<
     IPurchaseTokenParams,
@@ -69,8 +70,13 @@ const ModalPurchase = ({ show, handleClose, inscription }: IProps) => {
         contractAddress: listingInfo.erc20Token,
         operatorAddress: TC_MARKETPLACE_CONTRACT
       });
+      const allowanceAmountBN = new BigNumber(allowanceAmount);
       const hasApprovalCache = checkCacheApprovalTokenPermission(`${TC_MARKETPLACE_CONTRACT}_${listingInfo.erc20Token}`);
-      if (!allowanceAmount && !hasApprovalCache) {
+
+      logger.debug('allowanceAmountBN', allowanceAmountBN.toString());
+      logger.debug('hasApprovalCache', hasApprovalCache);
+
+      if (!allowanceAmountBN.isGreaterThan(listingInfo.price) && !hasApprovalCache) {
         logger.debug(TC_MARKETPLACE_CONTRACT);
         logger.debug(inscription.collectionAddress);
 
@@ -82,10 +88,11 @@ const ModalPurchase = ({ show, handleClose, inscription }: IProps) => {
 
         setCacheApprovalTokenPermission(`${TC_MARKETPLACE_CONTRACT}_${listingInfo.erc20Token}`);
       }
+
       await purchaseToken({
         offerId: listingInfo.offeringId,
       })
-      
+
       showToastSuccess({
         message: 'Please go to your wallet to authorize the request for the Bitcoin transaction.'
       })

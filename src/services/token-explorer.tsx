@@ -1,7 +1,7 @@
 import { API_URL } from '@/configs';
 import { IPagingParams } from '@/interfaces/api/query';
 import queryString from 'query-string';
-import { apiClient } from '..';
+import { apiClient } from '.';
 import { camelCaseKeys } from '@/utils';
 
 const API_PATH = '/token-explorer';

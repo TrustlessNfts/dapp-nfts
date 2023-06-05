@@ -12,19 +12,11 @@ export const Container = styled.div`
   max-width: 1920px;
   margin-left: auto;
   margin-right: auto;
-  display: flex;
-  flex-direction: column;
   padding: 0 ${px2rem(32)};
-  /* padding-left: 6%;
-  padding-right: 6%; */
 `;
 
 const ContentWrapper = styled.div`
   min-height: calc(100vh - 140px);
-  display: flex;
-  align-self: center;
-  flex-direction: column;
-  justify-content: center;
   width: 100%;
 
   > div {

@@ -2,7 +2,7 @@ import { API_URL } from '@/configs';
 import { ICollection, IUpdateCollectionPayload } from '@/interfaces/api/collection';
 import { IInscription } from '@/interfaces/api/inscription';
 import { IPagingParams } from '@/interfaces/api/query';
-import { apiClient } from '..';
+import { apiClient } from '.';
 import { camelCaseKeys } from '@/utils/helpers';
 
 const API_PATH = API_URL + '/nft-explorer';

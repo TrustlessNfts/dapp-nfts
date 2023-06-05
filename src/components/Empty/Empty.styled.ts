@@ -1,3 +1,4 @@
+import px2rem from '@/utils/px2rem';
 import styled from 'styled-components';
 
 export const StyledEmpty = styled.div<{ isTable: boolean }>`
@@ -5,14 +6,19 @@ export const StyledEmpty = styled.div<{ isTable: boolean }>`
     display: grid;
     place-items: center;
     position: relative;
+    padding-top: ${px2rem(24)};
+    padding-bottom: ${px2rem(24)};
 
-    &_image {
-      margin-bottom: rem(32px);
+    .image {
+      margin-bottom: ${px2rem(24)}
     }
 
-    h5 {
-      color: $black-40-solid;
-      font-weight: 500 !important;
+    .nodata-text {
+      color: #fff;
+      font-weight: 500;
+      font-size: ${px2rem(16)};
+      line-height: 1.4;
+      text-align: center;
     }
   }
 `;

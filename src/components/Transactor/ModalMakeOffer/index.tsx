@@ -58,7 +58,7 @@ const ModalMakeOffer: React.FC<IProps> = ({
     Transaction | null
   >({
     operation: useApproveTokenAmount,
-    inscribeable: true,
+    inscribeable: false,
   });
   const { run: makeOffer } = useContractOperation<
     IMakeTokenOfferParams,
@@ -92,8 +92,13 @@ const ModalMakeOffer: React.FC<IProps> = ({
         contractAddress: erc20Token,
         operatorAddress: TC_MARKETPLACE_CONTRACT
       });
+      const allowanceAmountBN = new BigNumber(allowanceAmount);
       const hasApprovalCache = checkCacheApprovalTokenPermission(`${TC_MARKETPLACE_CONTRACT}_${erc20Token}`);
-      if (!allowanceAmount && !hasApprovalCache) {
+
+      logger.debug('allowanceAmountBN', allowanceAmountBN.toString());
+      logger.debug('hasApprovalCache', hasApprovalCache);
+
+      if (!allowanceAmountBN.isGreaterThan(price) && !hasApprovalCache) {
         logger.debug(TC_MARKETPLACE_CONTRACT);
         logger.debug(inscription.collectionAddress);
 
