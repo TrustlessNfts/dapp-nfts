@@ -16,16 +16,17 @@ const CollectionsTab: React.FC = (): React.ReactElement => {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [collections, setCollections] = useState<Array<ICollection>>([]);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const handleSearch = useCallback(debounce(inputVal => fetchCollections(1, inputVal), 500), []);
 
-  const fetchCollections = async (p?: number, query?: string) => {
+  const fetchCollections = async (p = 1, query = '') => {
     try {
       setLoading(true);
       const page = p || Math.floor(collections.length / FETCH_LIMIT) + 1;
       const res = await getCollectionList({
         page: page,
-        name: query,
+        name: query || searchTerm,
         limit: 32,
         sort: -1,
         sort_by: 'volume'
@@ -35,6 +36,7 @@ const CollectionsTab: React.FC = (): React.ReactElement => {
       } else {
         setHasMore(true);
       }
+      setSearchTerm(query);
       if (page === 1) {
         setCollections(res);
       } else {
