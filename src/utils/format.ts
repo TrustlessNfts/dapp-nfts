@@ -84,7 +84,7 @@ export const formatPrice = (price: number | string, emptyStr?: string): string =
 export const formatEthPrice = (
   price: string | number | null,
   emptyStr?: string,
-  precision = 4,
+  precision = 6,
 ): string => {
   if (!price) return emptyStr || '-';
   return ceilPrecised(parseFloat(Web3.utils.fromWei(`${price}`, 'ether')), precision)

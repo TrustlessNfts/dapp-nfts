@@ -40,25 +40,28 @@ const DataTable: React.FC<IProps> = ({ collections }: IProps): React.ReactElemen
 
         floorPrice: (
           <div className={'floor-price'}>
-            {floorPrice.toLocaleString('en-US', {
+            {floorPrice > 0 ? floorPrice.toLocaleString('en-US', {
               style: 'currency',
-              currency: 'USD'
-            })}
+              currency: 'USD',
+              maximumFractionDigits: 6,
+            }) : '-'}
           </div>
         ),
 
         volume: (
           <div className={'volume'}>
-            {volume.toLocaleString('en-US', {
+            {volume > 0 ? volume.toLocaleString('en-US', {
               style: 'currency',
-              currency: 'USD'
-            })}
+              currency: 'USD',
+              maximumFractionDigits: 6,
+            }) : '-'}
           </div>
         ),
 
         owners: (
           <div className={'owners'}>
             {totalOwners.toLocaleString('en-US')}
+            {totalItems > 0 ? ` (${(totalOwners / totalItems * 100).toFixed(0)}%)` : ''}
           </div>
         ),
 
