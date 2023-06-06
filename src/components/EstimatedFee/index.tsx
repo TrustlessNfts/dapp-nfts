@@ -54,7 +54,6 @@ const EstimatedFee: React.FC<IProps> = ({ txSize }: IProps): React.ReactElement 
     feeRate: number;
   }) => {
     return (
-
       <div
         className={`est-fee-item`}
       >

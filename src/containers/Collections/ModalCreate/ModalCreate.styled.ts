@@ -87,47 +87,6 @@ export const StyledModalUpload = styled(Modal)`
     margin-bottom: ${px2rem(20)};
   }
 
-  .est-fee {
-    margin-top: ${px2rem(20)};
-    margin-bottom: ${px2rem(28)};
-  }
-
-  .est-fee-options {
-    display: flex;
-    align-items: center;
-    gap: ${px2rem(10)};
-  }
-
-  .est-fee-item {
-    flex: 1;
-    padding: ${px2rem(8)} ${px2rem(16)};
-    border: 1px solid #cecece;
-    border-radius: 8px;
-    display: grid;
-    place-items: center;
-    text-align: center;
-    opacity: 0.6;
-
-    &.active {
-      opacity: 1;
-      border-color: #9997f0;
-      border-width: 2px;
-    }
-
-    &:hover {
-      cursor: pointer;
-      opacity: 1;
-    }
-  }
-
-  .ext-price {
-    color: #9796f0;
-    font-size: ${px2rem(14)};
-    span {
-      font-size: ${px2rem(12)};
-    }
-  }
-
   .confirm {
     width: 100%;
     text-align: center;
