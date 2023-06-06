@@ -3,6 +3,7 @@ import { apiClient } from '.';
 import { camelCaseKeys } from '@/utils/helpers';
 import { IPagingParams } from '@/interfaces/api/query';
 import { ICreateTransactionPayload, ITransaction, IUpdateStatusTxPayload } from '@/interfaces/transaction';
+import logger from './logger';
 
 const API_PATH = '/profile';
 
@@ -11,7 +12,7 @@ export const getCurrentProfile = async (): Promise<IProfileResponse> => {
     const res = await apiClient.get(`${API_PATH}/me`);
     return Object(camelCaseKeys(res));
   } catch (err: unknown) {
-    console.log(err);
+    logger.error(err);
     throw Error('Profile not found');
   }
 };
@@ -21,7 +22,7 @@ export const updateStatusTransaction = async (payload: IUpdateStatusTxPayload[])
     const res = await apiClient.put(`${API_PATH}/histories`, { data: payload });
     return Object(camelCaseKeys(res));
   } catch (err: unknown) {
-    console.log(err);
+    logger.error(err);
     throw Error('Fail to update status transaction');
   }
 };
@@ -31,7 +32,7 @@ export const createTransactionHistory = async (payload: ICreateTransactionPayloa
     const res = await apiClient.post(`${API_PATH}/histories`, payload);
     return Object(camelCaseKeys(res));
   } catch (err: unknown) {
-    console.log(err);
+    logger.error(err);
     throw Error('Fail to update status transaction');
   }
 };
@@ -45,7 +46,7 @@ export const getTransactionsByWallet = async ({
     const res = await apiClient.get(`${API_PATH}/wallet/${walletAddress}/histories?limit=${limit}&page=${page}`);
     return Object(camelCaseKeys(res));
   } catch (err: unknown) {
-    console.log(err);
+    logger.error(err);
     throw Error('Profile not found');
   }
 };
@@ -57,7 +58,7 @@ export const getCollectionsByItemsOwned = async ({
     const res = await apiClient.get(`${API_PATH}/wallet/${walletAddress}/collections`);
     return Object(camelCaseKeys(res));
   } catch (err: unknown) {
-    console.log(err);
+    logger.error(err);
     throw Error('Profile not found');
   }
 };
@@ -73,7 +74,7 @@ export const getTokensWallet = async ({
     const res = await apiClient.get(`${API_PATH}/wallet/${walletAddress}/tokens/bought?limit=${limit}&page=${page}`);
     return Object(camelCaseKeys(res));
   } catch (err: unknown) {
-    console.log(err);
+    logger.error(err);
     throw Error('Profile not found');
   }
 };

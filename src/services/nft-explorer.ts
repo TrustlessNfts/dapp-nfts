@@ -51,7 +51,6 @@ export const getNFTDetail = async ({
   tokenId: string;
 }): Promise<IInscription> => {
   const res = await apiClient.get(`${API_PATH}/collections/${contractAddress}/nfts/${tokenId}`);
-  console.log(res);
   return Object(camelCaseKeys(res));
 }
 

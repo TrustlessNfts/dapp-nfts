@@ -30,7 +30,6 @@ const useCreateNFTCollection: ContractOperationHook<
   ): Promise<DeployContractResponse | null> => {
     if (account && provider) {
       const { name, listOfChunks } = params;
-      console.log(params);
       const byteCode = ERC721ABIJson.bytecode;
 
       const tcTxSizeBytes = listOfChunks

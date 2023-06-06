@@ -7,7 +7,7 @@ import { StyledModalUpload, Title, WrapInput } from './ModalTransfer.styled';
 import IconSVG from '@/components/IconSVG';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
-import { CDN_URL, TC_WEB_URL } from '@/configs';
+import { CDN_URL } from '@/configs';
 import { validateEVMAddress } from '@/utils';
 import { walletLinkSignTemplate } from '@/utils/configs';
 import useContractOperation from '@/hooks/contract-operations/useContractOperation';
@@ -15,8 +15,7 @@ import useTransferERC721Collection, { ITransferERC721CollectionParams } from '@/
 import { Transaction } from 'ethers';
 import ToastConfirm from '@/components/ToastConfirm';
 import { showToastError } from '@/utils/toast';
-import { DappsTabs } from '@/enums/tabs';
-import { ERROR_CODE } from '@/constants/error';
+import logger from '@/services/logger';
 
 type Props = {
   collection: ICollection;
@@ -89,19 +88,10 @@ const ModalTransfer = (props: Props) => {
         },
       );
     } catch (err: unknown) {
-      console.log(err);
-      if ((err as Error).message === ERROR_CODE.PENDING) {
-        showToastError({
-          message:
-            'You have some pending transactions. Please complete all of them before moving on.',
-          url: `${TC_WEB_URL}/?tab=${DappsTabs.TRANSACTION}`,
-          linkText: 'Go to Wallet',
-        });
-      } else {
-        showToastError({
-          message: (err as Error).message,
-        });
-      }
+      logger.error(err);
+      showToastError({
+        message: (err as Error).message,
+      });
     } finally {
       setIsProcessing(false);
     }

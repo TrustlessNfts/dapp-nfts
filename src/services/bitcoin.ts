@@ -42,7 +42,7 @@ export const getCollectedUTXO = async (
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any;
   } catch (err) {
-    console.log(err);
+    logger.error(err);
   }
 };
 
@@ -93,7 +93,7 @@ export const getTokenRate = async (pair: BINANCE_PAIR = 'ETHBTC'): Promise<numbe
     const rate = data?.price;
     return new BigNumber(rate).toNumber();
   } catch (err: unknown) {
-    console.log(err);
+    logger.error(err);
     throw err;
   }
 };
