@@ -11,6 +11,7 @@ export const Wrapper = styled.div`
     background: #FAFAFA;
     border-radius: 8px;
     padding: ${px2rem(12)};
+    background: #FAFAFA;
   }
 
   .est-fee-item {
@@ -41,6 +42,7 @@ export const Wrapper = styled.div`
     font-size: ${px2rem(14)};
     line-height: 150%;
     margin-bottom: ${px2rem(4)};
+    color: #1c1c1c;
   }
 
   .ext-price {

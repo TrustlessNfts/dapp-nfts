@@ -16,7 +16,6 @@ import * as TC_SDK from 'trustless-computer-sdk';
 export interface ICreateNFTCollectionParams {
   name: string;
   listOfChunks: Array<Array<Buffer>>;
-  selectFee: number;
 }
 
 const useCreateNFTCollection: ContractOperationHook<
@@ -24,13 +23,13 @@ const useCreateNFTCollection: ContractOperationHook<
   DeployContractResponse | null
 > = () => {
   const { account, provider } = useWeb3React();
-  const { btcBalance } = useContext(AssetsContext);
+  const { btcBalance, feeRate } = useContext(AssetsContext);
 
   const call = async (
     params: ICreateNFTCollectionParams,
   ): Promise<DeployContractResponse | null> => {
     if (account && provider) {
-      const { name, listOfChunks, selectFee } = params;
+      const { name, listOfChunks } = params;
       console.log(params);
       const byteCode = ERC721ABIJson.bytecode;
 
@@ -40,20 +39,12 @@ const useCreateNFTCollection: ContractOperationHook<
         )
         .reduce((prev, cur) => prev + cur, 0);
 
-      console.log({
-        tcTxSizeByte: Buffer.byteLength(byteCode),
-        feeRatePerByte: selectFee,
-      });
       const estimatedFee = TC_SDK.estimateInscribeFee({
         // TODO remove hardcode
         tcTxSizeByte: tcTxSizeBytes || 0,
-        feeRatePerByte: selectFee,
+        feeRatePerByte: feeRate.fastestFee,
       });
-      console.log(
-        '🚀 ~  estimatedFee.totalFee.toString():',
-        estimatedFee.totalFee.toString(),
-      );
-      console.log('🚀 ~ btcBalance:', btcBalance);
+
       const balanceInBN = new BigNumber(btcBalance);
       if (balanceInBN.isLessThan(estimatedFee.totalFee)) {
         throw Error(ERROR_CODE.INSUFFICIENT_BALANCE);
@@ -64,7 +55,7 @@ const useCreateNFTCollection: ContractOperationHook<
         byteCode,
         provider.getSigner(),
       );
-      console.log('factory', factory);
+
       const contract = await factory.deploy(name, listOfChunks);
 
       return {

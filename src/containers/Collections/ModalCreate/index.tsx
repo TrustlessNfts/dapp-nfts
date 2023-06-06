@@ -1,10 +1,9 @@
 import Button from '@/components/Button';
 import IconSVG from '@/components/IconSVG';
 import Text from '@/components/Text';
-import { CDN_URL, TC_WEB_URL } from '@/configs';
+import { CDN_URL } from '@/configs';
 import { MINT_TOOL_MAX_FILE_SIZE } from '@/constants/config';
 import { BLOCK_CHAIN_FILE_LIMIT, ZIP_EXTENSION } from '@/constants/file';
-import { DappsTabs } from '@/enums/tabs';
 import useCreateNFTCollection, {
   ICreateNFTCollectionParams,
 } from '@/hooks/contract-operations/nft/useCreateNFTCollection';
@@ -16,12 +15,11 @@ import {
   isERC721SupportedExt,
   unzipFile,
 } from '@/utils';
-import { showToastError } from '@/utils/toast';
+import { showToastError, showToastSuccess } from '@/utils/toast';
 import { Buffer } from 'buffer';
 import { Formik } from 'formik';
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Modal } from 'react-bootstrap';
-import toast from 'react-hot-toast';
 import DropFile from './DropFile';
 import {
   Checkboxes,
@@ -30,12 +28,7 @@ import {
   WrapInput,
 } from './ModalCreate.styled';
 import { STATIC_IMAGE_EXTENSIONS } from '@/constants/file';
-import * as TC_SDK from 'trustless-computer-sdk';
-import { AssetsContext } from '@/contexts/assets-context';
-import { formatBTCPrice } from '@trustless-computer/dapp-core';
-import ToastConfirm from '@/components/ToastConfirm';
-import { walletLinkSignTemplate } from '@/utils/configs';
-import { ERROR_CODE } from '@/constants/error';
+import EstimatedFee from '@/components/EstimatedFee';
 
 interface IFormValue {
   name: string;
@@ -51,79 +44,24 @@ enum UploadType {
   Zip = 1,
 }
 
-enum optionFees {
-  economy = 'Economy',
-  faster = 'Faster',
-  fastest = 'Fastest',
-}
-
 const ModalCreate = (props: Props) => {
   const { show = false, handleClose } = props;
   const [isProcessing, setIsProcessing] = useState(false);
   const [uploadType, setUploadType] = useState(UploadType.Single);
-  const [estBTCFee, setEstBTCFee] = useState({
-    economy: '0',
-    faster: '0',
-    fastest: '0',
-  });
-  const { feeRate } = useContext(AssetsContext);
-
   const { run } = useContractOperation<
     ICreateNFTCollectionParams,
     DeployContractResponse | null
   >({
     operation: useCreateNFTCollection,
   });
-  const { dAppType, operationName } = useCreateNFTCollection();
   const [file, setFile] = useState<File | null>(null);
   const [isProcessingFile, setIsProcessingFile] = useState(false);
-  const [selectFee, setSelectFee] = useState<number>(0);
-  const [activeFee, setActiveFee] = useState(optionFees.fastest);
   const [showUploadField, setShowUploadField] = useState(false);
   const [listFiles, setListFiles] = useState<Array<Array<Buffer>> | null>();
 
   const onChangeFile = (file: File | null): void => {
     setFile(file);
   };
-
-  // const onSizeError = (): void => {
-  //   showToastError({
-  //     message: `File size error, maximum file size is ${
-  //       MINT_TOOL_MAX_FILE_SIZE * 1000
-  //     }KB.`,
-  //   });
-  // };
-
-  const handleEstFee = useCallback(async (
-    listOfChunks: Array<Array<Buffer>> | null,
-  ): Promise<void> => {
-    const tcTxSizeBytes =
-      listOfChunks
-        ?.map((chunk) =>
-          chunk.reduce((prev, cur) => prev + Buffer.byteLength(cur), 0),
-        )
-        .reduce((prev, cur) => prev + cur, 0) || 0;
-
-    const estimatedFastestFee = TC_SDK.estimateInscribeFee({
-      tcTxSizeByte: tcTxSizeBytes,
-      feeRatePerByte: feeRate.fastestFee,
-    });
-    const estimatedFasterFee = TC_SDK.estimateInscribeFee({
-      tcTxSizeByte: tcTxSizeBytes,
-      feeRatePerByte: feeRate.halfHourFee,
-    });
-    const estimatedEconomyFee = TC_SDK.estimateInscribeFee({
-      tcTxSizeByte: tcTxSizeBytes,
-      feeRatePerByte: feeRate.hourFee,
-    });
-
-    setEstBTCFee({
-      fastest: estimatedFastestFee.totalFee.toString(),
-      faster: estimatedFasterFee.totalFee.toString(),
-      economy: estimatedEconomyFee.totalFee.toString(),
-    });
-
-  }, [setEstBTCFee, feeRate]);
 
   const handleSingleFile = async (file: File): Promise<Array<Array<Buffer>>> => {
     const obj = {
@@ -155,17 +93,11 @@ const ModalCreate = (props: Props) => {
         );
       }
       if (currentBatchSize + chunksSizeInKb >= BLOCK_CHAIN_FILE_LIMIT * 1000) {
-        // Split chunks and reset counter
-        console.log('File size reach 350kb', currentBatchSize);
-        console.log('batch number', listOfChunks.length);
         return listOfChunks;
       }
 
       listOfChunks.push([chunks]);
       currentBatchSize += chunksSizeInKb;
-      console.log('batch number', listOfChunks.length);
-      console.log('listOfChunks', listOfChunks);
-      console.log('currentBatchSize', currentBatchSize);
     }
 
     return listOfChunks;
@@ -204,57 +136,19 @@ const ModalCreate = (props: Props) => {
         }
       }
 
-      const tx = await run({
+      await run({
         name,
         listOfChunks,
-        selectFee,
       });
 
-      toast.success(
-        () => (
-          <ToastConfirm
-            id="create-success"
-            url={walletLinkSignTemplate({
-              operationName,
-              dAppType,
-              hash: Object(tx).hash,
-              isRedirect: true,
-            })}
-            message="Please go to your wallet to authorize the request for the Bitcoin transaction."
-            linkText="Go to wallet"
-          />
-        ),
-        {
-          duration: 50000,
-          position: 'top-right',
-          style: {
-            maxWidth: '900px',
-            borderLeft: '4px solid #00AA6C',
-          },
-        },
-      );
-      // toast.success('Transaction has been created. Please wait for few minutes.');
+      showToastSuccess({
+        message: 'Please go to your wallet to authorize the request for the Bitcoin transaction.'
+      });
       handleClose();
     } catch (err) {
-      if ((err as Error).message === ERROR_CODE.PENDING) {
-        showToastError({
-          message:
-            'You have some pending transactions. Please complete all of them before moving on.',
-          url: `${TC_WEB_URL}/?tab=${DappsTabs.TRANSACTION}`,
-          linkText: 'Go to Wallet',
-        });
-      } else if ((err as Error).message === ERROR_CODE.INSUFFICIENT_BALANCE) {
-        showToastError({
-          message: `Your balance is insufficient. Please top up BTC to pay network fee.`,
-          url: `${TC_WEB_URL}`,
-          linkText: 'Go to Wallet',
-        });
-      } else {
-        showToastError({
-          message: (err as Error).message,
-        });
-      }
-      console.log(err);
+      showToastError({
+        message: (err as Error).message,
+      });
     } finally {
       setIsProcessing(false);
     }
@@ -270,37 +164,15 @@ const ModalCreate = (props: Props) => {
     }
   };
 
-  const renderEstFee = ({
-    title,
-    estFee,
-    feeRate,
-  }: {
-    title: optionFees;
-    estFee: string;
-    feeRate: number;
-  }) => {
-    return (
-      <div
-        className={`est-fee-item ${activeFee === title ? 'active' : ''}`}
-        onClick={() => {
-          setSelectFee(feeRate);
-          setActiveFee(title);
-        }}
-      >
-        <div>
-          <Text fontWeight="medium" color="text2" size="regular">
-            {title}
-          </Text>
-          <Text color="border2" className="mb-10">
-            {feeRate} sats/vByte
-          </Text>
-          <p className="ext-price">
-            {formatBTCPrice(estFee)} <span>BTC</span>
-          </p>
-        </div>
-      </div>
-    );
-  };
+  const totalFileSize = useMemo(() => {
+    if (!listFiles) return 0;
+    const tcTxSizeBytes = listFiles
+      .map((chunk) =>
+        chunk.reduce((prev, cur) => prev + Buffer.byteLength(cur), 0),
+      )
+      .reduce((prev, cur) => prev + cur, 0);
+    return tcTxSizeBytes;
+  }, [listFiles])
 
   useEffect(() => {
     if (file) {
@@ -336,14 +208,6 @@ const ModalCreate = (props: Props) => {
       }
     }
   }, [file]);
-
-  useEffect(() => {
-    handleEstFee(listFiles || null);
-  }, [listFiles, handleEstFee]);
-
-  useEffect(() => {
-    setSelectFee(feeRate.fastestFee);
-  }, [feeRate.fastestFee]);
 
   return (
     <StyledModalUpload show={show} onHide={handleClose} centered size="lg">
@@ -392,9 +256,6 @@ const ModalCreate = (props: Props) => {
                   size="regular"
                   fontWeight="medium"
                   className="mb-4 upload-title"
-                  // onClick={() => {
-                  //   setShowUploadField(!showUploadField);
-                  // }}
                   onClick={handleShowUploadField}
                 >
                   <IconSVG src={`${CDN_URL}/icons/ic-upload.svg`} maxWidth="20" />
@@ -484,33 +345,7 @@ const ModalCreate = (props: Props) => {
                   </ul>
                 </div>
               )}
-              <div className="est-fee">
-                <Text
-                  size="regular"
-                  fontWeight="medium"
-                  color="bg1"
-                  className="mb-8"
-                >
-                  Select the network fee
-                </Text>
-                <div className="est-fee-options">
-                  {renderEstFee({
-                    title: optionFees.economy,
-                    estFee: estBTCFee.economy,
-                    feeRate: feeRate.hourFee,
-                  })}
-                  {renderEstFee({
-                    title: optionFees.faster,
-                    estFee: estBTCFee.faster,
-                    feeRate: feeRate.halfHourFee,
-                  })}
-                  {renderEstFee({
-                    title: optionFees.fastest,
-                    estFee: estBTCFee.fastest,
-                    feeRate: feeRate.fastestFee,
-                  })}
-                </div>
-              </div>
+              <EstimatedFee txSize={totalFileSize} />
               <div className="confirm">
                 <Button
                   disabled={isProcessing}
