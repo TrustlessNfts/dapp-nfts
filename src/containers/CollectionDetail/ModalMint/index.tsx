@@ -1,9 +1,8 @@
 import Button from '@/components/Button';
 import IconSVG from '@/components/IconSVG';
 import Text from '@/components/Text';
-import { CDN_URL, TC_WEB_URL } from '@/configs';
+import { CDN_URL } from '@/configs';
 import { MINT_TOOL_MAX_FILE_SIZE } from '@/constants/config';
-import { ERROR_CODE } from '@/constants/error';
 import {
   BLOCK_CHAIN_FILE_LIMIT,
   STATIC_IMAGE_EXTENSIONS,
@@ -16,7 +15,6 @@ import {
   Title,
 } from '@/containers/Collections/ModalCreate/ModalCreate.styled';
 import { AssetsContext } from '@/contexts/assets-context';
-import { DappsTabs } from '@/enums/tabs';
 import useMintBatchChunks, {
   IMintBatchChunksParams,
 } from '@/hooks/contract-operations/nft/useMintBatchChunks';
@@ -25,6 +23,7 @@ import useMintChunks, {
 } from '@/hooks/contract-operations/nft/useMintChunks';
 import useContractOperation from '@/hooks/contract-operations/useContractOperation';
 import { ICollection } from '@/interfaces/api/collection';
+import logger from '@/services/logger';
 import {
   fileToBase64,
   getFileExtensionByFileName,
@@ -109,9 +108,8 @@ const ModalMint = (props: Props) => {
       const chunksSizeInKb = Buffer.byteLength(chunks) / 1000;
       if (chunksSizeInKb > BLOCK_CHAIN_FILE_LIMIT * 1000) {
         showToastError({
-          message: `File size error, maximum file size is ${
-            BLOCK_CHAIN_FILE_LIMIT * 1000
-          }kb.`,
+          message: `File size error, maximum file size is ${BLOCK_CHAIN_FILE_LIMIT * 1000
+            }kb.`,
         });
         return [];
       }
@@ -120,16 +118,12 @@ const ModalMint = (props: Props) => {
         listOfChunks.push([...currentChunks]);
         currentChunks = [];
         currentBatchSize = 0;
-        console.log('batch number', listOfChunks.length);
       }
       currentBatchSize += chunksSizeInKb;
       currentChunks.push(chunks);
-      console.log('currentBatchSize', currentBatchSize);
     }
 
-    console.log('batch number', listOfChunks.length);
     listOfChunks.push([...currentChunks]);
-    console.log('listOfChunks', listOfChunks);
 
     return listOfChunks;
   };
@@ -198,7 +192,6 @@ const ModalMint = (props: Props) => {
       const obj = {
         image: await fileToBase64(file),
       };
-      console.log('json', JSON.stringify(obj));
       const chunks = Buffer.from(JSON.stringify(obj));
       await mintSingle({
         contractAddress: collection.contract,
@@ -208,27 +201,10 @@ const ModalMint = (props: Props) => {
       toast.success('Transaction has been created. Please wait for few minutes.');
       onUpdateSuccess();
     } catch (err: unknown) {
-      console.log(err);
-      if ((err as Error).message === ERROR_CODE.PENDING) {
-        showToastError({
-          message:
-            'You have some pending transactions. Please complete all of them before moving on.',
-          url: `${TC_WEB_URL}/?tab=${DappsTabs.TRANSACTION}`,
-          linkText: 'Go to Wallet',
-        });
-      } else if ((err as Error).message === ERROR_CODE.INSUFFICIENT_BALANCE) {
-        showToastError({
-          message: `Your balance is insufficient. Please top up BTC to pay network fee.`,
-          url: `${TC_WEB_URL}`,
-          linkText: 'Go to Wallet',
-        });
-      } else {
-        showToastError({
-          message:
-            (err as Error).message ||
-            'Something went wrong. Please try again later.',
-        });
-      }
+      logger.error(err);
+      showToastError({
+        message: (err as Error).message
+      });
     } finally {
       setIsMinting(false);
     }
@@ -256,27 +232,10 @@ const ModalMint = (props: Props) => {
       toast.success('Transaction has been created. Please wait for few minutes.');
       onUpdateSuccess();
     } catch (err: unknown) {
-      if ((err as Error).message === ERROR_CODE.PENDING) {
-        showToastError({
-          message:
-            'You have some pending transactions. Please complete all of them before moving on.',
-          url: `${TC_WEB_URL}/?tab=${DappsTabs.TRANSACTION}`,
-          linkText: 'Go to Wallet',
-        });
-      } else if ((err as Error).message === ERROR_CODE.INSUFFICIENT_BALANCE) {
-        showToastError({
-          message: `Your balance is insufficient. Please top up BTC to pay network fee.`,
-          url: `${TC_WEB_URL}`,
-          linkText: 'Go to Wallet',
-        });
-      } else {
-        showToastError({
-          message:
-            (err as Error).message ||
-            'Something went wrong. Please try again later.',
-        });
-      }
-      console.log(err);
+      logger.error(err);
+      showToastError({
+        message: (err as Error).message
+      });
     } finally {
       setIsMinting(false);
     }
@@ -298,9 +257,8 @@ const ModalMint = (props: Props) => {
       const fileSizeInKb = file.size / 1000;
       if (fileSizeInKb > BLOCK_CHAIN_FILE_LIMIT * 1000) {
         showToastError({
-          message: `File size error, maximum file size is ${
-            BLOCK_CHAIN_FILE_LIMIT * 1000
-          }kb.`,
+          message: `File size error, maximum file size is ${BLOCK_CHAIN_FILE_LIMIT * 1000
+            }kb.`,
         });
         return;
       }

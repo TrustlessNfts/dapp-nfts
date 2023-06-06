@@ -79,8 +79,6 @@ const useMakeTokenOffer: ContractOperationHook<
           })
         );
 
-        console.log('payload', payload)
-
         const transaction = await contract
           .connect(provider.getSigner())
           .makeOffer(payload, {

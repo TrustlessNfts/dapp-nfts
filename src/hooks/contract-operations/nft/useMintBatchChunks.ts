@@ -26,7 +26,6 @@ const useMintBatchChunks: ContractOperationHook<
   const call = useCallback(
     async (params: IMintBatchChunksParams): Promise<Transaction | null> => {
       const { listOfChunks, contractAddress, selectFee } = params;
-      console.log('useMintBatchChunks', params);
       if (account && provider && contractAddress) {
         const contract = getContract(
           contractAddress,
@@ -38,11 +37,6 @@ const useMintBatchChunks: ContractOperationHook<
           (prev, cur) => prev + Buffer.byteLength(cur),
           0,
         );
-        console.log({
-          tcTxSizeByte: tcTxSizeByte,
-          feeRatePerByte: selectFee,
-          contractAddress,
-        });
         const estimatedFee = TC_SDK.estimateInscribeFee({
           tcTxSizeByte: tcTxSizeByte,
           feeRatePerByte: selectFee,

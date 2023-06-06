@@ -33,11 +33,6 @@ const useMintChunks: ContractOperationHook<
           provider,
           account,
         );
-        console.log({
-          tcTxSizeByte: Buffer.byteLength(chunks),
-          feeRatePerByte: selectFee,
-          contractAddress,
-        });
         const estimatedFee = TC_SDK.estimateInscribeFee({
           tcTxSizeByte: Buffer.byteLength(chunks),
           feeRatePerByte: selectFee,

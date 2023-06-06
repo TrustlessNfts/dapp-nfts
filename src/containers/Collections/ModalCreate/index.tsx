@@ -67,7 +67,6 @@ const ModalCreate = (props: Props) => {
     const obj = {
       image: await fileToBase64(file),
     };
-    console.log('json', JSON.stringify(obj));
     const chunks = Buffer.from(JSON.stringify(obj));
     const chunkItem = [chunks];
     return [chunkItem];

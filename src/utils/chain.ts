@@ -1,5 +1,6 @@
 import { SupportedChainId, TRUSTLESS_COMPUTER_CHAIN_INFO } from '@/constants/chains';
 import { IResourceChain } from '@/interfaces/chain';
+import logger from '@/services/logger';
 import Web3 from 'web3';
 
 const API_PATH = 'https://chainid.network/chains.json';
@@ -10,8 +11,7 @@ const getChainList = async (): Promise<Array<IResourceChain>> => {
     const data = await res.json();
     return [...data, TRUSTLESS_COMPUTER_CHAIN_INFO] as Array<IResourceChain>;
   } catch (err: unknown) {
-    console.log('Failed to get chain list');
-    console.log(err);
+    logger.error(err);
     return [TRUSTLESS_COMPUTER_CHAIN_INFO];
   }
 };

@@ -5,13 +5,11 @@ import { Modal } from 'react-bootstrap';
 import { StyledModalUpload, WrapInput, Title } from './TransferModal.styled';
 import Button from '@/components/Button';
 import useContractOperation from '@/hooks/contract-operations/useContractOperation';
-import toast from 'react-hot-toast';
 import { Formik } from 'formik';
 import useTransferERC721Token from '@/hooks/contract-operations/nft/useTransferERC721Token';
-import { CDN_URL, TC_WEB_URL } from '@/configs';
-import { showToastError } from '@/utils/toast';
-import { DappsTabs } from '@/enums/tabs';
-import { ERROR_CODE } from '@/constants/error';
+import { CDN_URL } from '@/configs';
+import { showToastError, showToastSuccess } from '@/utils/toast';
+import logger from '@/services/logger';
 
 type Props = {
   show: boolean;
@@ -58,22 +56,15 @@ const TransferModal = (props: Props) => {
         to: toAddress,
         contractAddress: contractAddress,
       });
-      toast.success('Transaction has been created. Please wait for few minutes.');
+      showToastSuccess({
+        message: 'Transaction has been created. Please wait for few minutes.'
+      });
       handleClose();
-    } catch (err) {
-      if ((err as Error).message === ERROR_CODE.PENDING) {
-        showToastError({
-          message:
-            'You have some pending transactions. Please complete all of them before moving on.',
-          url: `${TC_WEB_URL}/?tab=${DappsTabs.TRANSACTION}`,
-          linkText: 'Go to Wallet',
-        });
-      } else {
-        showToastError({
-          message: (err as Error).message,
-        });
-      }
-      console.log(err);
+    } catch (err: unknown) {
+      logger.error(err);
+      showToastError({
+        message: (err as Error).message,
+      });
     } finally {
       setIsProcessing(false);
     }
