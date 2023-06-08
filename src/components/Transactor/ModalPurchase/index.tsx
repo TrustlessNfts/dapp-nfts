@@ -23,7 +23,7 @@ import BigNumber from 'bignumber.js';
 interface IProps {
   show: boolean;
   handleClose: () => void;
-  inscription: IInscription;
+  inscription: IInscription | null;
 }
 
 const ModalPurchase = ({ show, handleClose, inscription }: IProps) => {
@@ -52,7 +52,7 @@ const ModalPurchase = ({ show, handleClose, inscription }: IProps) => {
     inscribeable: true,
   });
 
-  if (!inscription.listingForSales) return <></>;
+  if (!inscription?.listingForSales) return <></>;
 
   const listingInfo = inscription?.listingForSales[0];
 

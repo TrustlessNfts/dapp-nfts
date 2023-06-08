@@ -5,6 +5,7 @@ import { Wrapper } from './DataTable.styled';
 import { shortenAddress } from '@/utils';
 import { useRouter } from 'next/router';
 import { ROUTE_PATH } from '@/constants/route-path';
+import ImageWrapper from '@/components/ImageWrapper';
 
 interface IProps {
   collections: Array<ICollection>;
@@ -30,7 +31,7 @@ const DataTable: React.FC<IProps> = ({ collections }: IProps): React.ReactElemen
       render: {
         info: (
           <div className={'collection-info'}>
-            <img className='collection-img' src={thumbnail} alt={name} />
+            <ImageWrapper className='collection-img' src={thumbnail} alt={name} />
             <div className="main-info">
               <p className='collection-name'>{name}</p>
               <p className='collection-owner'>{shortenAddress(creator)}</p>

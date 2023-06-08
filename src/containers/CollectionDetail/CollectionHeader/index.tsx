@@ -1,137 +1,69 @@
-import IconSVG from '@/components/IconSVG';
-import NFTDisplayBox from '@/components/NFTDisplayBox';
-import { CDN_URL } from '@/configs';
+import React, {  } from 'react';
+import { Wrapper } from './CollectionHeader.styled';
+import ImageWrapper from '@/components/ImageWrapper';
+import { ICollection } from '@/interfaces/api/marketplace';
+import { shortenAddress } from '@/utils';
+import Link from 'next/link';
 import { TC_EXPLORER } from '@/constants/url';
-import { ICollection } from '@/interfaces/api/collection';
-import { getUserSelector } from '@/state/user/selector';
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { Container } from './CollectionHeader.styled';
 
-interface ICollectionHeader {
-  collection?: ICollection;
-  onClickEdit: () => void;
-  onClickMint: () => void;
-  onClickTransfer: () => void;
+interface IProps {
+  collection: ICollection | null;
 }
 
-const CollectionHeader = (props: ICollectionHeader) => {
-  const { collection, onClickEdit, onClickMint, onClickTransfer } = props;
-  const user = useSelector(getUserSelector);
-
-  const isOwner =
-    user?.walletAddress?.toLowerCase() === collection?.creator.toLowerCase();
+const CollectionHeader: React.FC<IProps> = ({collection}: IProps): React.ReactElement => {
+  if (!collection) {
+    return <></>;
+  }
 
   return (
-    <Container>
-      {collection && (
-        <div className="infor">
-          <div className="infor-left">
-            <NFTDisplayBox contentClass="image" thumbnail={collection?.thumbnail} />
-            <div className="infor-content">
-              <p className="title">{collection?.name}</p>
-              <p className="subTitle">{collection?.description}</p>
-            </div>
-          </div>
-          <div className="infor-right">
-            <div className="info-header">
-              <div className="social">
-                <a
-                  href={`${TC_EXPLORER}/address/${collection?.contract}`}
-                  target="_blank"
-                >
-                  <img src={`${CDN_URL}/icons/ic-tc-explorer-24x24.svg`} alt='ic-tc-explorer' />
-                </a>
-                {collection.social.website && (
-                  <a
-                    href={collection.social.website}
-                    target="_blank"
-                    className="link"
-                  >
-                    <IconSVG
-                      src={`${CDN_URL}/icons/ic_website_black.svg`}
-                      maxWidth="24px"
-                    />
-                  </a>
-                )}
-                {collection.social.discord && (
-                  <a
-                    href={collection.social.discord}
-                    target="_blank"
-                    className="link"
-                  >
-                    <IconSVG
-                      src={`${CDN_URL}/icons/ic_discord_black.svg`}
-                      maxWidth="24px"
-                    />
-                  </a>
-                )}
-                {collection.social.twitter && (
-                  <a
-                    href={collection.social.twitter}
-                    target="_blank"
-                    className="link"
-                  >
-                    <IconSVG
-                      src={`${CDN_URL}/icons/ic_twitter_black.svg`}
-                      maxWidth="24px"
-                    />
-                  </a>
-                )}
-              </div>
-              {isOwner && (
-                <div className="actionWrapper">
-                  <button className="editButton" onClick={onClickTransfer}>
-                    Transfer owner
-                  </button>
-                  <button className="editButton" onClick={onClickEdit}>
-                    Edit
-                  </button>
-                  <button className="mintButton" onClick={onClickMint}>
-                    Mint
-                  </button>
-                </div>
-              )}
-            </div>
-            <div>
-              <p className="owner">OWNER</p>
-              <a
-                href={`https://explorer.trustless.computer/address/${collection?.creator}`}
-                target="_blank"
-                className="link"
-              >
-                {collection?.creator}
-              </a>
-            </div>
-            <div>
-              <p className="owner">CONTRACT</p>
-              <a
-                href={`https://explorer.trustless.computer/address/${collection?.contract}`}
-                target="_blank"
-                className="link"
-              >
-                {collection?.contract}
-              </a>
-            </div>
-            <div className="row-bottom">
-              <div>
-                <p className="owner">COLLECTION NUMBER</p>
-                <p className="address">#{collection?.index}</p>
-              </div>
-              <div>
-                <p className="owner">ITEMS</p>
-                <p className="address">{collection?.totalItems}</p>
-              </div>
-              <div>
-                <p className="owner">BLOCK</p>
-                <p className="address">{collection?.deployedAtBlock}</p>
-              </div>
-            </div>
-          </div>
+    <Wrapper>
+      <div className="left-content">
+        <div className="thumbnail-wrapper">
+          <ImageWrapper className='collection-thumbnail' src={collection.thumbnail} alt={collection.name} />
         </div>
-      )}
-    </Container>
-  );
+        <div className="collection-info">
+          <h1 className='collection-name'>{collection.name}</h1>
+          <Link href={`${TC_EXPLORER}/address/${collection.creator}`} target='_blank' className='collection-owner'>{shortenAddress(collection.creator)}</Link>
+        </div>
+      </div>
+      <div className="right-content">
+        {collection.totalItems && (
+          <div className="trading-info-item">
+            <p className="info-label">
+              Items
+            </p>
+            <p className="info-value">
+              {collection.totalItems}
+            </p>
+          </div>
+        )}
+        {collection.totalSales && (
+          <div className="trading-info-item">
+            <p className="info-label">
+              Listed
+            </p>
+            <p className="info-value">
+              {collection.totalSales}
+            </p>
+          </div>
+        )}
+        {collection.volume && (
+          <div className="trading-info-item">
+            <p className="info-label">
+              Total sales
+            </p>
+            <p className="info-value">
+              {collection.volume.toLocaleString('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                maximumFractionDigits: 6,
+              })}
+            </p>
+          </div>
+        )}
+      </div>
+    </Wrapper>
+  )
 };
 
 export default React.memo(CollectionHeader);

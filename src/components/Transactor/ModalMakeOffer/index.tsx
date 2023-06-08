@@ -25,7 +25,7 @@ import Web3 from 'web3';
 interface IProps {
   show: boolean;
   handleClose: () => void;
-  inscription: IInscription;
+  inscription: IInscription | null;
 }
 
 interface IFormValues {

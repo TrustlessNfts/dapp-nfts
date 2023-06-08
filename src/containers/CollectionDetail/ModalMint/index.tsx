@@ -8,12 +8,12 @@ import {
   STATIC_IMAGE_EXTENSIONS,
   ZIP_EXTENSION,
 } from '@/constants/file';
-import DropFile from '@/containers/Collections/ModalCreate/DropFile';
+import DropFile from '@/containers/Home/ModalCreate/DropFile';
 import {
   Checkboxes,
   StyledModalUpload,
   Title,
-} from '@/containers/Collections/ModalCreate/ModalCreate.styled';
+} from '@/containers/Home/ModalCreate/ModalCreate.styled';
 import { AssetsContext } from '@/contexts/assets-context';
 import useMintBatchChunks, {
   IMintBatchChunksParams,

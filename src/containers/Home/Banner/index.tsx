@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Wrapper } from './Banner.styled';
 import Button from '@/components/Button';
 import Text from '@/components/Text';
-import ModalCreate from '@/containers/Collections/ModalCreate';
+import ModalCreate from '@/containers/Home/ModalCreate';
 import { ROUTE_PATH } from '@/constants/route-path';
 import { getIsAuthenticatedSelector } from '@/state/user/selector';
 import { showToastError } from '@/utils/toast';

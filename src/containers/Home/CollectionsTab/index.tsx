@@ -29,7 +29,7 @@ const CollectionsTab: React.FC = (): React.ReactElement => {
         name: query || searchTerm,
         limit: FETCH_LIMIT,
         sort: -1,
-        sort_by: 'volume'
+        sort_by: 'volume',
       });
       if (res.length < FETCH_LIMIT) {
         setHasMore(false);
