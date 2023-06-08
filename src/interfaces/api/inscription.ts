@@ -19,6 +19,7 @@ export interface IInscription {
   activities?: IInscriptionActivity[];
   listingForSales?: IInscriptionLisftingForSale[];
   makeOffers?: IInscriptionOffer[];
+  buyable: boolean;
 }
 
 export interface IInscriptionActivity {
