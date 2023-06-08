@@ -110,4 +110,18 @@ export const Styled = styled(Link)<{ isBNS?: boolean }>`
       border-radius: 2px;
     }
   }
+
+  .cta-btn {
+    padding: ${px2rem(4)} ${px2rem(20)};
+
+    .button-text {
+      font-size: ${px2rem(14)};
+    }
+
+    &:hover {
+      .button-text {
+        text-decoration: none;
+      }
+    }
+  }
 `;

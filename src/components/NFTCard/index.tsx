@@ -1,7 +1,10 @@
+import { IInscriptionLisftingForSale } from '@/interfaces/api/inscription';
+import { formatEthPrice, mappingERC20ToSymbol } from '@/utils/format';
+import Link from 'next/link';
+import Button from '../Button';
 import NFTDisplayBox from '../NFTDisplayBox';
 import { IMAGE_TYPE } from '../NFTDisplayBox/constant';
 import { Styled } from './NFTCard.styled';
-import React, {  } from 'react';
 
 export interface INFTCard {
   href: string;
@@ -15,6 +18,8 @@ export interface INFTCard {
   title3?: string;
   owner?: string;
   isBNS?: boolean;
+  isBuyable?: boolean;
+  listingInfo?: IInscriptionLisftingForSale | undefined;
 }
 
 const NFTCard = ({
@@ -28,6 +33,8 @@ const NFTCard = ({
   title1,
   title2,
   title3,
+  isBuyable = false,
+  listingInfo,
 }: INFTCard) => {
   return (
     <>
@@ -50,6 +57,14 @@ const NFTCard = ({
             {title1 && <p className="card-title1">{title1}</p>}
             {title2 && <p className="card-title2">{title2}</p>}
             {title3 && <p className="card-title3">{title3}</p>}
+            {isBuyable && listingInfo && (
+              <Button background={'white'} bg="white" className="cta-btn">
+                <Link href={href} className="button-text">
+                  Buy {formatEthPrice(listingInfo?.price)}{' '}
+                  {mappingERC20ToSymbol(listingInfo?.erc20Token)}
+                </Link>
+              </Button>
+            )}
           </div>
         </div>
       </Styled>

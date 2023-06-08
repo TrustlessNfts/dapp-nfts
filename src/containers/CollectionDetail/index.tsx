@@ -37,30 +37,33 @@ const Collection = () => {
       const data = await getCollectionDetail({ contractAddress: contract });
       setCollection(data);
     } catch (error) {
-      logger.error(error)
+      logger.error(error);
     }
   }, [setCollection, contract]);
 
-  const fetchInscriptions = useCallback(async (page = 1) => {
-    try {
-      setIsFetching(true);
-      const data = await getCollectionNfts({
-        contractAddress: contract,
-        page,
-        limit: LIMIT,
-        owner: owner || '',
-      });
-      if (page > 1) {
-        setInscriptions((prev) => [...prev, ...data]);
-      } else {
-        setInscriptions(data);
+  const fetchInscriptions = useCallback(
+    async (page = 1) => {
+      try {
+        setIsFetching(true);
+        const data = await getCollectionNfts({
+          contractAddress: contract,
+          page,
+          limit: LIMIT,
+          owner: owner || '',
+        });
+        if (page > 1) {
+          setInscriptions((prev) => [...prev, ...data]);
+        } else {
+          setInscriptions(data);
+        }
+      } catch (error) {
+        logger.error(error);
+      } finally {
+        setIsFetching(false);
       }
-    } catch (error) {
-      logger.error(error);
-    } finally {
-      setIsFetching(false);
-    }
-  }, [contract, setInscriptions, owner]);
+    },
+    [contract, setInscriptions, owner],
+  );
 
   const onLoadMoreCollections = () => {
     if (isFetching || inscriptions.length % LIMIT !== 0) return;
@@ -74,7 +77,7 @@ const Collection = () => {
     if (!contract) return;
     fetchCollectionDetail();
     fetchInscriptions();
-  }, [contract, fetchCollectionDetail, fetchInscriptions])
+  }, [contract, fetchCollectionDetail, fetchInscriptions]);
 
   return (
     <Container>
@@ -123,6 +126,10 @@ const Collection = () => {
                       }
                       title2={shortenAddress(item.owner, 4)}
                       owner={item.owner}
+                      isBuyable={item.buyable}
+                      listingInfo={
+                        item?.listingForSales ? item?.listingForSales[0] : undefined
+                      }
                     />
                   );
                 })}
