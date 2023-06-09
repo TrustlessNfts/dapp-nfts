@@ -38,19 +38,6 @@ const FeatureList = () => {
     },
   ];
 
-  //   const settings = {
-  //     // customPaging: function (i: number) {
-  //     //   return <a>{/* <img src={listThumbs[i].image} alt="" /> */}</a>;
-  //     // },
-  //     dots: true,
-  //     dotsClass: 'slick-dots slick-thumb',
-  //     infinite: true,
-  //     speed: 500,
-  //     effect: 'fade',
-  //     slidesToShow: 1,
-  //     slidesToScroll: 1,
-  //   };
-
   return (
     <StyledFeatureList>
       <Carousel autoPlay showArrows={false} showStatus={false} showThumbs={false}>
@@ -64,10 +51,6 @@ const FeatureList = () => {
                 <Text size="large" fontWeight="bold">
                   {item.name}
                 </Text>
-                {/* <Text>
-                  <span>Floor: </span>
-                  $123434
-                </Text> */}
               </div>
               <div>
                 <Button

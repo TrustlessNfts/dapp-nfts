@@ -2,8 +2,6 @@ import px2rem from '@/utils/px2rem';
 import styled from 'styled-components';
 
 export const StyledFeatureList = styled.div`
-  /* width: 100%; */
-
   flex: 1;
   position: relative;
 
@@ -13,9 +11,14 @@ export const StyledFeatureList = styled.div`
     margin-right: auto;
   }
 
+  .feature-item {
+    padding: ${px2rem(6)};
+  }
+
   .thumbnail-wrapper {
     margin-bottom: ${px2rem(24)};
   }
+
   .collection-info {
     display: flex;
     align-items: center;

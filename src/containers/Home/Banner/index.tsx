@@ -20,7 +20,7 @@ const Banner: React.FC = (): React.ReactElement => {
       showToastError({
         message: 'Please connect wallet to continue.',
       });
-      router.push(`${ROUTE_PATH.CONNECT_WALLET}?next=${window.location.href}`);
+      router.push(`${ROUTE_PATH.CONNECT_WALLET}`);
       return;
     }
     setShowModal(true);

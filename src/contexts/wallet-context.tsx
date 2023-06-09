@@ -88,7 +88,7 @@ export const WalletProvider: React.FC<PropsWithChildren> = ({ children }: PropsW
   const requestBtcAddress = useCallback(async (): Promise<void> => {
     await TC_SDK.actionRequest({
       method: TC_SDK.RequestMethod.account,
-      redirectURL: window.location.origin + window.location.pathname,
+      redirectURL: window.location.href,
       target: '_self',
       isMainnet: true,
     })
@@ -133,7 +133,7 @@ export const WalletProvider: React.FC<PropsWithChildren> = ({ children }: PropsW
   useEffect(() => {
     const handleAccountsChanged = async () => {
       await disconnect();
-      router.push(`${ROUTE_PATH.CONNECT_WALLET}?next=${ROUTE_PATH.HOME}`);
+      router.push(`${ROUTE_PATH.CONNECT_WALLET}`);
     };
 
     if (window.ethereum) {
@@ -143,6 +143,7 @@ export const WalletProvider: React.FC<PropsWithChildren> = ({ children }: PropsW
 
   useEffect(() => {
     const { tcAddress, tpAddress } = router.query as { tcAddress: string, tpAddress: string };
+    console.log(tcAddress)
     if (tpAddress) {
       dispatch(updateTaprootWallet(tpAddress));
       bitcoinStorage.setUserTaprootAddress(tcAddress, tpAddress);
