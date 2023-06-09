@@ -8,7 +8,7 @@ const Home: React.FC = (): React.ReactElement => {
       <Banner />
       <CollectionData />
     </div>
-  )
-}
+  );
+};
 
 export default Home;

@@ -56,3 +56,22 @@ export interface IResizeImagePayload {
 export interface IResizeImageResponse {
   file: string; // fileBase64
 }
+
+export interface ICompressFileAndGetSizePayload {
+  fileBase64: string;
+}
+
+export interface ICompressFileAndGetSizeResponse {
+  originalSize: number;
+  compressedSize: number;
+}
+
+export interface IGetFileChunkResponse {
+  id: string;
+  status: ChunkProcessStatus;
+  createdAt: string;
+  fileId: string;
+  chunkIndex: number;
+  chunkData: string;
+  txHash: string;
+}

@@ -27,31 +27,34 @@ const Banner: React.FC = (): React.ReactElement => {
 
   return (
     <Wrapper>
-      <h1 className='title'>
-        BRC-721 on Bitcoin
-      </h1>
-      <p className='description'>
-        BRC-721 is the standard for Non-Fungible Tokens (NFT) on Bitcoin. You can use it for collectible items, memberships, in-game items, and more.
-      </p>
-      <div className="upload-wrapper">
-        <Button
-          className="create-btn"
-          background={'linear-gradient(90deg, #9796f0,#fbc7d4)'}
-          onClick={handleOpenModal}
-        >
-          <Text
-            size="medium"
-            color="bg1"
-            className="button-text"
-            fontWeight="medium"
+      <div className="">
+        <h1 className="title">The complete Bitcoin NFTs platform</h1>
+        <p className="description">
+          BRC-721 is kind of NFT on Bitcoin chain.
+          <br />
+          Be the 1st ever to own a Bitcoin NFT now.
+        </p>
+        <div className="upload-wrapper">
+          <Button
+            className="create-btn"
+            background={'linear-gradient(90deg, #9796f0,#fbc7d4)'}
+            onClick={handleOpenModal}
           >
-            Create BRC-721
-          </Text>
-        </Button>
+            <Text
+              size="medium"
+              color="bg1"
+              className="button-text"
+              fontWeight="medium"
+            >
+              Create BRC-721
+            </Text>
+          </Button>
+        </div>
       </div>
+      <div className="feature-list"></div>
       <ModalCreate show={showModal} handleClose={() => setShowModal(false)} />
     </Wrapper>
-  )
-}
+  );
+};
 
 export default Banner;
