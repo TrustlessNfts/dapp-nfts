@@ -1,4 +1,5 @@
 import Button from '@/components/Button';
+import EstimatedFee from '@/components/EstimatedFee';
 import IconSVG from '@/components/IconSVG';
 import Text from '@/components/Text';
 import { CDN_URL } from '@/configs';
@@ -8,6 +9,7 @@ import {
   STATIC_IMAGE_EXTENSIONS,
   ZIP_EXTENSION,
 } from '@/constants/file';
+import web3Provider from '@/connection/custom-web3-provider';
 import DropFile from '@/containers/Home/ModalCreate/DropFile';
 import {
   Checkboxes,
@@ -31,13 +33,13 @@ import {
   unzipFile,
 } from '@/utils';
 import { showToastError } from '@/utils/toast';
-import { formatBTCPrice } from '@trustless-computer/dapp-core';
 import { Buffer } from 'buffer';
 import { Transaction } from 'ethers';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import toast from 'react-hot-toast';
 import * as TC_SDK from 'trustless-computer-sdk';
+import BigNumber from 'bignumber.js';
 
 type Props = {
   show: boolean;
@@ -51,29 +53,19 @@ enum UploadType {
   Zip = 1,
 }
 
-enum optionFees {
-  economy = 'Economy',
-  faster = 'Faster',
-  fastest = 'Fastest',
-}
-
 const ModalMint = (props: Props) => {
   const { show = false, handleClose, collection, onUpdateSuccess } = props;
   // const [isProcessing, _] = useState(false);
   const [uploadType, setUploadType] = useState(UploadType.Single);
   const [isMinting, setIsMinting] = useState(false);
-  const [selectFee, setSelectFee] = useState<number>(0);
-  const [activeFee, setActiveFee] = useState(optionFees.fastest);
+  const [estBTCFee, setEstBTCFee] = useState<string | null>(null);
+  const [estTCFee, setEstTCFee] = useState<string | null>(null);
 
-  // const [estBTCFee, setEstBTCFee] = useState('0');
-  const [estBTCFee, setEstBTCFee] = useState({
-    economy: '0',
-    faster: '0',
-    fastest: '0',
-  });
   const [file, setFile] = useState<File | null>(null);
-  // const [listFiles, setListFiles] = useState<Array<Array<Buffer>> | null>();
   const { feeRate } = useContext(AssetsContext);
+
+  const { estimateGas: estimateChunksGas } = useMintChunks();
+  // const { estimateGas: estimateBatchChunksGas } = useMintChunks();
 
   const { run: mintSingle } = useContractOperation<
     IMintChunksParams,
@@ -108,8 +100,9 @@ const ModalMint = (props: Props) => {
       const chunksSizeInKb = Buffer.byteLength(chunks) / 1000;
       if (chunksSizeInKb > BLOCK_CHAIN_FILE_LIMIT * 1000) {
         showToastError({
-          message: `File size error, maximum file size is ${BLOCK_CHAIN_FILE_LIMIT * 1000
-            }kb.`,
+          message: `File size error, maximum file size is ${
+            BLOCK_CHAIN_FILE_LIMIT * 1000
+          }kb.`,
         });
         return [];
       }
@@ -128,34 +121,60 @@ const ModalMint = (props: Props) => {
     return listOfChunks;
   };
 
-  const calculateEstFee = useCallback((fileSize: number) => {
-    const estimatedFastestFee = TC_SDK.estimateInscribeFee({
-      tcTxSizeByte: fileSize,
-      feeRatePerByte: feeRate.fastestFee,
-    });
-    const estimatedFasterFee = TC_SDK.estimateInscribeFee({
-      tcTxSizeByte: fileSize,
-      feeRatePerByte: feeRate.halfHourFee,
-    });
-    const estimatedEconomyFee = TC_SDK.estimateInscribeFee({
-      tcTxSizeByte: fileSize,
-      feeRatePerByte: feeRate.hourFee,
-    });
+  const calculateEstBtcFee = useCallback(
+    (fileSize: number) => {
+      const estimatedEconomyFee = TC_SDK.estimateInscribeFee({
+        tcTxSizeByte: fileSize,
+        feeRatePerByte: feeRate.hourFee,
+      });
 
-    setEstBTCFee({
-      fastest: estimatedFastestFee.totalFee.toString(),
-      faster: estimatedFasterFee.totalFee.toString(),
-      economy: estimatedEconomyFee.totalFee.toString(),
-    });
-  }, [feeRate, setEstBTCFee]);
+      setEstBTCFee(estimatedEconomyFee.totalFee.toString());
+    },
+    [feeRate, setEstBTCFee],
+  );
+
+  const calculateEstTcFee = useCallback(
+    async (fileSize: Buffer) => {
+      if (!estimateChunksGas) return;
+
+      setEstTCFee(null);
+      let payload: IMintChunksParams | IMintBatchChunksParams;
+      try {
+        // if (!fileSize) {
+        //   payload = {
+        //     name: preSubmitName,
+        //     listOfChunks: [],
+        //   };
+        // } else {
+        //   payload = {
+        //     name: preSubmitName,
+        //     listOfChunks: listFiles,
+        //   };
+        // }
+
+        payload = {
+          chunks: fileSize,
+          contractAddress: collection.contract,
+        };
+
+        const gasLimit = await estimateChunksGas(payload);
+        const gasPrice = await web3Provider.getGasPrice();
+        const gasLimitBN = new BigNumber(gasLimit);
+        const gasPriceBN = new BigNumber(gasPrice);
+        const tcGas = gasLimitBN.times(gasPriceBN);
+        logger.debug('TC Gas', tcGas.toString());
+        setEstTCFee(tcGas.toString());
+      } catch (err: unknown) {
+        logger.error(err);
+      }
+    },
+    [setEstTCFee, estimateChunksGas, collection.contract],
+  );
 
   const handleEstFee = useCallback(async (): Promise<void> => {
     if (!file) {
-      setEstBTCFee({
-        economy: '0',
-        faster: '0',
-        fastest: '0',
-      });
+      setEstBTCFee('0');
+      setEstTCFee('0');
       return;
     }
     const fileExt = getFileExtensionByFileName(file.name);
@@ -168,16 +187,18 @@ const ModalMint = (props: Props) => {
           )
           .reduce((prev, cur) => prev + cur, 0) || 0;
 
-      calculateEstFee(tcTxSizeBytes);
+      calculateEstBtcFee(tcTxSizeBytes);
+      calculateEstTcFee(tcTxSizeBytes);
     } else {
       const obj = {
         image: await fileToBase64(file),
       };
       const chunks = Buffer.from(JSON.stringify(obj));
 
-      calculateEstFee(Buffer.byteLength(chunks));
+      calculateEstBtcFee(Buffer.byteLength(chunks));
+      calculateEstTcFee(chunks);
     }
-  }, [calculateEstFee, file]);
+  }, [calculateEstBtcFee, file]);
 
   const handleMintSingle = async (file: File): Promise<void> => {
     if (!collection?.contract) {
@@ -196,14 +217,13 @@ const ModalMint = (props: Props) => {
       await mintSingle({
         contractAddress: collection.contract,
         chunks: chunks,
-        selectFee,
       });
       toast.success('Transaction has been created. Please wait for few minutes.');
       onUpdateSuccess();
     } catch (err: unknown) {
       logger.error(err);
       showToastError({
-        message: (err as Error).message
+        message: (err as Error).message,
       });
     } finally {
       setIsMinting(false);
@@ -226,7 +246,6 @@ const ModalMint = (props: Props) => {
         await mintBatch({
           contractAddress: collection.contract,
           listOfChunks: batch,
-          selectFee,
         });
       }
       toast.success('Transaction has been created. Please wait for few minutes.');
@@ -234,7 +253,7 @@ const ModalMint = (props: Props) => {
     } catch (err: unknown) {
       logger.error(err);
       showToastError({
-        message: (err as Error).message
+        message: (err as Error).message,
       });
     } finally {
       setIsMinting(false);
@@ -257,8 +276,9 @@ const ModalMint = (props: Props) => {
       const fileSizeInKb = file.size / 1000;
       if (fileSizeInKb > BLOCK_CHAIN_FILE_LIMIT * 1000) {
         showToastError({
-          message: `File size error, maximum file size is ${BLOCK_CHAIN_FILE_LIMIT * 1000
-            }kb.`,
+          message: `File size error, maximum file size is ${
+            BLOCK_CHAIN_FILE_LIMIT * 1000
+          }kb.`,
         });
         return;
       }
@@ -266,41 +286,6 @@ const ModalMint = (props: Props) => {
       await handleMintSingle(file);
     }
   };
-
-  const renderEstFee = ({
-    title,
-    estFee,
-    feeRate,
-  }: {
-    title: optionFees;
-    estFee: string;
-    feeRate: number;
-  }) => {
-    return (
-      <div
-        className={`est-fee-item ${activeFee === title ? 'active' : ''}`}
-        onClick={() => {
-          setSelectFee(feeRate);
-          setActiveFee(title);
-        }}
-      >
-        <div>
-          <Text fontWeight="medium" color="text2" size="regular">
-            {title}
-          </Text>
-          <Text color="border2" className="mb-10">
-            {feeRate} sats/vByte
-          </Text>
-          <p className="ext-price">
-            {formatBTCPrice(estFee)} <span>BTC</span>
-          </p>
-        </div>
-      </div>
-    );
-  };
-  useEffect(() => {
-    setSelectFee(feeRate.fastestFee);
-  }, [feeRate.fastestFee]);
 
   useEffect(() => {
     handleEstFee();
@@ -394,28 +379,8 @@ const ModalMint = (props: Props) => {
               {uploadType === UploadType.Zip && ' for each file in zip'} is 350KB.
             </li>
           </ul>
-          <div className="est-fee">
-            <Text size="regular" fontWeight="medium" color="bg1" className="mb-8">
-              Select the network fee
-            </Text>
-            <div className="est-fee-options">
-              {renderEstFee({
-                title: optionFees.economy,
-                estFee: estBTCFee.economy,
-                feeRate: feeRate.hourFee,
-              })}
-              {renderEstFee({
-                title: optionFees.faster,
-                estFee: estBTCFee.faster,
-                feeRate: feeRate.halfHourFee,
-              })}
-              {renderEstFee({
-                title: optionFees.fastest,
-                estFee: estBTCFee.fastest,
-                feeRate: feeRate.fastestFee,
-              })}
-            </div>
-          </div>
+          <EstimatedFee estimateBTCGas={estBTCFee} estimateTCGas={estTCFee} />
+
           <div className="confirm">
             <Button
               type="submit"
