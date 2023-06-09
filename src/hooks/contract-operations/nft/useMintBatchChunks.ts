@@ -58,7 +58,7 @@ const useMintBatchChunks: ContractOperationHook<
 
       return null;
     },
-    [account, provider, btcBalance],
+    [account, provider, btcBalance, estimateGas, feeRate.hourFee],
   );
 
   return {

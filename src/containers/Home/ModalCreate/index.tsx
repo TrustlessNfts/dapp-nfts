@@ -201,7 +201,7 @@ const ModalCreate = (props: Props) => {
     } catch (err: unknown) {
       logger.error(err);
     }
-  }, [file, setEstBTCFee, feeRate.hourFee, totalFileSize]);
+  }, [setEstBTCFee, feeRate.hourFee, totalFileSize]);
 
   const calculateEstTcFee = useCallback(async () => {
     if (!estimateGas) return;
