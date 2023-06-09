@@ -105,6 +105,7 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
     <>
       <Wrapper>
         <InfiniteScroll
+          className='disable-scrollbar'
           hasMore={hasMore}
           dataLength={nftList.length}
           next={fetchNFTList}
