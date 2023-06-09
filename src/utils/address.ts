@@ -18,3 +18,14 @@ export function shortenAddress(address: string, charsStart = 4, charsEnd?: numbe
 
   return `${address.substring(0, charsStart + 2)}...${address.substring(42 - (charsEnd || charsStart))}`;
 }
+
+export const getEndingOfAddress = (
+  address?: string,
+  length = 6
+): string => {
+  if (!address) return '-';
+  if (address.length <= length) {
+    return address;
+  }
+  return address.slice(-6);
+};

@@ -316,8 +316,6 @@ const StyledTableList = styled.div`
     .tableHead {
       text-transform: uppercase;
       background-color: #1e1e22;
-      border-top: 1px solid #353945;
-      border-bottom: 1px solid #353945;
 
       .tableHead_item {
         color: white;

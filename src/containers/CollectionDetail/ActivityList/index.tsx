@@ -1,19 +1,27 @@
 import Table from '@/components/Table';
 import { TokenActivityType } from '@/enums/transaction';
-import { shortenAddress } from '@/utils';
+import { getEndingOfAddress, shortenAddress } from '@/utils';
 import { formatEthPrice, mappingERC20ToSymbol } from '@/utils/format';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import logger from '@/services/logger';
 import { getCollectionActivityList } from '@/services/marketplace';
 import { useRouter } from 'next/router';
-import { ICollectionActivity } from '@/interfaces/api/marketplace';
+import { ICollection, ICollectionActivity } from '@/interfaces/api/marketplace';
 import { StyledActivityList, Wrapper } from './ActivityList.styled';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import BigNumber from 'bignumber.js';
+import { Spinner } from 'react-bootstrap';
+import { ROUTE_PATH } from '@/constants/route-path';
+import ImageWrapper from '@/components/ImageWrapper';
+
+interface IProps {
+  collection: ICollection | null;
+}
 
 const FETCH_LIMIT = 32;
 
-const ActivityList = () => {
+const ActivityList: React.FC<IProps> = ({collection}: IProps) => {
   const router = useRouter();
   const { contract } = router.query as {
     contract: string;
@@ -48,14 +56,28 @@ const ActivityList = () => {
       activity;
 
     const isMintActivity = userAAddress?.startsWith('0x000000');
+    const amountBN = new BigNumber(amount);
+    console.log(activity)
 
     return {
       id: offeringId,
       render: {
+        info: (
+          <div className='info-wrapper'>
+            <div className="thumbnail-wrapper">
+              <Link href={`${ROUTE_PATH.COLLECTION}/${activity.collectionContract}/token/${activity.tokenId}`}>
+                <ImageWrapper className='token-thumbnail' src={activity.thumbnail} alt={activity.tokenId} />
+              </Link>
+            </div>
+            <div className="token-info">
+              <Link href={`${ROUTE_PATH.COLLECTION}/${activity.collectionContract}/token/${activity.tokenId}`} className='token-id'>{`#${activity.tokenId}`}</Link>
+            </div>
+          </div>
+        ),
+
         price: (
           <div className={'activity-amount'}>
-            {amount > 0 ? `${formatEthPrice(amount)}` : '-'}
-            {amount > 0 && <span> {mappingERC20ToSymbol(erc20Address)}</span>}
+            {amountBN.isGreaterThan(0) ? `${formatEthPrice(amount)} ${mappingERC20ToSymbol(erc20Address)}` : '-'}
           </div>
         ),
         seller: (
@@ -65,7 +87,7 @@ const ActivityList = () => {
                 href={`https://explorer.trustless.computer/address/${userAAddress}`}
                 target="_blank"
               >
-                {shortenAddress(userAAddress)}
+                {getEndingOfAddress(userAAddress)}
               </Link>
               : (
                 <span>-</span>
@@ -79,7 +101,7 @@ const ActivityList = () => {
                 href={`https://explorer.trustless.computer/address/${userBAddress}`}
                 target="_blank"
               >
-                {shortenAddress(userBAddress)}
+                {getEndingOfAddress(userBAddress)}
               </Link>
               : (
                 <span>-</span>
@@ -107,11 +129,19 @@ const ActivityList = () => {
         dataLength={activities.length}
         next={fetchActivities}
         hasMore={hasMore}
-        loader={<></>}
+        height={500}
+        style={{overflow: 'hidden auto'}}
+        loader={loading ?
+          (
+            <div className="loading-wrapper">
+              <Spinner variant='light' />
+            </div>
+          ) : <></>
+        }
       >
         <StyledActivityList>
           <Table
-            tableHead={['price', 'from', 'to', 'event']}
+            tableHead={[`${(collection && collection.totalSales > 0) ? `${collection.totalSales} listed` : 'Items' }`,'price', 'from', 'to', 'event']}
             data={tableData}
             className="activity-table"
           />

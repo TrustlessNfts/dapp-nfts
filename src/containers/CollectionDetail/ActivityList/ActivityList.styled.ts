@@ -5,11 +5,13 @@ import styled from 'styled-components';
 export const StyledActivityList = styled(StyledTableList)`
   .table {
     .tableHead {
+      border: none;
+      
       .tableHead_item {
-        padding: ${px2rem(12)} ${px2rem(24)};
+        padding: ${px2rem(12)};
         font-weight: 500;
-        font-size: ${px2rem(12)};
-        line-height: ${px2rem(22)};
+        font-size: ${px2rem(10)};
+        line-height: 1.2;
         text-transform: uppercase;
         color: #FFFFFF;
         vertical-align: middle;
@@ -18,10 +20,10 @@ export const StyledActivityList = styled(StyledTableList)`
 
     .tableData {
       .tableData_item {
-        padding: ${px2rem(12)} ${px2rem(24)};
+        padding: ${px2rem(12)};
         font-weight: 500;
-        font-size: ${px2rem(12)};
-        line-height: ${px2rem(22)};
+        font-size: ${px2rem(10)};
+        line-height: 1.2;
         text-transform: uppercase;
         color: #FFFFFF;
         vertical-align: middle;
@@ -41,8 +43,6 @@ export const StyledActivityList = styled(StyledTableList)`
 `;
 
 export const Wrapper = styled.div`
-  border-top: 1px solid #353945;
-
   .table-header {
     display: flex;
     align-items: center;
@@ -56,5 +56,18 @@ export const Wrapper = styled.div`
     color: #fff;
     text-transform: uppercase;
     padding: ${px2rem(20)} ${px2rem(24)};
+  }
+
+  .info-wrapper {
+    display: flex;
+    align-items: center;
+    gap: ${px2rem(12)};
+  }
+
+  .token-thumbnail {
+    width: ${px2rem(40)};
+    height: ${px2rem(40)};
+    border-radius: 4px;
+    object-fit: contain;
   }
 `;

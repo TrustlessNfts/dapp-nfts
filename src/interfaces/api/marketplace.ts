@@ -28,6 +28,7 @@ export interface ICollection {
   uniqueOwners: number;
   floorPrice: number;
   volume: number;
+  description: string;
 }
 
 export interface ITokenSaleInfo {
@@ -99,9 +100,10 @@ export interface ICollectionActivity {
   amount: string;
   erc20Address: string;
   time: string;
-  inscriptionId: string;
+  tokenId: string;
   collectionContract: string;
   offeringId: string;
   blockNumber: number;
   txHash: string;
+  thumbnail: string;
 }

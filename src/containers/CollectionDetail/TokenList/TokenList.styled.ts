@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import px2rem from '@/utils/px2rem';
 
 export const Wrapper = styled.div`
-  max-height: 800px;
+  max-height: 500px;
   overflow: auto;
 
   .loading-wrapper {
@@ -14,14 +14,18 @@ export const Wrapper = styled.div`
   .data-table {
     width: 100%;
 
-    th:first-child,
-    td:first-child {
-      width: calc(600 / 2000  * 100%);
+    th:nth-child(1),
+    th:nth-child(2),
+    td:nth-child(1),
+    td:nth-child(2) {
+      width: calc(400 / 2000  * 100%);
     }
 
-    th:not(:first-child),
-    td:not(:first-child) {
-      width: calc(350 / 2000  * 100%);
+    th:nth-child(3),
+    th:nth-child(4),
+    td:nth-child(3),
+    td:nth-child(4) {
+      width: calc(600 / 2000  * 100%);
     }
 
 
@@ -34,7 +38,6 @@ export const Wrapper = styled.div`
 
     thead {
       background: #1E1E22;
-      border-bottom: 1px solid #353945;
 
       th {
         padding: ${px2rem(12)} ${px2rem(24)};
@@ -63,10 +66,17 @@ export const Wrapper = styled.div`
       align-items: center;
       gap: ${px2rem(16)};
 
+      .thumbnail-wrapper {
+        width: ${px2rem(60)};
+        height: ${px2rem(60)};
+        display: inline-block;
+      }
+
       .token-thumbnail {
         width: ${px2rem(60)};
         height: ${px2rem(60)};
         object-fit: contain;
+        border-radius: 4px;
       }
 
       .token-id {

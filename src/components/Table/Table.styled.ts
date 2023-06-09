@@ -23,8 +23,6 @@ export const StyledTable = styled.div`
         font-weight: 500;
         line-height: ${px2rem(24)};
         color: #fff;
-        position: sticky;
-        top: 0;
         z-index: 10;
         font-size: 14px;
         background: #1E1E22;

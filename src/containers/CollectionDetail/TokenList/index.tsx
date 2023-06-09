@@ -71,21 +71,17 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
   }
 
   const fetchCollectionInfo = async (p?: number): Promise<void> => {
-    console.log('fuck', collection);
 
     if (!collection) return;
 
     try {
       setLoading(true);
       const page = p || (Math.floor(nftList.length / FETCH_LIMIT) + 1);
-      console.log('page', page);
       const res = await getCollectionNFTList({
         contract_address: collection.contract,
         page: page,
         limit: FETCH_LIMIT,
       });
-
-      console.log('api', res);
 
       if (page === 1) {
         setNftList(res);
@@ -104,8 +100,6 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
   }, []);
 
   const hasMore = !!collection && (nftList.length < collection.totalItems);
-  console.log('hasMore', hasMore);
-  console.log('nftList length', nftList.length);
 
   return (
     <>
@@ -114,7 +108,7 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
           hasMore={hasMore}
           dataLength={nftList.length}
           next={fetchCollectionInfo}
-          height={800}
+          height={500}
           loader={loading ?
             (
               <div className="loading-wrapper">
@@ -152,7 +146,9 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
                       <td className='token-info'>
                         <div className="token-info-wrapper">
                           <div className="thumbnail-wrapper">
-                            <ImageWrapper className='token-thumbnail' src={token.image} alt={collection?.name} />
+                            <Link href={`${ROUTE_PATH.COLLECTION}/${token.collectionAddress}/token/${token.tokenId}`}>
+                              <ImageWrapper className='token-thumbnail' src={token.image} alt={collection?.name} />
+                            </Link>
                           </div>
                           <div className="token-info">
                             <Link href={`${ROUTE_PATH.COLLECTION}/${token.collectionAddress}/token/${token.tokenId}`} className='token-id'>{`#${token.tokenId}`}</Link>

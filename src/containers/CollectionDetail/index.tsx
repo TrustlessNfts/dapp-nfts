@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Container } from './Collection.styled';
 import CollectionHeader from './CollectionHeader';
-import CollectionTabInfo from './CollectionTabInfo';
+import CollectionTabNFT from './CollectionTabNFT';
 import { ICollection } from '@/interfaces/api/marketplace';
 import logger from '@/services/logger';
 import { getCollectionDetail } from '@/services/marketplace';
 import { useRouter } from 'next/router';
 import ActivityList from './ActivityList';
+import CollectionTabInfo from './CollectionTabInfo';
 
 const CollectionDetail = () => {
   const router = useRouter();
@@ -36,11 +37,14 @@ const CollectionDetail = () => {
         <CollectionHeader collection={collection} />
       </div>
       <div className="collection-trading-info-wrapper">
-        <div className="item-list-wrapper">
+        <div className="item-info-wrapper">
           <CollectionTabInfo collection={collection} />
         </div>
+        <div className="item-list-wrapper">
+          <CollectionTabNFT collection={collection} />
+        </div>
         <div className="item-activities-wrapper">
-          <ActivityList />
+          <ActivityList collection={collection} />
         </div>
       </div>
     </Container>
