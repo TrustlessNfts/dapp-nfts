@@ -2,9 +2,6 @@ import React, {  } from 'react';
 import { Wrapper } from './CollectionHeader.styled';
 import ImageWrapper from '@/components/ImageWrapper';
 import { ICollection } from '@/interfaces/api/marketplace';
-import { shortenAddress } from '@/utils';
-import Link from 'next/link';
-import { TC_EXPLORER } from '@/constants/url';
 
 interface IProps {
   collection: ICollection | null;
@@ -47,10 +44,24 @@ const CollectionHeader: React.FC<IProps> = ({collection}: IProps): React.ReactEl
             </p>
           </div>
         )}
+        {collection.floorPrice && (
+          <div className="trading-info-item">
+            <p className="info-label">
+              Floor price
+            </p>
+            <p className="info-value">
+              {collection.floorPrice.toLocaleString('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                maximumFractionDigits: 6,
+              })}
+            </p>
+          </div>
+        )}
         {collection.volume && (
           <div className="trading-info-item">
             <p className="info-label">
-              Total sales
+              Total volume
             </p>
             <p className="info-value">
               {collection.volume.toLocaleString('en-US', {

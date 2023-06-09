@@ -2,7 +2,6 @@ import React from "react";
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import { Wrapper } from "./CollectionTabInfo.styled";
-import TokenList from "../TokenList";
 import { ICollection } from "@/interfaces/api/marketplace";
 import CollectionDescription from "../CollectionDescription";
 

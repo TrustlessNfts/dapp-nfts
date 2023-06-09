@@ -5,7 +5,9 @@ export const Wrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: ${px2rem(24)};
+  padding-top: ${px2rem(40)};
+  padding-bottom: ${px2rem(40)};
+  border-bottom: 1px solid #353945;
 
   .left-content {
     display: flex;

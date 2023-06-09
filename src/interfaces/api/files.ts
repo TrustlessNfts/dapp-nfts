@@ -68,7 +68,7 @@ export interface ICompressFileAndGetSizeResponse {
 
 export interface IGetFileChunkResponse {
   id: string;
-  status: ChunkProcessStatus;
+  status: number;
   createdAt: string;
   fileId: string;
   chunkIndex: number;

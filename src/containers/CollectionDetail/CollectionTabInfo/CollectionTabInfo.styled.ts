@@ -19,7 +19,6 @@ export const Wrapper = styled.div`
       &.active {
         background: none;
         opacity: 1;
-        /* border-bottom: 1px solid #fff; */
       }
 
       &:hover {

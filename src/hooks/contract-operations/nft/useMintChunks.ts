@@ -1,14 +1,13 @@
 import ERC721ABIJson from '@/abis/erc721.json';
 import { AssetsContext } from '@/contexts/assets-context';
 import { TransactionEventType } from '@/enums/transaction';
-import { useContract } from '@/hooks/useContract';
 import { ContractOperationHook, DAppType } from '@/interfaces/contract-operation';
 import logger from '@/services/logger';
 import { getContract } from '@/utils';
 import { formatBTCPrice } from '@/utils/format';
 import { useWeb3React } from '@web3-react/core';
 import BigNumber from 'bignumber.js';
-import { Transaction, ContractFactory } from 'ethers';
+import { Transaction } from 'ethers';
 import { useCallback, useContext } from 'react';
 import * as TC_SDK from 'trustless-computer-sdk';
 
@@ -35,25 +34,12 @@ const useMintChunks: ContractOperationHook<
           provider,
           account,
         );
-        const byteCode = ERC721ABIJson.bytecode;
-
-        const factory = new ContractFactory(
-          ERC721ABIJson.abi,
-          byteCode,
-          provider.getSigner(),
+        const gasLimit = await contract.estimateGas.mintChunks(
+          account,
+          [chunks],
         );
-
-        // const gasLimit = await factory.getDeployTransaction(account, chunks)
-        //   .gasLimit;
-
-        const estimatedGas = await factory.signer.estimateGas(
-          contract.connect(provider.getSigner()).mintChunks(account, [chunks]),
-        );
-        console.log('🚀 ~ estimatedGas:', estimatedGas);
-
-        // const gasLimit = await contract.estimateGas.mintChunks(account, [chunks]);
-        const gasLimitBN = new BigNumber(estimatedGas.toString());
-        const gasBuffer = gasLimitBN.decimalPlaces(0);
+        const gasLimitBN = new BigNumber(gasLimit.toString());
+        const gasBuffer = gasLimitBN.times(1.1).decimalPlaces(0);
         logger.debug('useMintChunks estimate gas', gasBuffer.toString());
         return gasBuffer.toString();
       }
@@ -77,19 +63,21 @@ const useMintChunks: ContractOperationHook<
           feeRatePerByte: feeRate.hourFee,
         });
         const balanceInBN = new BigNumber(btcBalance);
-        // if (balanceInBN.isLessThan(estimatedFee.totalFee)) {
-        //   throw Error(
-        //     `Insufficient BTC balance. Please top up at least ${formatBTCPrice(
-        //       estimatedFee.totalFee.toString(),
-        //     )} BTC.`,
-        //   );
-        // }
+        if (balanceInBN.isLessThan(estimatedFee.totalFee)) {
+          throw Error(
+            `Insufficient BTC balance. Please top up at least ${formatBTCPrice(
+              estimatedFee.totalFee.toString(),
+            )} BTC.`,
+          );
+        }
+        const gasLimit = await estimateGas(params);
+        logger.debug('gasLimit', gasLimit);
         const transaction = await contract.connect(provider.getSigner()).mintChunks(
           account,
           [chunks],
-          //   {
-          //   gasLimit: await estimateGas(params),
-          // }
+          {
+            gasLimit,
+          }
         );
 
         return transaction;

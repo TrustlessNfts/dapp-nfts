@@ -7,7 +7,7 @@ import {
   DeployContractResponse,
 } from '@/interfaces/contract-operation';
 import logger from '@/services/logger';
-import { formatEthPrice } from '@/utils/format';
+import { formatBTCPrice } from '@/utils/format';
 import { useWeb3React } from '@web3-react/core';
 import BigNumber from 'bignumber.js';
 import { ContractFactory } from 'ethers';
@@ -37,18 +37,9 @@ const useCreateNFTCollection: ContractOperationHook<
           byteCode,
           provider.getSigner(),
         );
-        // const gasLimit = await factory.getDeployTransaction(name, listOfChunks)
-        //   .gasLimit;
-        // console.log('🚀 ~ gasLimit:', gasLimit);
         const estimatedGas = await factory.signer.estimateGas(
           factory.getDeployTransaction(name, listOfChunks),
         );
-        console.log('🚀 ~ estimatedGas:', formatEthPrice(estimatedGas.toString()));
-
-        // if (!gasLimit) {
-        //   return '500000';
-        // }
-
         const gasLimitBN = new BigNumber(estimatedGas.toString());
         const gasBuffer = gasLimitBN.decimalPlaces(0);
         logger.debug('useCreateNFTCollection estimate gas', gasBuffer.toString());
@@ -78,14 +69,13 @@ const useCreateNFTCollection: ContractOperationHook<
       });
 
       const balanceInBN = new BigNumber(btcBalance);
-      // if (balanceInBN.isLessThan(estimatedFee.totalFee)) {
-      //   // throw Error(ERROR_CODE.INSUFFICIENT_BALANCE);
-      //   throw Error(
-      //     `Insufficient BTC balance. Please top up at least ${formatBTCPrice(
-      //       estimatedFee.totalFee.toString(),
-      //     )} BTC.`,
-      //   );
-      // }
+      if (balanceInBN.isLessThan(estimatedFee.totalFee)) {
+        throw Error(
+          `Insufficient BTC balance. Please top up at least ${formatBTCPrice(
+            estimatedFee.totalFee.toString(),
+          )} BTC.`,
+        );
+      }
 
       const factory = new ContractFactory(
         ERC721ABIJson.abi,

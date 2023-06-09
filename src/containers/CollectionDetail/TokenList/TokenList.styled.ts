@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import px2rem from '@/utils/px2rem';
 
 export const Wrapper = styled.div`
-  max-height: 500px;
+  max-height: 600px;
   overflow: auto;
 
   .loading-wrapper {
@@ -38,9 +38,12 @@ export const Wrapper = styled.div`
 
     thead {
       background: #1E1E22;
+      z-index: 2;
+      position: sticky;
+      top: 0;
 
       th {
-        padding: ${px2rem(12)} ${px2rem(24)};
+        padding: ${px2rem(12)};
         font-weight: 500;
         font-size: ${px2rem(12)};
         line-height: ${px2rem(22)};
@@ -52,7 +55,7 @@ export const Wrapper = styled.div`
 
     tbody {
       td {
-        padding: ${px2rem(12)} ${px2rem(24)};
+        padding: ${px2rem(12)};
         font-weight: 500;
         font-size: ${px2rem(12)};
         line-height: ${px2rem(22)};
@@ -64,7 +67,7 @@ export const Wrapper = styled.div`
     .token-info-wrapper {
       display: flex;
       align-items: center;
-      gap: ${px2rem(16)};
+      gap: ${px2rem(14)};
 
       .thumbnail-wrapper {
         width: ${px2rem(60)};
@@ -81,7 +84,7 @@ export const Wrapper = styled.div`
 
       .token-id {
         font-weight: 500;
-        font-size: ${px2rem(16)};
+        font-size: ${px2rem(14)};
         line-height: ${px2rem(28)};
         letter-spacing: -0.01em;
         color: #FFFFFF;
@@ -90,7 +93,7 @@ export const Wrapper = styled.div`
 
     .token-owner-link {
       font-weight: 500;
-      font-size: ${px2rem(16)};
+      font-size: ${px2rem(14)};
       line-height: ${px2rem(28)};
       letter-spacing: -0.01em;
       color: rgba(255, 255, 255, 0.7);
@@ -105,6 +108,15 @@ export const Wrapper = styled.div`
       font-size: ${px2rem(14)};
       line-height: ${px2rem(26)};
       color: #1C1C1C;
+      display: inline-flex;
+      align-items: center;
+      gap: ${px2rem(8)};
+
+      .token-icon {
+        width: ${px2rem(20)};
+        height: ${px2rem(20)};
+        border-radius: 50%;
+      }
     }
 
     .make-offer-btn {

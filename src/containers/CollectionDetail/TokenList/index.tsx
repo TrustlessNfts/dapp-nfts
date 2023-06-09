@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Wrapper } from './TokenList.styled';
 import { getCollectionNFTList } from '@/services/marketplace';
 import logger from '@/services/logger';
@@ -11,7 +11,7 @@ import ImageWrapper from '@/components/ImageWrapper';
 import { TC_EXPLORER } from '@/constants/url';
 import { shortenAddress } from '@trustless-computer/dapp-core';
 import Link from 'next/link';
-import { formatEthPrice, mappingERC20ToSymbol } from '@/utils/format';
+import { formatEthPrice, mappingERC20ToIcon } from '@/utils/format';
 import ModalPurchase from '@/components/Transactor/ModalPurchase';
 import ModalMakeOffer from '@/components/Transactor/ModalMakeOffer';
 import { IInscription } from '@/interfaces/api/inscription';
@@ -71,7 +71,6 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
   }
 
   const fetchCollectionInfo = async (p?: number): Promise<void> => {
-
     if (!collection) return;
 
     try {
@@ -108,7 +107,8 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
           hasMore={hasMore}
           dataLength={nftList.length}
           next={fetchCollectionInfo}
-          height={500}
+          height={600}
+          style={{ overflow: 'hidden auto' }}
           loader={loading ?
             (
               <div className="loading-wrapper">
@@ -161,7 +161,8 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
                       <td className='buy-now'>
                         {(token.buyable && token.priceErc20.price && token.priceErc20.erc20Token && token.priceErc20.offeringId && user?.walletAddress?.toLowerCase() !== token.owner.toLowerCase()) && (
                           <button className='purchase-btn' onClick={() => handleOpenPurchase(token)}>
-                            {`${formatEthPrice(token.priceErc20.price)} ${mappingERC20ToSymbol(token.priceErc20.erc20Token)}`}
+                            <span>{`${formatEthPrice(token.priceErc20.price)}`}</span>
+                            <img className='token-icon' src={mappingERC20ToIcon(token.priceErc20.erc20Token)} alt="coin-ic" />
                           </button>
                         )}
                       </td>

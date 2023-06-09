@@ -2,10 +2,11 @@ import styled from 'styled-components';
 import px2rem from '@/utils/px2rem';
 
 export const Wrapper = styled.div`
+  padding-left: ${px2rem(24)};
+  padding-right: ${px2rem(24)};
+
   .tabs {
     border-bottom: none;
-    padding-left: ${px2rem(24)};
-    padding-right: ${px2rem(24)};
 
     .nav-link {
       font-weight: 500;
@@ -21,7 +22,7 @@ export const Wrapper = styled.div`
       &.active {
         background: none;
         opacity: 1;
-        border-bottom: 1px solid #fff;
+        border-bottom: 2px solid #fff;
       }
 
       &:hover {

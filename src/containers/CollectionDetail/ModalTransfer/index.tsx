@@ -41,8 +41,6 @@ const ModalTransfer = (props: Props) => {
   });
   const { dAppType, operationName } = useTransferERC721Collection();
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
-  const [estBTCFee, setEstBTCFee] = useState<string | null>(null);
-  const [estTCFee, setEstTCFee] = useState<string | null>(null);
 
   const validateForm = (values: IFormValue): Record<string, string> => {
     const errors: Record<string, string> = {};
@@ -141,10 +139,7 @@ const ModalTransfer = (props: Props) => {
                   <p className="error">{errors.receiverAddress}</p>
                 )}
               </WrapInput>
-              <EstimatedFee
-                estimateBTCGas={estBTCFee}
-                estimateTCGas={estTCFee}
-              ></EstimatedFee>
+              <EstimatedFee />
               <Button
                 type="submit"
                 bg="linear-gradient(90deg, #9796f0,#fbc7d4)"

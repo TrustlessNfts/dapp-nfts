@@ -2,6 +2,7 @@ import { WETH_ADDRESS, WBTC_ADDRESS } from '@/constants/marketplace';
 import { ROOT_ADDRESS } from '@/constants/common';
 import Web3 from 'web3';
 import BigNumber from 'bignumber.js';
+import { CDN_URL } from '@/configs';
 
 export const exponentialToDecimal = (exponential: number): string => {
   let decimal = exponential.toString().toLowerCase();
@@ -12,9 +13,9 @@ export const exponentialToDecimal = (exponential: number): string => {
       let i = 0;
       i <
       +exponentialSplitted[1] -
-        (exponentialSplitted[0].includes('.')
-          ? exponentialSplitted[0].split('.')[1].length
-          : 0);
+      (exponentialSplitted[0].includes('.')
+        ? exponentialSplitted[0].split('.')[1].length
+        : 0);
       i++
     ) {
       postfix += '0';
@@ -122,5 +123,18 @@ export const mappingERC20ToSymbol = (erc20Address: string) => {
       return 'WBTC';
     default:
       return 'TC';
+  }
+};
+
+export const mappingERC20ToIcon = (erc20Address: string) => {
+  switch (erc20Address.toLowerCase()) {
+    case ROOT_ADDRESS.toLowerCase():
+      return `${CDN_URL}/icons/tc-ic.svg`;
+    case WETH_ADDRESS.toLowerCase():
+      return `${CDN_URL}/icons/ic-eth-24.svg`;
+    case WBTC_ADDRESS.toLowerCase():
+      return `${CDN_URL}/icons/ic-btc-24.svg`;
+    default:
+      return `${CDN_URL}/icons/tc-ic.svg`;
   }
 };

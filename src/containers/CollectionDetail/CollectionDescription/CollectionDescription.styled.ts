@@ -42,7 +42,6 @@ export const Wrapper = styled.div`
     align-items: center;
     justify-content: space-between;
     margin-bottom: ${px2rem(32)};
-    border-bottom: 1px solid #353945;
   }
 
   .section-title {
@@ -53,6 +52,7 @@ export const Wrapper = styled.div`
     text-transform: uppercase;
     padding: ${px2rem(20)} 0;
     border-bottom: 1px solid #fff;
+    display: inline-block;
   }
 
   .edit-btn {

@@ -55,18 +55,13 @@ enum UploadType {
 
 const ModalMint = (props: Props) => {
   const { show = false, handleClose, collection, onUpdateSuccess } = props;
-  // const [isProcessing, _] = useState(false);
   const [uploadType, setUploadType] = useState(UploadType.Single);
   const [isMinting, setIsMinting] = useState(false);
   const [estBTCFee, setEstBTCFee] = useState<string | null>(null);
   const [estTCFee, setEstTCFee] = useState<string | null>(null);
-
   const [file, setFile] = useState<File | null>(null);
   const { feeRate } = useContext(AssetsContext);
-
   const { estimateGas: estimateChunksGas } = useMintChunks();
-  // const { estimateGas: estimateBatchChunksGas } = useMintChunks();
-
   const { run: mintSingle } = useContractOperation<
     IMintChunksParams,
     Transaction | null
@@ -100,9 +95,8 @@ const ModalMint = (props: Props) => {
       const chunksSizeInKb = Buffer.byteLength(chunks) / 1000;
       if (chunksSizeInKb > BLOCK_CHAIN_FILE_LIMIT * 1000) {
         showToastError({
-          message: `File size error, maximum file size is ${
-            BLOCK_CHAIN_FILE_LIMIT * 1000
-          }kb.`,
+          message: `File size error, maximum file size is ${BLOCK_CHAIN_FILE_LIMIT * 1000
+            }kb.`,
         });
         return [];
       }
@@ -133,27 +127,15 @@ const ModalMint = (props: Props) => {
     [feeRate, setEstBTCFee],
   );
 
-  const calculateEstTcFee = useCallback(
-    async (fileSize: Buffer) => {
-      if (!estimateChunksGas) return;
+  const calculateEstTcFeeMintSingle = useCallback(
+    async (fileBuffer: Buffer) => {
+      if (!estimateChunksGas) return '0';
 
       setEstTCFee(null);
       let payload: IMintChunksParams | IMintBatchChunksParams;
       try {
-        // if (!fileSize) {
-        //   payload = {
-        //     name: preSubmitName,
-        //     listOfChunks: [],
-        //   };
-        // } else {
-        //   payload = {
-        //     name: preSubmitName,
-        //     listOfChunks: listFiles,
-        //   };
-        // }
-
         payload = {
-          chunks: fileSize,
+          chunks: fileBuffer,
           contractAddress: collection.contract,
         };
 
@@ -164,12 +146,18 @@ const ModalMint = (props: Props) => {
         const tcGas = gasLimitBN.times(gasPriceBN);
         logger.debug('TC Gas', tcGas.toString());
         setEstTCFee(tcGas.toString());
+        return tcGas.toString()
       } catch (err: unknown) {
         logger.error(err);
+        return '0';
       }
     },
     [setEstTCFee, estimateChunksGas, collection.contract],
   );
+
+  // const calculateEstTcFeeMintBatch = useCallback((async (fileBuffer: Buffer) => {
+
+  // }, []);
 
   const handleEstFee = useCallback(async (): Promise<void> => {
     if (!file) {
@@ -180,6 +168,7 @@ const ModalMint = (props: Props) => {
     const fileExt = getFileExtensionByFileName(file.name);
     if (fileExt === ZIP_EXTENSION) {
       const listOfChunks = await getBatchFileList(file);
+      // const chunks = listOfChunks.map((chunk) => Buffer.from(JSON.stringify(chunk)));
       const tcTxSizeBytes =
         listOfChunks
           ?.map((chunk) =>
@@ -188,7 +177,7 @@ const ModalMint = (props: Props) => {
           .reduce((prev, cur) => prev + cur, 0) || 0;
 
       calculateEstBtcFee(tcTxSizeBytes);
-      calculateEstTcFee(tcTxSizeBytes);
+      // calculateEstTcFeeMintSingle(chunks);
     } else {
       const obj = {
         image: await fileToBase64(file),
@@ -196,7 +185,7 @@ const ModalMint = (props: Props) => {
       const chunks = Buffer.from(JSON.stringify(obj));
 
       calculateEstBtcFee(Buffer.byteLength(chunks));
-      calculateEstTcFee(chunks);
+      calculateEstTcFeeMintSingle(chunks);
     }
   }, [calculateEstBtcFee, file]);
 
@@ -276,9 +265,8 @@ const ModalMint = (props: Props) => {
       const fileSizeInKb = file.size / 1000;
       if (fileSizeInKb > BLOCK_CHAIN_FILE_LIMIT * 1000) {
         showToastError({
-          message: `File size error, maximum file size is ${
-            BLOCK_CHAIN_FILE_LIMIT * 1000
-          }kb.`,
+          message: `File size error, maximum file size is ${BLOCK_CHAIN_FILE_LIMIT * 1000
+            }kb.`,
         });
         return;
       }

@@ -11,6 +11,8 @@ import { TwitterShareButton, TwitterIcon } from 'react-share';
 import { shortenAddress } from '@/utils';
 import Link from 'next/link';
 import { TC_EXPLORER } from '@/constants/url';
+import { useSelector } from 'react-redux';
+import { getUserSelector } from '@/state/user/selector';
 
 interface IProps {
   collection: ICollection | null;
@@ -18,9 +20,12 @@ interface IProps {
 
 const CollectionDescription: React.FC<IProps> = ({ collection }: IProps): React.ReactElement => {
   const description = collection?.description || "";
+  const user = useSelector(getUserSelector);
   const [showModalEdit, setShowModalEdit] = useState(false);
   const [showModalMint, setShowModalMint] = useState(false);
   const [showModalTransfer, setShowModalTransfer] = useState(false);
+  const isOwner =
+    user?.walletAddress?.toLowerCase() === collection?.creator.toLowerCase();
 
   const handleOpenEditModal = () => {
     setShowModalEdit(true);
@@ -41,18 +46,22 @@ const CollectionDescription: React.FC<IProps> = ({ collection }: IProps): React.
           <h3 className='section-title'>
             Description
           </h3>
-          <button className='edit-btn' onClick={handleOpenEditModal}>
-            <img src={`${CDN_URL}/icons/edit-03.svg`} alt='edit-03' />
-          </button>
+          {isOwner && (
+            <button className='edit-btn' onClick={handleOpenEditModal}>
+              <img src={`${CDN_URL}/icons/edit-03.svg`} alt='edit-03' />
+            </button>
+          )}
         </div>
-        <div className='action-wrapper'>
-          <button className="mint-btn" onClick={handleOpenMintModal}>
-            Mint
-          </button>
-          <button className="transfer-btn" onClick={handleOpenTransferModal}>
-            Transfer
-          </button>
-        </div>
+        {isOwner && (
+          <div className='action-wrapper'>
+            <button className="mint-btn" onClick={handleOpenMintModal}>
+              Mint
+            </button>
+            <button className="transfer-btn" onClick={handleOpenTransferModal}>
+              Transfer
+            </button>
+          </div>
+        )}
         {description && (
           <ShowMoreText showMoreClassname='show-more-btn' maxLines={5}>
             <p className={'description'}>{description}</p>
