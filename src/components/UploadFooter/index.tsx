@@ -18,7 +18,7 @@ const UploadFooter = ({
   return (
     <StyledUploadFooter isUploadVisible={isUploadVisible} style={style}>
       <div className="text">
-        <span>Are you a creator? Create you first ever BRC-721 collection now</span>
+        <span>Are you a creator? Create your first ever BRC-721 collection now</span>
       </div>
       <div className="button">
         <Button
