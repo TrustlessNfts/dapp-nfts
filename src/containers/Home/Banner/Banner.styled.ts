@@ -6,6 +6,7 @@ export const Wrapper = styled.div`
   padding-bottom: ${px2rem(60)};
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
 
   .title-wrapper {
     flex: 1;
@@ -42,5 +43,24 @@ export const Wrapper = styled.div`
     padding: ${px2rem(14)} ${px2rem(36)};
     font-size: ${px2rem(16)};
     line-height: ${px2rem(26)};
+  }
+`;
+
+export const TopBar = styled.div`
+  background: #2e2e2e;
+  display: grid;
+  place-items: center;
+  color: white;
+  padding: ${px2rem(8)} 0;
+  font-size: ${px2rem(12)};
+
+  .create-link {
+    color: #95a4fc;
+    cursor: pointer;
+  }
+
+  @media screen and (max-width: 1920.98px) {
+    width: 100vw;
+    margin-left: ${px2rem(-32)};
   }
 `;

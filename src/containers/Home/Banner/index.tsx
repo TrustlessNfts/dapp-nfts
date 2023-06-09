@@ -1,16 +1,14 @@
-import React, { useState } from 'react';
-import { Wrapper } from './Banner.styled';
-import Button from '@/components/Button';
-import Text from '@/components/Text';
-import ModalCreate from '@/containers/Home/ModalCreate';
+import UploadFooter from '@/components/UploadFooter';
 import { ROUTE_PATH } from '@/constants/route-path';
+import ModalCreate from '@/containers/Home/ModalCreate';
+import { useIsInViewport } from '@/hooks/useIsInViewport';
 import { getIsAuthenticatedSelector } from '@/state/user/selector';
 import { showToastError } from '@/utils/toast';
 import { useRouter } from 'next/router';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import FeatureList from '../FeatureList';
-import UploadFooter from '@/components/UploadFooter';
-import { useIsInViewport } from '@/hooks/useIsInViewport';
+import { TopBar, Wrapper } from './Banner.styled';
 
 const Banner: React.FC = (): React.ReactElement => {
   const [showModal, setShowModal] = useState(false);
@@ -34,6 +32,14 @@ const Banner: React.FC = (): React.ReactElement => {
 
   return (
     <>
+      <TopBar>
+        <div className="text">
+          <span>Are you a creator? </span>
+          <span className="create-link" onClick={handleOpenModal}>
+            Create BRC-721
+          </span>
+        </div>
+      </TopBar>
       <Wrapper>
         <div className="title-wrapper">
           <h1 className="title">
@@ -48,7 +54,7 @@ const Banner: React.FC = (): React.ReactElement => {
             utilities now.
           </p>
           <div className="upload-wrapper" ref={uploadRef}>
-            <Button
+            {/* <Button
               className="create-btn"
               background={'linear-gradient(90deg, #9796f0,#fbc7d4)'}
               onClick={handleOpenModal}
@@ -61,7 +67,7 @@ const Banner: React.FC = (): React.ReactElement => {
               >
                 Create BRC-721
               </Text>
-            </Button>
+            </Button> */}
           </div>
         </div>
         <FeatureList />

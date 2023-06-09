@@ -6,7 +6,7 @@ export const StyledFeatureList = styled.div`
   position: relative;
 
   .carousel-root {
-    max-width: ${px2rem(315)};
+    max-width: ${px2rem(350)};
     margin-left: auto;
     margin-right: auto;
   }
@@ -38,6 +38,7 @@ export const StyledFeatureList = styled.div`
       border: 1px solid #95a4fc;
       position: relative;
       font-weight: 300;
+      font-size: ${px2rem(14)};
 
       &:hover {
         color: black;
