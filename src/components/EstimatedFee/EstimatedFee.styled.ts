@@ -20,7 +20,7 @@ export const Wrapper = styled.div`
 
   .est-fee-title {
     font-weight: 500;
-    font-size: ${px2rem(16)};
+    font-size: ${px2rem(14)};
     line-height: 1.4;
     color: #1c1c1c;
     margin-bottom: ${px2rem(8)};
@@ -28,14 +28,14 @@ export const Wrapper = styled.div`
 
   .est-fee-item-title {
     font-weight: 400;
-    font-size: ${px2rem(16)};
+    font-size: ${px2rem(14)};
     line-height: 1.2;
     color: #1c1c1c;
   }
 
   .est-fee-item-value {
     font-weight: 500;
-    font-size: ${px2rem(16)};
+    font-size: ${px2rem(14)};
     line-height: 1.2;
     color: #1c1c1c;
   }

@@ -6,6 +6,7 @@ import { Wrapper } from './Header.styled';
 import MenuMobile from './MenuMobile';
 import WalletHeader from './Wallet';
 import { useWindowSize } from '@trustless-computer/dapp-core';
+import IconSVG from '@/components/IconSVG';
 
 const Header = ({ height }: { height: number }) => {
   const [isOpenMenu, setIsOpenMenu] = useState<boolean>(false);
@@ -23,17 +24,32 @@ const Header = ({ height }: { height: number }) => {
       <MenuMobile isOpen={isOpenMenu} onCloseMenu={() => setIsOpenMenu(false)} />
       <div className="rightContainer">
         <div className="external-link hideMobile">
-          <Link href={'https://trustless.computer/'} target="_blank">
-            Trustless
-          </Link>
           <Link href={'https://tcgasstation.com/'} target="_blank">
             Get TC
+            <IconSVG
+              maxWidth="28"
+              src={`${CDN_URL}/pages/artifacts/icons/ic-link.svg`}
+            ></IconSVG>
+          </Link>
+          <Link href={'https://newbitcoincity.com/'} target="_blank">
+            NBC
+            <IconSVG
+              maxWidth="28"
+              src={`${CDN_URL}/pages/artifacts/icons/ic-link.svg`}
+            ></IconSVG>
+          </Link>
+          <Link href={'https://generative.xyz/discord'} target="_blank">
+            Discord
+            <IconSVG
+              maxWidth="28"
+              src={`${CDN_URL}/pages/artifacts/icons/ic-link.svg`}
+            ></IconSVG>
           </Link>
         </div>
 
         <WalletHeader />
         <button className="btnMenuMobile" onClick={() => setIsOpenMenu(true)}>
-          <img src={`${CDN_URL}/icons/ic_hambuger.svg`} alt='ic_hambuger' />
+          <img src={`${CDN_URL}/icons/ic_hambuger.svg`} alt="ic_hambuger" />
         </button>
       </div>
     </Wrapper>

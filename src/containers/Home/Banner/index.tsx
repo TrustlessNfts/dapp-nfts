@@ -29,11 +29,16 @@ const Banner: React.FC = (): React.ReactElement => {
   return (
     <Wrapper>
       <div className="title-wrapper">
-        <h1 className="title">The complete Bitcoin NFTs platform</h1>
+        <h1 className="title">
+          The complete
+          <br /> Smart Bitcoin NFTs platform
+        </h1>
         <p className="description">
-          BRC-721 is kind of NFT on Bitcoin chain.
+          Smart BRC-721 is <span>the first Smart NFT</span> with{' '}
+          <span>smart contract</span> on Bitcoin.
           <br />
-          Be the 1st ever to own a Bitcoin NFT now.
+          Be the 1st ever to own Smart Bitcoin NFTs with a bunch of additional
+          utilities now.
         </p>
         <div className="upload-wrapper">
           <Button

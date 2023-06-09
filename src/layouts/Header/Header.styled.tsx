@@ -58,6 +58,12 @@ const Wrapper = styled.div`
       align-items: center;
       gap: ${px2rem(16)};
       margin-right: ${px2rem(24)};
+
+      a {
+        display: flex;
+        align-items: center;
+        gap: ${px2rem(6)};
+      }
     }
 
     @media screen and (min-width: 1024px) {
@@ -196,7 +202,7 @@ const WalletBalance = styled.div`
       width: 1px;
       height: 16px;
       background-color: ${({ theme }: { theme: DefaultTheme }) =>
-    theme.primary['5b']};
+        theme.primary['5b']};
     }
   }
 
