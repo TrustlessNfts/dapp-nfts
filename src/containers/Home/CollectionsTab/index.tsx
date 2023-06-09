@@ -18,6 +18,7 @@ const CollectionsTab: React.FC = (): React.ReactElement => {
   const [collections, setCollections] = useState<Array<ICollection>>([]);
   const [searchTerm, setSearchTerm] = useState('');
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleSearch = useCallback(debounce(inputVal => fetchCollections(1, inputVal), 500), []);
 
   const fetchCollections = async (p?: number, query?: string) => {
@@ -51,6 +52,7 @@ const CollectionsTab: React.FC = (): React.ReactElement => {
 
   useEffect(() => {
     fetchCollections();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!collections) return <></>;

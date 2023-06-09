@@ -71,7 +71,6 @@ const useMintChunks: ContractOperationHook<
           );
         }
         const gasLimit = await estimateGas(params);
-        logger.debug('gasLimit', gasLimit);
         const transaction = await contract.connect(provider.getSigner()).mintChunks(
           account,
           [chunks],

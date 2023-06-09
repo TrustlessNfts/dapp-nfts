@@ -39,8 +39,10 @@ export const StyledTable = styled.div`
     }
 
     .tableData {
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      
+      &:not(:last-child) {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
       &_item {
         padding-top: ${px2rem(16)};
         padding-bottom: ${px2rem(16)};

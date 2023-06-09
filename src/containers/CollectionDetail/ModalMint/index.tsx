@@ -62,6 +62,7 @@ const ModalMint = (props: Props) => {
   const [file, setFile] = useState<File | null>(null);
   const { feeRate } = useContext(AssetsContext);
   const { estimateGas: estimateChunksGas } = useMintChunks();
+  const { estimateGas: estimateBatchChunksGas } = useMintBatchChunks();
   const { run: mintSingle } = useContractOperation<
     IMintChunksParams,
     Transaction | null
@@ -155,9 +156,36 @@ const ModalMint = (props: Props) => {
     [setEstTCFee, estimateChunksGas, collection.contract],
   );
 
-  // const calculateEstTcFeeMintBatch = useCallback((async (fileBuffer: Buffer) => {
+  const calculateEstTcFeeMintBatch = useCallback(async (listOfChunks: Array<Array<Buffer>>) => {
+    let totalFee = new BigNumber(0);
 
-  // }, []);
+    if (!estimateBatchChunksGas) return '0';
+
+    setEstTCFee(null);
+    let payload: IMintChunksParams | IMintBatchChunksParams;
+    for (let i = 0; i < listOfChunks.length; i++) {
+      const batch = listOfChunks[i];
+      try {
+        payload = {
+          contractAddress: collection.contract,
+          listOfChunks: batch,
+        };
+
+        const gasLimit = await estimateBatchChunksGas(payload);
+        const gasPrice = await web3Provider.getGasPrice();
+        const gasLimitBN = new BigNumber(gasLimit);
+        const gasPriceBN = new BigNumber(gasPrice);
+        const tcGas = gasLimitBN.times(gasPriceBN);
+        logger.debug('TC Gas', tcGas.toString());
+        totalFee = totalFee.plus(tcGas);
+      } catch (err: unknown) {
+        logger.error(err);
+        setEstTCFee(null);
+      }
+    }
+    console.log('totalFee', totalFee.toString())
+    setEstTCFee(totalFee.toString());
+  }, [setEstTCFee, estimateBatchChunksGas, collection.contract]);
 
   const handleEstFee = useCallback(async (): Promise<void> => {
     if (!file) {
@@ -168,7 +196,6 @@ const ModalMint = (props: Props) => {
     const fileExt = getFileExtensionByFileName(file.name);
     if (fileExt === ZIP_EXTENSION) {
       const listOfChunks = await getBatchFileList(file);
-      // const chunks = listOfChunks.map((chunk) => Buffer.from(JSON.stringify(chunk)));
       const tcTxSizeBytes =
         listOfChunks
           ?.map((chunk) =>
@@ -177,7 +204,7 @@ const ModalMint = (props: Props) => {
           .reduce((prev, cur) => prev + cur, 0) || 0;
 
       calculateEstBtcFee(tcTxSizeBytes);
-      // calculateEstTcFeeMintSingle(chunks);
+      calculateEstTcFeeMintBatch(listOfChunks);
     } else {
       const obj = {
         image: await fileToBase64(file),
@@ -187,7 +214,7 @@ const ModalMint = (props: Props) => {
       calculateEstBtcFee(Buffer.byteLength(chunks));
       calculateEstTcFeeMintSingle(chunks);
     }
-  }, [calculateEstBtcFee, file]);
+  }, [calculateEstBtcFee, calculateEstTcFeeMintBatch, calculateEstTcFeeMintSingle, file]);
 
   const handleMintSingle = async (file: File): Promise<void> => {
     if (!collection?.contract) {

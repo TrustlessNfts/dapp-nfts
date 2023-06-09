@@ -52,7 +52,7 @@ export const StyledActivityList = styled(StyledTableList)`
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: ${px2rem(8)};
+    gap: ${px2rem(4)};
 
     span {
       opacity: 0.7;

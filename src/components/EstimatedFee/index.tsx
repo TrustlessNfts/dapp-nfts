@@ -25,7 +25,7 @@ const EstimatedFee: React.FC<IProps> = ({
   uploadModal = false,
   classNames, // isBigFile = false,
 }: // uploadView = false,
-IProps): React.ReactElement => {
+  IProps): React.ReactElement => {
   const [estBTCFee, setEstBTCFee] = useState<string | null>(null);
   const [estTCFee, setEstTCFee] = useState<string | null>(null);
   const { feeRate } = useContext(AssetsContext);
@@ -64,13 +64,13 @@ IProps): React.ReactElement => {
     if (!estimateBTCGas) {
       calculateEstBtcFee();
     }
-  }, [calculateEstBtcFee]);
+  }, [estimateBTCGas, calculateEstBtcFee]);
 
   useEffect(() => {
     if (!estimateTCGas) {
       calculateEstTcFee();
     }
-  }, [calculateEstTcFee]);
+  }, [estimateTCGas, calculateEstTcFee]);
 
   return (
     <Wrapper className={classNames}>
