@@ -149,6 +149,7 @@ const ActivityList: React.FC<IProps> = () => {
       </div>
       <div className="data-list">
         <InfiniteScroll
+          className='disable-scrollbar'
           dataLength={activities.length}
           next={fetchActivities}
           hasMore={hasMore}

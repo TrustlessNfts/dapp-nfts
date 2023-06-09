@@ -18,6 +18,7 @@ export const Container = styled.div`
 const ContentWrapper = styled.div`
   min-height: calc(100vh - 80px);
   width: 100%;
+  overflow: hidden;
 
   > div {
     width: 100%;
