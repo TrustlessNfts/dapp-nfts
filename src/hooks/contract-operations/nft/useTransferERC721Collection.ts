@@ -1,10 +1,10 @@
 import ERC721ABIJson from '@/abis/erc721.json';
 import { TRANSFER_TX_SIZE } from '@/configs';
-import { ERROR_CODE } from '@/constants/error';
 import { AssetsContext } from '@/contexts/assets-context';
 import { TransactionEventType } from '@/enums/transaction';
 import { ContractOperationHook, DAppType } from '@/interfaces/contract-operation';
 import { getContract } from '@/utils';
+import { formatBTCPrice } from '@/utils/format';
 import { useWeb3React } from '@web3-react/core';
 import BigNumber from 'bignumber.js';
 import { Transaction } from 'ethers';
@@ -39,7 +39,11 @@ const useTransferERC721Collection: ContractOperationHook<
         });
         const balanceInBN = new BigNumber(btcBalance);
         if (balanceInBN.isLessThan(estimatedFee.totalFee)) {
-          throw Error(ERROR_CODE.INSUFFICIENT_BALANCE);
+          throw Error(
+            `Insufficient BTC balance. Please top up at least ${formatBTCPrice(
+              estimatedFee.totalFee.toString(),
+            )} BTC.`,
+          );
         }
 
         const transaction = await contract

@@ -40,7 +40,10 @@ const CollectionHeader = (props: ICollectionHeader) => {
                   href={`${TC_EXPLORER}/address/${collection?.contract}`}
                   target="_blank"
                 >
-                  <img src={`${CDN_URL}/icons/ic-tc-explorer-24x24.svg`} alt='ic-tc-explorer' />
+                  <img
+                    src={`${CDN_URL}/icons/ic-tc-explorer-24x24.svg`}
+                    alt="ic-tc-explorer"
+                  />
                 </a>
                 {collection.social.website && (
                   <a
@@ -79,19 +82,19 @@ const CollectionHeader = (props: ICollectionHeader) => {
                   </a>
                 )}
               </div>
-              {isOwner && (
-                <div className="actionWrapper">
-                  <button className="editButton" onClick={onClickTransfer}>
-                    Transfer owner
-                  </button>
-                  <button className="editButton" onClick={onClickEdit}>
-                    Edit
-                  </button>
-                  <button className="mintButton" onClick={onClickMint}>
-                    Mint
-                  </button>
-                </div>
-              )}
+              {/* {isOwner && ( */}
+              <div className="actionWrapper">
+                <button className="editButton" onClick={onClickTransfer}>
+                  Transfer owner
+                </button>
+                <button className="editButton" onClick={onClickEdit}>
+                  Edit
+                </button>
+                <button className="mintButton" onClick={onClickMint}>
+                  Mint
+                </button>
+              </div>
+              {/* )} */}
             </div>
             <div>
               <p className="owner">OWNER</p>

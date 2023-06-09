@@ -13,7 +13,6 @@ import { TransactionEventType } from '@/enums/transaction';
 export interface IMintBatchChunksParams {
   listOfChunks: Array<Buffer>;
   contractAddress: string;
-  selectFee: number;
 }
 
 const useMintBatchChunks: ContractOperationHook<
@@ -21,11 +20,11 @@ const useMintBatchChunks: ContractOperationHook<
   Transaction | null
 > = () => {
   const { account, provider } = useWeb3React();
-  const { btcBalance } = useContext(AssetsContext);
+  const { btcBalance, feeRate } = useContext(AssetsContext);
 
   const call = useCallback(
     async (params: IMintBatchChunksParams): Promise<Transaction | null> => {
-      const { listOfChunks, contractAddress, selectFee } = params;
+      const { listOfChunks, contractAddress } = params;
       if (account && provider && contractAddress) {
         const contract = getContract(
           contractAddress,
@@ -39,7 +38,7 @@ const useMintBatchChunks: ContractOperationHook<
         );
         const estimatedFee = TC_SDK.estimateInscribeFee({
           tcTxSizeByte: tcTxSizeByte,
-          feeRatePerByte: selectFee,
+          feeRatePerByte: feeRate.hourFee,
         });
         const balanceInBN = new BigNumber(btcBalance);
         if (balanceInBN.isLessThan(estimatedFee.totalFee)) {

@@ -2,7 +2,7 @@ import Button from '@/components/Button';
 import EstimatedFee from '@/components/EstimatedFee';
 import IconSVG from '@/components/IconSVG';
 import Text from '@/components/Text';
-import { CDN_URL, TRANSFER_TX_SIZE } from '@/configs';
+import { CDN_URL } from '@/configs';
 import web3Provider from '@/connection/custom-web3-provider';
 import { MINT_TOOL_MAX_FILE_SIZE } from '@/constants/config';
 import {
@@ -187,19 +187,10 @@ const ModalCreate = (props: Props) => {
   }, [listFiles]);
 
   const calculateEstBtcFee = useCallback(async () => {
-    if (!file) return;
     try {
       setEstBTCFee(null);
 
-      const tcTxSizeByte = TRANSFER_TX_SIZE;
-
-      // if (file.size < BLOCK_CHAIN_FILE_LIMIT) {
-      //   const fileBuffer = await readFileAsBuffer(file);
-      //   const { compressedSize } = await compressFileAndGetSize({
-      //     fileBase64: fileBuffer.toString('base64'),
-      //   });
-      //   tcTxSizeByte = TRANSFER_TX_SIZE;
-      // }
+      const tcTxSizeByte = totalFileSize;
 
       const estimatedEconomyFee = TC_SDK.estimateInscribeFee({
         tcTxSizeByte: tcTxSizeByte,
@@ -210,30 +201,26 @@ const ModalCreate = (props: Props) => {
     } catch (err: unknown) {
       logger.error(err);
     }
-  }, [file, setEstBTCFee, feeRate.hourFee]);
+  }, [file, setEstBTCFee, feeRate.hourFee, totalFileSize]);
 
   const calculateEstTcFee = useCallback(async () => {
-    if (!listFiles) return;
+    if (!estimateGas) return;
 
     setEstTCFee(null);
-    const payload: ICreateNFTCollectionParams = {
-      name: '',
-      listOfChunks: listFiles,
-    };
-    logger.debug('Payload', payload);
+    let payload: ICreateNFTCollectionParams;
     try {
-      //   if (file.size < BLOCK_CHAIN_FILE_LIMIT) {
-      //     const fileBuffer = await readFileAsBuffer(file);
-      //     payload = {
-      //       address: account,
-      //       chunks: [fileBuffer],
-      //     };
-      //   } else {
-      //     payload = {
-      //       address: account,
-      //       chunks: [],
-      //     };
-      //   }
+      if (!listFiles) {
+        payload = {
+          name: preSubmitName,
+          listOfChunks: [],
+        };
+      } else {
+        payload = {
+          name: preSubmitName,
+          listOfChunks: listFiles,
+        };
+      }
+
       const gasLimit = await estimateGas(payload);
       const gasPrice = await web3Provider.getGasPrice();
       const gasLimitBN = new BigNumber(gasLimit);
@@ -244,7 +231,7 @@ const ModalCreate = (props: Props) => {
     } catch (err: unknown) {
       logger.error(err);
     }
-  }, [file, setEstTCFee, estimateGas]);
+  }, [setEstTCFee, estimateGas, listFiles]);
 
   useEffect(() => {
     if (file) {
@@ -321,7 +308,10 @@ const ModalCreate = (props: Props) => {
                   type="text"
                   name="name"
                   onChange={handleChange}
-                  onBlur={handleBlur}
+                  onBlur={(e) => {
+                    handleBlur(e);
+                    setPreSubmitName(e.target.value);
+                  }}
                   value={values.name}
                   className="input"
                   placeholder={`Enter collection name`}
@@ -428,7 +418,7 @@ const ModalCreate = (props: Props) => {
               <EstimatedFee
                 estimateBTCGas={estBTCFee}
                 estimateTCGas={estTCFee}
-                // classNames,
+                uploadModal
               />
               <div className="confirm">
                 <Button

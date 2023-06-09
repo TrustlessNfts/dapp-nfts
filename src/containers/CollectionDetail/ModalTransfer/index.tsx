@@ -11,11 +11,14 @@ import { CDN_URL } from '@/configs';
 import { validateEVMAddress } from '@/utils';
 import { walletLinkSignTemplate } from '@/utils/configs';
 import useContractOperation from '@/hooks/contract-operations/useContractOperation';
-import useTransferERC721Collection, { ITransferERC721CollectionParams } from '@/hooks/contract-operations/nft/useTransferERC721Collection';
+import useTransferERC721Collection, {
+  ITransferERC721CollectionParams,
+} from '@/hooks/contract-operations/nft/useTransferERC721Collection';
 import { Transaction } from 'ethers';
 import ToastConfirm from '@/components/ToastConfirm';
 import { showToastError } from '@/utils/toast';
 import logger from '@/services/logger';
+import EstimatedFee from '@/components/EstimatedFee';
 
 type Props = {
   collection: ICollection;
@@ -38,6 +41,8 @@ const ModalTransfer = (props: Props) => {
   });
   const { dAppType, operationName } = useTransferERC721Collection();
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [estBTCFee, setEstBTCFee] = useState<string | null>(null);
+  const [estTCFee, setEstTCFee] = useState<string | null>(null);
 
   const validateForm = (values: IFormValue): Record<string, string> => {
     const errors: Record<string, string> = {};
@@ -136,6 +141,10 @@ const ModalTransfer = (props: Props) => {
                   <p className="error">{errors.receiverAddress}</p>
                 )}
               </WrapInput>
+              <EstimatedFee
+                estimateBTCGas={estBTCFee}
+                estimateTCGas={estTCFee}
+              ></EstimatedFee>
               <Button
                 type="submit"
                 bg="linear-gradient(90deg, #9796f0,#fbc7d4)"
@@ -151,8 +160,7 @@ const ModalTransfer = (props: Props) => {
           )}
         </Formik>
       </Modal.Body>
-      <Modal.Footer>
-      </Modal.Footer>
+      <Modal.Footer></Modal.Footer>
     </StyledModalUpload>
   );
 };
