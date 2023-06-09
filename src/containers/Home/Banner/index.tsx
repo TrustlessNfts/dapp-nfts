@@ -9,11 +9,17 @@ import { showToastError } from '@/utils/toast';
 import { useRouter } from 'next/router';
 import { useSelector } from 'react-redux';
 import FeatureList from '../FeatureList';
+import UploadFooter from '@/components/UploadFooter';
+import { useIsInViewport } from '@/hooks/useIsInViewport';
 
 const Banner: React.FC = (): React.ReactElement => {
   const [showModal, setShowModal] = useState(false);
   const isAuthenticated = useSelector(getIsAuthenticatedSelector);
   const router = useRouter();
+
+  const uploadRef = React.useRef<HTMLInputElement>(null);
+
+  const isUploadVisible = useIsInViewport(uploadRef, { threshold: 0.2 });
 
   const handleOpenModal = async () => {
     if (!isAuthenticated) {
@@ -27,39 +33,45 @@ const Banner: React.FC = (): React.ReactElement => {
   };
 
   return (
-    <Wrapper>
-      <div className="title-wrapper">
-        <h1 className="title">
-          The complete
-          <br /> Smart Bitcoin NFTs platform
-        </h1>
-        <p className="description">
-          Smart BRC-721 is <span>the first Smart NFT</span> with{' '}
-          <span>smart contract</span> on Bitcoin.
-          <br />
-          Be the 1st ever to own Smart Bitcoin NFTs with a bunch of additional
-          utilities now.
-        </p>
-        <div className="upload-wrapper">
-          <Button
-            className="create-btn"
-            background={'linear-gradient(90deg, #9796f0,#fbc7d4)'}
-            onClick={handleOpenModal}
-          >
-            <Text
-              size="medium"
-              color="bg1"
-              className="button-text"
-              fontWeight="medium"
+    <>
+      <Wrapper>
+        <div className="title-wrapper">
+          <h1 className="title">
+            The complete
+            <br /> Smart Bitcoin NFTs platform
+          </h1>
+          <p className="description">
+            Smart BRC-721 is <span>the first Smart NFT</span> with{' '}
+            <span>smart contract</span> on Bitcoin.
+            <br />
+            Be the 1st ever to own Smart Bitcoin NFTs with a bunch of additional
+            utilities now.
+          </p>
+          <div className="upload-wrapper" ref={uploadRef}>
+            <Button
+              className="create-btn"
+              background={'linear-gradient(90deg, #9796f0,#fbc7d4)'}
+              onClick={handleOpenModal}
             >
-              Create BRC-721
-            </Text>
-          </Button>
+              <Text
+                size="medium"
+                color="bg1"
+                className="button-text"
+                fontWeight="medium"
+              >
+                Create BRC-721
+              </Text>
+            </Button>
+          </div>
         </div>
-      </div>
-      <FeatureList />
-      <ModalCreate show={showModal} handleClose={() => setShowModal(false)} />
-    </Wrapper>
+        <FeatureList />
+        <ModalCreate show={showModal} handleClose={() => setShowModal(false)} />
+      </Wrapper>
+      <UploadFooter
+        handleOpenModal={handleOpenModal}
+        isUploadVisible={isUploadVisible}
+      />
+    </>
   );
 };
 
