@@ -24,7 +24,7 @@ const CollectionHeader: React.FC<IProps> = ({collection}: IProps): React.ReactEl
         </div>
       </div>
       <div className="right-content">
-        {collection.totalItems && (
+        {!!collection.totalItems && (
           <div className="trading-info-item">
             <p className="info-label">
               Items
@@ -34,7 +34,7 @@ const CollectionHeader: React.FC<IProps> = ({collection}: IProps): React.ReactEl
             </p>
           </div>
         )}
-        {collection.totalSales && (
+        {!!collection.totalSales && (
           <div className="trading-info-item">
             <p className="info-label">
               Listed
@@ -44,7 +44,7 @@ const CollectionHeader: React.FC<IProps> = ({collection}: IProps): React.ReactEl
             </p>
           </div>
         )}
-        {collection.floorPrice && (
+        {!!collection.floorPrice && (
           <div className="trading-info-item">
             <p className="info-label">
               Floor price
@@ -58,7 +58,7 @@ const CollectionHeader: React.FC<IProps> = ({collection}: IProps): React.ReactEl
             </p>
           </div>
         )}
-        {collection.volume && (
+        {!!collection.volume && (
           <div className="trading-info-item">
             <p className="info-label">
               Total volume
