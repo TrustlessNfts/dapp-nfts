@@ -1,7 +1,16 @@
-import React from 'react';
+import { getImageURLContent } from '@/lib';
+import React, { useMemo } from 'react';
 
 const ImageWrapper: React.FC<React.ImgHTMLAttributes<HTMLImageElement>> = (props: React.ImgHTMLAttributes<HTMLImageElement>): React.ReactElement => {
-
+  
+  const imageSrc = useMemo(() => {
+    if (!props.src) {
+      return
+    }
+    if (props.src.startsWith('/dapp')) return getImageURLContent(props.src);
+    return props.src;
+  }, [props.src]);
+  
   const handleOnImgLoaded = (
     evt: React.SyntheticEvent<HTMLImageElement>
   ): void => {
@@ -17,7 +26,7 @@ const ImageWrapper: React.FC<React.ImgHTMLAttributes<HTMLImageElement>> = (props
   };
 
   return (
-    <img {...props} onLoad={handleOnImgLoaded} />
+    <img alt='image' {...props} src={imageSrc} onLoad={handleOnImgLoaded} />
   );
 }
 

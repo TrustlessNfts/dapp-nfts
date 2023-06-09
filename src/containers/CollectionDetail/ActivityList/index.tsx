@@ -21,7 +21,7 @@ interface IProps {
 
 const FETCH_LIMIT = 32;
 
-const ActivityList: React.FC<IProps> = ({ collection }: IProps) => {
+const ActivityList: React.FC<IProps> = () => {
   const router = useRouter();
   const { contract } = router.query as {
     contract: string;
@@ -64,6 +64,7 @@ const ActivityList: React.FC<IProps> = ({ collection }: IProps) => {
 
   useEffect(() => {
     fetchActivities();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contract]);
 
   const tableData = activities?.map((activity, index) => {
@@ -92,10 +93,10 @@ const ActivityList: React.FC<IProps> = ({ collection }: IProps) => {
         price: (
           <div className={'activity-amount'}>
             {amountBN.isGreaterThan(0) ? (
-            <>
-            <span>{formatEthPrice(amount)}</span>
-            <img className='token-icon' src={mappingERC20ToIcon(erc20Address)} alt="token icon" />
-            </>
+              <>
+                <span>{formatEthPrice(amount)}</span>
+                <img className='token-icon' src={mappingERC20ToIcon(erc20Address)} alt="token icon" />
+              </>
             ) : (
               <span>-</span>
             )}
@@ -163,7 +164,7 @@ const ActivityList: React.FC<IProps> = ({ collection }: IProps) => {
         >
           <StyledActivityList>
             <Table
-              tableHead={[`${(collection && collection.totalSales > 0) ? `${collection.totalSales} listed` : 'Items'}`, 'price', 'from', 'to', 'event']}
+              tableHead={[`Items`, 'price', 'from', 'to', 'event']}
               data={tableData}
               className="activity-table"
             />

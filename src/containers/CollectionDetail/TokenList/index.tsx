@@ -70,7 +70,7 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
     setSelectedToken(null);
   }
 
-  const fetchCollectionInfo = async (p?: number): Promise<void> => {
+  const fetchNFTList = async (p?: number): Promise<void> => {
     if (!collection) return;
 
     try {
@@ -95,7 +95,8 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
   };
 
   useEffect(() => {
-    fetchCollectionInfo();
+    fetchNFTList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const hasMore = !!collection && (nftList.length < collection.totalItems);
@@ -106,7 +107,7 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
         <InfiniteScroll
           hasMore={hasMore}
           dataLength={nftList.length}
-          next={fetchCollectionInfo}
+          next={fetchNFTList}
           height={600}
           style={{ overflow: 'hidden auto' }}
           loader={loading ?
@@ -126,7 +127,7 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
               <thead>
                 <tr>
                   <th>
-                    {`${collection?.totalSales || 0} listed`}
+                    {`Items`}
                   </th>
                   <th>
                     Owner

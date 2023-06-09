@@ -231,7 +231,7 @@ const ModalCreate = (props: Props) => {
     } catch (err: unknown) {
       logger.error(err);
     }
-  }, [setEstTCFee, estimateGas, listFiles]);
+  }, [setEstTCFee, estimateGas, listFiles, preSubmitName]);
 
   useEffect(() => {
     if (file) {

@@ -324,7 +324,9 @@ const StyledTableList = styled.div`
     }
 
     .tableData {
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      &:not(:last-child) {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
 
       .tableData_item {
         padding-top: ${px2rem(12)};

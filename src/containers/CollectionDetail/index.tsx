@@ -29,6 +29,7 @@ const CollectionDetail = () => {
 
   useEffect(() => {
     fetchCollectionInfo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contract]);
 
   return (
