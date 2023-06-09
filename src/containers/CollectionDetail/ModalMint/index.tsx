@@ -22,7 +22,7 @@ import useMintChunks, {
   IMintChunksParams,
 } from '@/hooks/contract-operations/nft/useMintChunks';
 import useContractOperation from '@/hooks/contract-operations/useContractOperation';
-import { ICollection } from '@/interfaces/api/collection';
+import { ICollection } from '@/interfaces/api/marketplace';
 import logger from '@/services/logger';
 import {
   fileToBase64,

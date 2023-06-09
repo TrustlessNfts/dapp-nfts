@@ -25,13 +25,12 @@ export const Wrapper = styled.div`
       color: #fff;
     }
 
-    .collection-owner {
+    .collection-index {
       font-weight: 400;
       font-size: ${px2rem(16)};
       line-height: ${px2rem(28)};
       color: rgba(255, 255, 255, 0.7);
       letter-spacing: -0.01em;
-      text-transform: lowercase;
     }
   }
 

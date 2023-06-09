@@ -23,7 +23,7 @@ const CollectionHeader: React.FC<IProps> = ({collection}: IProps): React.ReactEl
         </div>
         <div className="collection-info">
           <h1 className='collection-name'>{collection.name}</h1>
-          <Link href={`${TC_EXPLORER}/address/${collection.creator}`} target='_blank' className='collection-owner'>{shortenAddress(collection.creator)}</Link>
+          <p className='collection-index'>{`Collection #${collection.index}`}</p>
         </div>
       </div>
       <div className="right-content">

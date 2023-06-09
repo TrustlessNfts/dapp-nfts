@@ -1,6 +1,6 @@
 import Button from '@/components/Button';
 import Text from '@/components/Text';
-import { ICollection } from '@/interfaces/api/collection';
+import { ICollection } from '@/interfaces/api/marketplace';
 import { Formik } from 'formik';
 import { Modal } from 'react-bootstrap';
 import { StyledModalUpload, Title, WrapInput } from './ModalTransfer.styled';
