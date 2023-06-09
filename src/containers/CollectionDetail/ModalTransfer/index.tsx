@@ -1,6 +1,6 @@
 import Button from '@/components/Button';
 import Text from '@/components/Text';
-import { ICollection } from '@/interfaces/api/collection';
+import { ICollection } from '@/interfaces/api/marketplace';
 import { Formik } from 'formik';
 import { Modal } from 'react-bootstrap';
 import { StyledModalUpload, Title, WrapInput } from './ModalTransfer.styled';
@@ -11,11 +11,14 @@ import { CDN_URL } from '@/configs';
 import { validateEVMAddress } from '@/utils';
 import { walletLinkSignTemplate } from '@/utils/configs';
 import useContractOperation from '@/hooks/contract-operations/useContractOperation';
-import useTransferERC721Collection, { ITransferERC721CollectionParams } from '@/hooks/contract-operations/nft/useTransferERC721Collection';
+import useTransferERC721Collection, {
+  ITransferERC721CollectionParams,
+} from '@/hooks/contract-operations/nft/useTransferERC721Collection';
 import { Transaction } from 'ethers';
 import ToastConfirm from '@/components/ToastConfirm';
 import { showToastError } from '@/utils/toast';
 import logger from '@/services/logger';
+import EstimatedFee from '@/components/EstimatedFee';
 
 type Props = {
   collection: ICollection;
@@ -136,6 +139,7 @@ const ModalTransfer = (props: Props) => {
                   <p className="error">{errors.receiverAddress}</p>
                 )}
               </WrapInput>
+              <EstimatedFee />
               <Button
                 type="submit"
                 bg="linear-gradient(90deg, #9796f0,#fbc7d4)"
@@ -151,8 +155,7 @@ const ModalTransfer = (props: Props) => {
           )}
         </Formik>
       </Modal.Body>
-      <Modal.Footer>
-      </Modal.Footer>
+      <Modal.Footer></Modal.Footer>
     </StyledModalUpload>
   );
 };

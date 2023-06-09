@@ -23,8 +23,6 @@ export const StyledTable = styled.div`
         font-weight: 500;
         line-height: ${px2rem(24)};
         color: #fff;
-        position: sticky;
-        top: 0;
         z-index: 10;
         font-size: 14px;
         background: #1E1E22;
@@ -41,8 +39,10 @@ export const StyledTable = styled.div`
     }
 
     .tableData {
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      
+      &:not(:last-child) {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
       &_item {
         padding-top: ${px2rem(16)};
         padding-bottom: ${px2rem(16)};

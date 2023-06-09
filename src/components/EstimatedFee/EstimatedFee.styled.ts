@@ -2,53 +2,41 @@ import px2rem from '@/utils/px2rem';
 import styled from 'styled-components';
 
 export const Wrapper = styled.div`
-  .est-fee {
-    margin-top: ${px2rem(20)};
-    margin-bottom: ${px2rem(28)};
-  }
-
-  .est-fee-options {
-    background: #FAFAFA;
-    border-radius: 8px;
-    padding: ${px2rem(12)};
-    background: #FAFAFA;
-  }
+  padding: ${px2rem(16)} ${px2rem(28)};
+  background: #fafafa;
+  border-radius: 8px;
+  margin-bottom: ${px2rem(28)};
+  margin-top: ${px2rem(20)};
 
   .est-fee-item {
-    padding-bottom: ${px2rem(8)};
-    padding-top: ${px2rem(8)};
-
-    &:first-child {
-      padding-top: 0;
-    }
-
-    &:last-child {
-      padding-bottom: 0;
-    }
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 
     &:not(:last-child) {
-      border-bottom: 1px solid #E9E9E9;
+      margin-bottom: ${px2rem(8)};
     }
-  }
-
-  .est-fee-item-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
   }
 
   .est-fee-title {
     font-weight: 500;
     font-size: ${px2rem(14)};
-    line-height: 150%;
-    margin-bottom: ${px2rem(4)};
+    line-height: 1.4;
+    color: #1c1c1c;
+    margin-bottom: ${px2rem(8)};
+  }
+
+  .est-fee-item-title {
+    font-weight: 400;
+    font-size: ${px2rem(14)};
+    line-height: 1.2;
     color: #1c1c1c;
   }
 
-  .ext-price {
-    font-weight: 400;
-    font-size: ${px2rem(12)};
-    line-height: 150%;
-    color: #5B5B5B;
+  .est-fee-item-value {
+    font-weight: 500;
+    font-size: ${px2rem(14)};
+    line-height: 1.2;
+    color: #1c1c1c;
   }
 `;

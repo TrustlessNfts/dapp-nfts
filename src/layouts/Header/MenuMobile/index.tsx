@@ -21,7 +21,7 @@ const MenuMobile = ({ onCloseMenu, isOpen }: IProp) => {
   const router = useRouter();
 
   const handleConnectWallet = async () => {
-    router.push(`${ROUTE_PATH.CONNECT_WALLET}?next=${window.location.href}`);
+    router.push(`${ROUTE_PATH.CONNECT_WALLET}`);
   };
 
   return (

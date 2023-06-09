@@ -8,7 +8,7 @@ export const Wrapper = styled.div`
     position: relative;
     width: 100%;
     border: 1px solid #353945;
-    border-radius: 2px;
+    border-radius: 8px;
 
     .search-icon {
       position: absolute;

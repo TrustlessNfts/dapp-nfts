@@ -4,7 +4,7 @@ export const StyledButton = styled.button<{ bg: string; background?: string }>`
   --bg-color: ${({ bg, theme }: { bg: string; theme: DefaultTheme }) =>
     (theme as any)[bg] || theme.white};
 
-  border-radius: 100px !important;
+  border-radius: 8px !important;
   border: none;
   padding: 0;
   outline: none;

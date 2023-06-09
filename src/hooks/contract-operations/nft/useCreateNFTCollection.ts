@@ -1,5 +1,4 @@
 import ERC721ABIJson from '@/abis/erc721.json';
-import { ERROR_CODE } from '@/constants/error';
 import { AssetsContext } from '@/contexts/assets-context';
 import { TransactionEventType } from '@/enums/transaction';
 import {
@@ -7,10 +6,12 @@ import {
   DAppType,
   DeployContractResponse,
 } from '@/interfaces/contract-operation';
+import logger from '@/services/logger';
+import { formatBTCPrice } from '@/utils/format';
 import { useWeb3React } from '@web3-react/core';
 import BigNumber from 'bignumber.js';
 import { ContractFactory } from 'ethers';
-import { useContext } from 'react';
+import { useCallback, useContext } from 'react';
 import * as TC_SDK from 'trustless-computer-sdk';
 
 export interface ICreateNFTCollectionParams {
@@ -24,6 +25,30 @@ const useCreateNFTCollection: ContractOperationHook<
 > = () => {
   const { account, provider } = useWeb3React();
   const { btcBalance, feeRate } = useContext(AssetsContext);
+
+  const estimateGas = useCallback(
+    async (params: ICreateNFTCollectionParams): Promise<string> => {
+      if (account && provider) {
+        const { name, listOfChunks } = params;
+        const byteCode = ERC721ABIJson.bytecode;
+
+        const factory = new ContractFactory(
+          ERC721ABIJson.abi,
+          byteCode,
+          provider.getSigner(),
+        );
+        const estimatedGas = await factory.signer.estimateGas(
+          factory.getDeployTransaction(name, listOfChunks),
+        );
+        const gasLimitBN = new BigNumber(estimatedGas.toString());
+        const gasBuffer = gasLimitBN.decimalPlaces(0);
+        logger.debug('useCreateNFTCollection estimate gas', gasBuffer.toString());
+        return gasBuffer.toString();
+      }
+      return '1000000000';
+    },
+    [provider, account],
+  );
 
   const call = async (
     params: ICreateNFTCollectionParams,
@@ -39,14 +64,17 @@ const useCreateNFTCollection: ContractOperationHook<
         .reduce((prev, cur) => prev + cur, 0);
 
       const estimatedFee = TC_SDK.estimateInscribeFee({
-        // TODO remove hardcode
         tcTxSizeByte: tcTxSizeBytes || 0,
-        feeRatePerByte: feeRate.fastestFee,
+        feeRatePerByte: feeRate.hourFee,
       });
 
       const balanceInBN = new BigNumber(btcBalance);
       if (balanceInBN.isLessThan(estimatedFee.totalFee)) {
-        throw Error(ERROR_CODE.INSUFFICIENT_BALANCE);
+        throw Error(
+          `Insufficient BTC balance. Please top up at least ${formatBTCPrice(
+            estimatedFee.totalFee.toString(),
+          )} BTC.`,
+        );
       }
 
       const factory = new ContractFactory(
@@ -70,6 +98,7 @@ const useCreateNFTCollection: ContractOperationHook<
 
   return {
     call: call,
+    estimateGas: estimateGas,
     dAppType: DAppType.ERC721,
     operationName: TransactionEventType.CREATE,
   };

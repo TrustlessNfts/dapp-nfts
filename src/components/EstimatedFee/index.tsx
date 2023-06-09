@@ -1,107 +1,123 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import * as TC_SDK from 'trustless-computer-sdk';
 import Text from '@/components/Text';
-import { formatBTCPrice } from '@/utils/format';
+import { formatBTCPrice, formatEthPrice } from '@/utils/format';
 import { Wrapper } from './EstimatedFee.styled';
+import EllipsisLoading from '../EllipsisLoading';
 import { AssetsContext } from '@/contexts/assets-context';
+import web3Provider from '@/connection/custom-web3-provider';
+import BigNumber from 'bignumber.js';
+import logger from '@/services/logger';
+import { TRANSFER_TX_SIZE } from '@/configs';
+import * as TC_SDK from 'trustless-computer-sdk';
 
 interface IProps {
-  txSize: number;
+  estimateBTCGas?: string | null;
+  estimateTCGas?: string | null;
+  classNames?: string;
+  uploadModal?: boolean;
+  // isBigFile?: boolean;
+  // uploadView?: boolean;
 }
 
-enum optionFees {
-  economy = 'Economy',
-  faster = 'Faster',
-  fastest = 'Fastest',
-}
-
-const EstimatedFee: React.FC<IProps> = ({ txSize }: IProps): React.ReactElement => {
+const EstimatedFee: React.FC<IProps> = ({
+  estimateBTCGas,
+  estimateTCGas,
+  uploadModal = false,
+  classNames, // isBigFile = false,
+}: // uploadView = false,
+  IProps): React.ReactElement => {
+  const [estBTCFee, setEstBTCFee] = useState<string | null>(null);
+  const [estTCFee, setEstTCFee] = useState<string | null>(null);
   const { feeRate } = useContext(AssetsContext);
-  const [estBTCFee, setEstBTCFee] = useState({
-    economy: '0',
-    faster: '0',
-    fastest: '0',
-  });
 
-  const calculateEstFee = useCallback(() => {
-    const estimatedFastestFee = TC_SDK.estimateInscribeFee({
-      tcTxSizeByte: txSize,
-      feeRatePerByte: feeRate.fastestFee,
-    });
-    const estimatedFasterFee = TC_SDK.estimateInscribeFee({
-      tcTxSizeByte: txSize,
-      feeRatePerByte: feeRate.halfHourFee,
-    });
-    const estimatedEconomyFee = TC_SDK.estimateInscribeFee({
-      tcTxSizeByte: txSize,
-      feeRatePerByte: feeRate.hourFee,
-    });
+  const calculateEstBtcFee = useCallback(async () => {
+    try {
+      setEstBTCFee(null);
 
-    setEstBTCFee({
-      fastest: estimatedFastestFee.totalFee.toString(),
-      faster: estimatedFasterFee.totalFee.toString(),
-      economy: estimatedEconomyFee.totalFee.toString(),
-    });
-  }, [txSize, setEstBTCFee, feeRate.fastestFee, feeRate.halfHourFee, feeRate.hourFee]);
+      const estimatedEconomyFee = TC_SDK.estimateInscribeFee({
+        tcTxSizeByte: TRANSFER_TX_SIZE,
+        feeRatePerByte: feeRate.hourFee,
+      });
 
-  const renderEstFee = ({
-    title,
-    estFee,
-    feeRate,
-  }: {
-    title: optionFees;
-    estFee: string;
-    feeRate: number;
-  }) => {
-    return (
-      <div
-        className={`est-fee-item`}
-      >
-        <div className='est-fee-item-header'>
-          <p className='est-fee-title'>
-            {title}
-          </p>
-          <p className='est-fee-title'>
-            {formatBTCPrice(estFee)} BTC
-          </p>
-        </div>
-        <p className="ext-price">
-          {feeRate} sats/vByte
-        </p>
-      </div >
-    );
-  };
+      setEstBTCFee(estimatedEconomyFee.totalFee.toString());
+    } catch (err: unknown) {
+      logger.error(err);
+    }
+  }, [setEstBTCFee, feeRate.hourFee]);
+
+  const calculateEstTcFee = useCallback(async () => {
+    setEstTCFee(null);
+    try {
+      const gasLimit = '5000000';
+      const gasPrice = await web3Provider.getGasPrice();
+      const gasLimitBN = new BigNumber(gasLimit);
+      const gasPriceBN = new BigNumber(gasPrice);
+      const tcGas = gasLimitBN.times(gasPriceBN);
+      logger.debug('TC Gas', tcGas.toString());
+      setEstTCFee(tcGas.toString());
+    } catch (err: unknown) {
+      logger.error(err);
+    }
+  }, [setEstTCFee]);
 
   useEffect(() => {
-    calculateEstFee();
-  }, [txSize, calculateEstFee]);
+    if (!estimateBTCGas) {
+      calculateEstBtcFee();
+    }
+  }, [estimateBTCGas, calculateEstBtcFee]);
+
+  useEffect(() => {
+    if (!estimateTCGas) {
+      calculateEstTcFee();
+    }
+  }, [estimateTCGas, calculateEstTcFee]);
 
   return (
-    <Wrapper>
+    <Wrapper className={classNames}>
       <div className="est-fee">
-        <Text size="regular" fontWeight="medium" color="bg1" className="mb-8">
-          Network fee estimate
+        <Text
+          className="est-fee-title"
+          size="regular"
+          fontWeight="medium"
+          color="bg1"
+        >
+          Network fee estimation
         </Text>
         <div className="est-fee-options">
-          {renderEstFee({
-            title: optionFees.economy,
-            estFee: estBTCFee.economy,
-            feeRate: feeRate.hourFee,
-          })}
-          {renderEstFee({
-            title: optionFees.faster,
-            estFee: estBTCFee.faster,
-            feeRate: feeRate.halfHourFee,
-          })}
-          {renderEstFee({
-            title: optionFees.fastest,
-            estFee: estBTCFee.fastest,
-            feeRate: feeRate.fastestFee,
-          })}
+          <div className={`est-fee-item`}>
+            <p className="est-fee-item-title">BTC network fee</p>
+            <p className="est-fee-item-value">
+              {estimateBTCGas ? (
+                `~ ${formatBTCPrice(estimateBTCGas)} BTC`
+              ) : estBTCFee && !uploadModal ? (
+                `~ ${formatBTCPrice(estBTCFee)} BTC`
+              ) : (
+                <EllipsisLoading />
+              )}
+            </p>
+          </div>
+          <div className={`est-fee-item`}>
+            <p className="est-fee-item-title">TC network fee</p>
+            <p className="est-fee-item-value">
+              {estimateTCGas ? (
+                `~ ${formatEthPrice(estimateTCGas)} TC`
+              ) : estTCFee && !uploadModal ? (
+                `~ ${formatEthPrice(estTCFee)} TC`
+              ) : (
+                <EllipsisLoading />
+              )}
+            </p>
+          </div>
+          <div className={`est-fee-item`}>
+            <p className="est-fee-item-title">Platform fee</p>
+            <p className="est-fee-item-value">
+              2.5%
+            </p>
+          </div>
         </div>
       </div>
     </Wrapper>
-  )
-}
+  );
+};
 
-export default EstimatedFee;
+export default React.memo(EstimatedFee);

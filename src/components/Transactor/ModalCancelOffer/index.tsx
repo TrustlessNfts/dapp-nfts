@@ -1,18 +1,19 @@
-import React, { useState } from 'react';
-import TransactorBaseModal from '../TransactorBaseModal';
-import { IInscriptionOffer } from '@/interfaces/api/inscription';
 import EstimatedFee from '@/components/EstimatedFee';
-import { TRANSFER_TX_SIZE } from '@/configs';
-import { SubmitButton } from '../TransactorBaseModal/TransactorBaseModal.styled';
 import { ROUTE_PATH } from '@/constants/route-path';
+import useCancelTokenOffer, {
+  ICancelTokenOfferParams,
+} from '@/hooks/contract-operations/marketplace/useCancelTokenOffer';
 import useContractOperation from '@/hooks/contract-operations/useContractOperation';
+import { IInscriptionOffer } from '@/interfaces/api/inscription';
 import logger from '@/services/logger';
 import { getUserSelector } from '@/state/user/selector';
-import { showToastSuccess, showToastError } from '@/utils/toast';
+import { showToastError, showToastSuccess } from '@/utils/toast';
+import { Transaction } from 'ethers';
 import { useRouter } from 'next/router';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import useCancelTokenOffer, { ICancelTokenOfferParams } from '@/hooks/contract-operations/marketplace/useCancelTokenOffer';
-import { Transaction } from 'ethers'
+import TransactorBaseModal from '../TransactorBaseModal';
+import { SubmitButton } from '../TransactorBaseModal/TransactorBaseModal.styled';
 
 interface IProps {
   show: boolean;
@@ -44,20 +45,21 @@ const ModalCancelOffer = ({ show, handleClose, inscription }: IProps) => {
       setProcessing(true);
       await cancelTokenOffer({
         offerId: inscription.offeringId,
-      })
+      });
       showToastSuccess({
-        message: 'Please go to your wallet to authorize the request for the Bitcoin transaction.'
-      })
+        message:
+          'Please go to your wallet to authorize the request for the Bitcoin transaction.',
+      });
       handleClose();
     } catch (err: unknown) {
       logger.error(err);
       showToastError({
-        message: (err as Error).message
-      })
+        message: (err as Error).message,
+      });
     } finally {
       setProcessing(false);
     }
-  }
+  };
 
   if (!inscription) {
     return <></>;
@@ -74,7 +76,7 @@ const ModalCancelOffer = ({ show, handleClose, inscription }: IProps) => {
         cancelation from your wallet
       </p>
       <div className="form-item">
-        <EstimatedFee txSize={TRANSFER_TX_SIZE} />
+        <EstimatedFee />
       </div>
       <div className="action-wrapper">
         <div className="multi-btn">
@@ -82,7 +84,8 @@ const ModalCancelOffer = ({ show, handleClose, inscription }: IProps) => {
           <SubmitButton
             onClick={handleCancelOffer}
             className="secondary"
-            disabled={processing}>
+            disabled={processing}
+          >
             {processing ? 'Processing...' : 'Confirm'}
           </SubmitButton>
         </div>

@@ -47,7 +47,7 @@ const useContractOperation = <P, R>(
       // It delegates error to caller
 
       if (!isAuthenticated || !user?.walletAddress) {
-        router.push(`${ROUTE_PATH.CONNECT_WALLET}?next=${window.location.href}`);
+        router.push(`${ROUTE_PATH.CONNECT_WALLET}`);
         throw Error('Please connect wallet to continue.');
       }
 

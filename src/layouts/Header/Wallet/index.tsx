@@ -35,7 +35,7 @@ const WalletHeader = () => {
   const ref = useRef(null);
 
   const goToConnectWalletPage = async () => {
-    router.push(`${ROUTE_PATH.CONNECT_WALLET}?next=${window.location.href}`);
+    router.push(`${ROUTE_PATH.CONNECT_WALLET}`);
   };
 
   const onClickCopy = (address: string) => {

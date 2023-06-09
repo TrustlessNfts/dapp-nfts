@@ -1,35 +1,53 @@
-import React, { useState } from 'react';
-import TransactorBaseModal from '../TransactorBaseModal';
-import { IInscription } from '@/interfaces/api/inscription';
 import EstimatedFee from '@/components/EstimatedFee';
-import { TC_MARKETPLACE_CONTRACT, TRANSFER_TX_SIZE } from '@/configs';
-import { SubmitButton } from '../TransactorBaseModal/TransactorBaseModal.styled';
-import { formatEthPrice, mappingERC20ToSymbol } from '@/utils/format';
-import useContractOperation from '@/hooks/contract-operations/useContractOperation';
-import logger from '@/services/logger';
-import { showToastError, showToastSuccess } from '@/utils/toast';
-import { useSelector } from 'react-redux';
-import { getUserSelector } from '@/state/user/selector';
-import { useRouter } from 'next/router';
-import { ROUTE_PATH } from '@/constants/route-path';
-import usePurchaseToken, { IPurchaseTokenParams } from '@/hooks/contract-operations/marketplace/usePurchaseToken';
-import useApproveTokenAmount, { IApproveTokenAmountParams } from '@/hooks/contract-operations/erc20/useApproveTokenAmount';
-import useGetAllowanceAmount, { IGetAllowanceAmountParams } from '@/hooks/contract-operations/erc20/useGetAllowanceAmount';
+import { TC_MARKETPLACE_CONTRACT } from '@/configs';
 import { MAX_HEX_VALUE } from '@/constants/common';
-import { checkCacheApprovalTokenPermission, setCacheApprovalTokenPermission } from '@/utils/marketplace-storage';
-import { Transaction } from 'ethers'
+import { ROUTE_PATH } from '@/constants/route-path';
+import useApproveTokenAmount, {
+  IApproveTokenAmountParams,
+} from '@/hooks/contract-operations/erc20/useApproveTokenAmount';
+import useGetAllowanceAmount, {
+  IGetAllowanceAmountParams,
+} from '@/hooks/contract-operations/erc20/useGetAllowanceAmount';
+import usePurchaseToken, {
+  IPurchaseTokenParams,
+} from '@/hooks/contract-operations/marketplace/usePurchaseToken';
+import useContractOperation from '@/hooks/contract-operations/useContractOperation';
+import { IInscription } from '@/interfaces/api/inscription';
+import logger from '@/services/logger';
+import { getUserSelector } from '@/state/user/selector';
+import { exponentialToDecimal, formatEthPrice, mappingERC20ToSymbol } from '@/utils/format';
+import {
+  checkCacheApprovalTokenPermission,
+  setCacheApprovalTokenPermission,
+} from '@/utils/marketplace-storage';
+import { showToastError, showToastSuccess } from '@/utils/toast';
 import BigNumber from 'bignumber.js';
+import { Transaction } from 'ethers';
+import { useRouter } from 'next/router';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import TransactorBaseModal from '../TransactorBaseModal';
+import { SubmitButton } from '../TransactorBaseModal/TransactorBaseModal.styled';
+import useTokenBalance, { IGetTokenBalanceParams } from '@/hooks/contract-operations/erc20/useTokenBalance';
+import Web3 from 'web3';
 
 interface IProps {
   show: boolean;
   handleClose: () => void;
-  inscription: IInscription;
+  inscription: IInscription | null;
 }
 
 const ModalPurchase = ({ show, handleClose, inscription }: IProps) => {
   const user = useSelector(getUserSelector);
   const router = useRouter();
   const [processing, setProcessing] = useState(false);
+  const { run: getTokenBalance } = useContractOperation<
+    IGetTokenBalanceParams,
+    string
+  >({
+    operation: useTokenBalance,
+    inscribeable: false,
+  });
   const { run: getAllowanceAmount } = useContractOperation<
     IGetAllowanceAmountParams,
     number
@@ -52,7 +70,7 @@ const ModalPurchase = ({ show, handleClose, inscription }: IProps) => {
     inscribeable: true,
   });
 
-  if (!inscription.listingForSales) return <></>;
+  if (!inscription?.listingForSales) return <></>;
 
   const listingInfo = inscription?.listingForSales[0];
 
@@ -66,12 +84,45 @@ const ModalPurchase = ({ show, handleClose, inscription }: IProps) => {
 
     try {
       setProcessing(true);
+
+      // Check ERC20 balance
+      const tokenBalance = await getTokenBalance({
+        contractAddress: listingInfo.erc20Token,
+      });
+
+      const balanceBN = new BigNumber(tokenBalance);
+      const priceBN = new BigNumber(
+        Web3.utils.toWei(exponentialToDecimal(Number(listingInfo.price))),
+      );
+
+      logger.debug(
+        `${balanceBN.dividedBy(1e18).toString()} ${mappingERC20ToSymbol(
+          listingInfo.erc20Token,
+        )}`,
+      );
+
+      if (balanceBN.isLessThan(priceBN)) {
+        logger.error('Insufficient balance');
+        showToastError({
+          message: `Insufficient ${mappingERC20ToSymbol(
+            listingInfo.erc20Token,
+          )} balance. Require ${new BigNumber(listingInfo.price).dividedBy(1e18)} ${mappingERC20ToSymbol(
+            listingInfo.erc20Token,
+          )}. You have ${balanceBN
+            .dividedBy(1e18)
+            .toString()} ${mappingERC20ToSymbol(listingInfo.erc20Token)}.`,
+        });
+        return;
+      }
+
       const allowanceAmount = await getAllowanceAmount({
         contractAddress: listingInfo.erc20Token,
-        operatorAddress: TC_MARKETPLACE_CONTRACT
+        operatorAddress: TC_MARKETPLACE_CONTRACT,
       });
       const allowanceAmountBN = new BigNumber(allowanceAmount);
-      const hasApprovalCache = checkCacheApprovalTokenPermission(`${TC_MARKETPLACE_CONTRACT}_${listingInfo.erc20Token}`);
+      const hasApprovalCache = checkCacheApprovalTokenPermission(
+        `${TC_MARKETPLACE_CONTRACT}_${listingInfo.erc20Token}`,
+      );
 
       logger.debug('allowanceAmountBN', allowanceAmountBN.toString());
       logger.debug('hasApprovalCache', hasApprovalCache);
@@ -83,25 +134,28 @@ const ModalPurchase = ({ show, handleClose, inscription }: IProps) => {
         await approveTokenAmount({
           tokenAddress: listingInfo.erc20Token,
           consumerAddress: TC_MARKETPLACE_CONTRACT,
-          amount: MAX_HEX_VALUE
+          amount: MAX_HEX_VALUE,
         });
 
-        setCacheApprovalTokenPermission(`${TC_MARKETPLACE_CONTRACT}_${listingInfo.erc20Token}`);
+        setCacheApprovalTokenPermission(
+          `${TC_MARKETPLACE_CONTRACT}_${listingInfo.erc20Token}`,
+        );
       }
 
       await purchaseToken({
         offerId: listingInfo.offeringId,
-      })
+      });
 
       showToastSuccess({
-        message: 'Please go to your wallet to authorize the request for the Bitcoin transaction.'
-      })
+        message:
+          'Please go to your wallet to authorize the request for the Bitcoin transaction.',
+      });
       handleClose();
     } catch (err: unknown) {
       logger.error(err);
       showToastError({
-        message: (err as Error).message
-      })
+        message: (err as Error).message,
+      });
     } finally {
       setProcessing(false);
     }
@@ -124,13 +178,10 @@ const ModalPurchase = ({ show, handleClose, inscription }: IProps) => {
         )}`}</b>
       </p>
       <div className="form-item">
-        <EstimatedFee txSize={TRANSFER_TX_SIZE} />
+        <EstimatedFee />
       </div>
       <div className="action-wrapper">
-        <SubmitButton
-          disabled={processing}
-          onClick={hanlePurchaseToken}
-        >
+        <SubmitButton disabled={processing} onClick={hanlePurchaseToken}>
           {processing ? 'Processing...' : 'Confirm'}
         </SubmitButton>
       </div>
