@@ -108,6 +108,12 @@ const EstimatedFee: React.FC<IProps> = ({
               )}
             </p>
           </div>
+          <div className={`est-fee-item`}>
+            <p className="est-fee-item-title">Platform fee</p>
+            <p className="est-fee-item-value">
+              2.5%
+            </p>
+          </div>
         </div>
       </div>
     </Wrapper>

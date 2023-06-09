@@ -15,7 +15,7 @@ import useContractOperation from '@/hooks/contract-operations/useContractOperati
 import { IInscription } from '@/interfaces/api/inscription';
 import logger from '@/services/logger';
 import { getUserSelector } from '@/state/user/selector';
-import { formatEthPrice, mappingERC20ToSymbol } from '@/utils/format';
+import { exponentialToDecimal, formatEthPrice, mappingERC20ToSymbol } from '@/utils/format';
 import {
   checkCacheApprovalTokenPermission,
   setCacheApprovalTokenPermission,
@@ -28,6 +28,8 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import TransactorBaseModal from '../TransactorBaseModal';
 import { SubmitButton } from '../TransactorBaseModal/TransactorBaseModal.styled';
+import useTokenBalance, { IGetTokenBalanceParams } from '@/hooks/contract-operations/erc20/useTokenBalance';
+import Web3 from 'web3';
 
 interface IProps {
   show: boolean;
@@ -39,6 +41,13 @@ const ModalPurchase = ({ show, handleClose, inscription }: IProps) => {
   const user = useSelector(getUserSelector);
   const router = useRouter();
   const [processing, setProcessing] = useState(false);
+  const { run: getTokenBalance } = useContractOperation<
+    IGetTokenBalanceParams,
+    string
+  >({
+    operation: useTokenBalance,
+    inscribeable: false,
+  });
   const { run: getAllowanceAmount } = useContractOperation<
     IGetAllowanceAmountParams,
     number
@@ -75,6 +84,37 @@ const ModalPurchase = ({ show, handleClose, inscription }: IProps) => {
 
     try {
       setProcessing(true);
+
+      // Check ERC20 balance
+      const tokenBalance = await getTokenBalance({
+        contractAddress: listingInfo.erc20Token,
+      });
+
+      const balanceBN = new BigNumber(tokenBalance);
+      const priceBN = new BigNumber(
+        Web3.utils.toWei(exponentialToDecimal(Number(listingInfo.price))),
+      );
+
+      logger.debug(
+        `${balanceBN.dividedBy(1e18).toString()} ${mappingERC20ToSymbol(
+          listingInfo.erc20Token,
+        )}`,
+      );
+
+      if (balanceBN.isLessThan(priceBN)) {
+        logger.error('Insufficient balance');
+        showToastError({
+          message: `Insufficient ${mappingERC20ToSymbol(
+            listingInfo.erc20Token,
+          )} balance. Require ${new BigNumber(listingInfo.price).dividedBy(1e18)} ${mappingERC20ToSymbol(
+            listingInfo.erc20Token,
+          )}. You have ${balanceBN
+            .dividedBy(1e18)
+            .toString()} ${mappingERC20ToSymbol(listingInfo.erc20Token)}.`,
+        });
+        return;
+      }
+
       const allowanceAmount = await getAllowanceAmount({
         contractAddress: listingInfo.erc20Token,
         operatorAddress: TC_MARKETPLACE_CONTRACT,

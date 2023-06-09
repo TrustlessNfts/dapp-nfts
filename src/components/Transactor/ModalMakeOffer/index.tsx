@@ -99,6 +99,36 @@ const ModalMakeOffer: React.FC<IProps> = ({
       setProcessing(true);
       const { price, erc20Token } = values;
 
+      // Check ERC20 balance
+      const tokenBalance = await getTokenBalance({
+        contractAddress: erc20Token,
+      });
+
+      const balanceBN = new BigNumber(tokenBalance);
+      const priceBN = new BigNumber(
+        Web3.utils.toWei(exponentialToDecimal(Number(price))),
+      );
+
+      logger.debug(
+        `${balanceBN.dividedBy(1e18).toString()} ${mappingERC20ToSymbol(
+          erc20Token,
+        )}`,
+      );
+
+      if (balanceBN.isLessThan(priceBN)) {
+        logger.error('Insufficient balance');
+        showToastError({
+          message: `Insufficient ${mappingERC20ToSymbol(
+            erc20Token,
+          )} balance. Require ${price} ${mappingERC20ToSymbol(
+            erc20Token,
+          )}. You have ${balanceBN
+            .dividedBy(1e18)
+            .toString()} ${mappingERC20ToSymbol(erc20Token)}.`,
+        });
+        return;
+      }
+
       const allowanceAmount = await getAllowanceAmount({
         contractAddress: erc20Token,
         operatorAddress: TC_MARKETPLACE_CONTRACT,
@@ -122,34 +152,6 @@ const ModalMakeOffer: React.FC<IProps> = ({
         });
 
         setCacheApprovalTokenPermission(`${TC_MARKETPLACE_CONTRACT}_${erc20Token}`);
-      }
-
-      // Check ERC20 balance
-      const tokenBalance = await getTokenBalance({
-        contractAddress: erc20Token,
-      });
-
-      const balanceBN = new BigNumber(tokenBalance);
-      const priceBN = new BigNumber(
-        Web3.utils.toWei(exponentialToDecimal(Number(price))),
-      );
-      logger.debug(
-        `${balanceBN.dividedBy(1e18).toString()} ${mappingERC20ToSymbol(
-          erc20Token,
-        )}`,
-      );
-      if (balanceBN.isLessThan(priceBN)) {
-        logger.error('Insufficient balance');
-        showToastError({
-          message: `Insufficient ${mappingERC20ToSymbol(
-            erc20Token,
-          )} balance. Require ${price} ${mappingERC20ToSymbol(
-            erc20Token,
-          )}. You have ${balanceBN
-            .dividedBy(1e18)
-            .toString()} ${mappingERC20ToSymbol(erc20Token)}.`,
-        });
-        return;
       }
 
       logger.debug({
