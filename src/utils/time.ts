@@ -4,11 +4,8 @@ import isNumber from 'lodash/isNumber';
 const FORMAT_PATTERN = 'DD MMM hh:mm A';
 
 interface IFormatDate {
-  dateTime: number;
+  dateTime: number | string;
   formatPattern?: string;
-}
-const formatUnixDateTime = ({ dateTime, formatPattern = FORMAT_PATTERN }: IFormatDate) => {
-  return dayjs.unix(dateTime).format(formatPattern);
 }
 
 const formatDateTime = ({ dateTime, formatPattern = FORMAT_PATTERN }: IFormatDate) =>
@@ -45,7 +42,6 @@ function getCurrentUnixTimestamp() {
 }
 
 export {
-  formatUnixDateTime,
   formatDateTime,
   isExpiredUnixTime,
   isExpiredTime,

@@ -1,23 +1,32 @@
-import React, { useState } from 'react';
-import TransactorBaseModal from '../TransactorBaseModal';
+import EstimatedFee from '@/components/EstimatedFee';
+import { TC_MARKETPLACE_CONTRACT } from '@/configs';
+import { TOKEN_OPTIONS, WETH_ADDRESS } from '@/constants/marketplace';
+import useListTokenForSale, {
+  IListTokenForSaleParams,
+} from '@/hooks/contract-operations/marketplace/useListTokenForSale';
+import useSetApprovalForAll, {
+  ISetApprovalForAllParams,
+} from '@/hooks/contract-operations/marketplace/useSetApprovalForAll';
+import useIsApprovedForAll, {
+  IIsApprovedForAllParams,
+} from '@/hooks/contract-operations/nft/useIsApprovedForAll';
+import useContractOperation from '@/hooks/contract-operations/useContractOperation';
 import { IInscription } from '@/interfaces/api/inscription';
 import logger from '@/services/logger';
-import { Formik } from 'formik';
-import Form from 'react-bootstrap/Form';
-import { TOKEN_OPTIONS, WETH_ADDRESS } from '@/constants/marketplace';
-import { SubmitButton } from '../TransactorBaseModal/TransactorBaseModal.styled';
-import EstimatedFee from '@/components/EstimatedFee';
-import { TC_MARKETPLACE_CONTRACT, TRANSFER_TX_SIZE } from '@/configs';
-import isNaN from 'lodash/isNaN';
-import cs from 'classnames';
-import { Transaction } from 'ethers'
-import { showToastError, showToastSuccess } from '@/utils/toast';
-import useContractOperation from '@/hooks/contract-operations/useContractOperation';
-import useIsApprovedForAll, { IIsApprovedForAllParams } from '@/hooks/contract-operations/nft/useIsApprovedForAll';
-import useSetApprovalForAll, { ISetApprovalForAllParams } from '@/hooks/contract-operations/marketplace/useSetApprovalForAll';
-import useListTokenForSale, { IListTokenForSaleParams } from '@/hooks/contract-operations/marketplace/useListTokenForSale';
-import { checkCacheApprovalPermission, setCacheApprovalPermission } from '@/utils/marketplace-storage';
 import { exponentialToDecimal } from '@/utils/format';
+import {
+  checkCacheApprovalPermission,
+  setCacheApprovalPermission,
+} from '@/utils/marketplace-storage';
+import { showToastError, showToastSuccess } from '@/utils/toast';
+import cs from 'classnames';
+import { Transaction } from 'ethers';
+import { Formik } from 'formik';
+import isNaN from 'lodash/isNaN';
+import React, { useState } from 'react';
+import Form from 'react-bootstrap/Form';
+import TransactorBaseModal from '../TransactorBaseModal';
+import { SubmitButton } from '../TransactorBaseModal/TransactorBaseModal.styled';
 
 interface IProps {
   show: boolean;
@@ -48,7 +57,7 @@ const ModalListTokenForSale: React.FC<IProps> = ({
     Transaction | null
   >({
     operation: useSetApprovalForAll,
-    inscribeable: false
+    inscribeable: false,
   });
   const { run: listToken } = useContractOperation<
     IListTokenForSaleParams,
@@ -68,7 +77,7 @@ const ModalListTokenForSale: React.FC<IProps> = ({
     }
 
     return errors;
-  }
+  };
 
   const handleSubmit = async (values: IFormValues) => {
     if (processing || !inscription) return;
@@ -79,9 +88,11 @@ const ModalListTokenForSale: React.FC<IProps> = ({
       const { price, erc20Token } = values;
       const isApproved = await isTokenApproved({
         contractAddress: inscription.collectionAddress,
-        operatorAddress: TC_MARKETPLACE_CONTRACT
+        operatorAddress: TC_MARKETPLACE_CONTRACT,
       });
-      const hasApprovalCache = checkCacheApprovalPermission(`${TC_MARKETPLACE_CONTRACT}_${inscription.collectionAddress}`);
+      const hasApprovalCache = checkCacheApprovalPermission(
+        `${TC_MARKETPLACE_CONTRACT}_${inscription.collectionAddress}`,
+      );
       if (!isApproved && !hasApprovalCache) {
         logger.debug(TC_MARKETPLACE_CONTRACT);
         logger.debug(inscription.collectionAddress);
@@ -89,9 +100,11 @@ const ModalListTokenForSale: React.FC<IProps> = ({
         await setApprovalForAll({
           operatorAddress: TC_MARKETPLACE_CONTRACT,
           contractAddress: inscription.collectionAddress,
-        })
+        });
 
-        setCacheApprovalPermission(`${TC_MARKETPLACE_CONTRACT}_${inscription.collectionAddress}`);
+        setCacheApprovalPermission(
+          `${TC_MARKETPLACE_CONTRACT}_${inscription.collectionAddress}`,
+        );
       }
 
       logger.debug({
@@ -101,31 +114,36 @@ const ModalListTokenForSale: React.FC<IProps> = ({
         durationTime: 0,
         tokenID: inscription.tokenId,
       });
-      
+
       await listToken({
         collectionAddress: inscription.collectionAddress,
         erc20Token: erc20Token,
         price: exponentialToDecimal(Number(price)),
         durationTime: 0,
         tokenID: inscription.tokenId,
-      })
+      });
 
       showToastSuccess({
-        message: 'Please go to your wallet to authorize the request for the Bitcoin transaction.'
-      })
+        message:
+          'Please go to your wallet to authorize the request for the Bitcoin transaction.',
+      });
       handleClose();
     } catch (err: unknown) {
       logger.error(err);
       showToastError({
-        message: (err as Error).message
-      })
+        message: (err as Error).message,
+      });
     } finally {
       setProcessing(false);
     }
-  }
+  };
 
   return (
-    <TransactorBaseModal title={'List token for sale'} show={show} handleClose={handleClose}>
+    <TransactorBaseModal
+      title={'List token for sale'}
+      show={show}
+      handleClose={handleClose}
+    >
       <Formik
         key="listTokenForSale"
         initialValues={{
@@ -138,44 +156,47 @@ const ModalListTokenForSale: React.FC<IProps> = ({
         {({ values, errors, touched, handleChange, handleSubmit }) => (
           <form onSubmit={handleSubmit}>
             <div className="form-item">
-              <label className='label' htmlFor="erc20Token">Choose token</label>
+              <label className="label" htmlFor="erc20Token">
+                Choose token
+              </label>
               <Form.Select
                 className={'form-control'}
                 value={values.erc20Token}
                 onChange={handleChange}
-                name='erc20Token'
-                id='erc20Token'>
-                {TOKEN_OPTIONS.map(item => (
-                  <option key={item.value} value={item.value}>{item.label}</option>
+                name="erc20Token"
+                id="erc20Token"
+              >
+                {TOKEN_OPTIONS.map((item) => (
+                  <option key={item.value} value={item.value}>
+                    {item.label}
+                  </option>
                 ))}
               </Form.Select>
             </div>
             <div className="form-item">
-              <label className='label' htmlFor="price">Price</label>
+              <label className="label" htmlFor="price">
+                Price
+              </label>
               <Form.Control
                 className={cs('form-control', {
-                  'has-error': touched.price && errors.price
+                  'has-error': touched.price && errors.price,
                 })}
                 value={values.price}
                 onChange={handleChange}
                 type="number"
-                name='price'
-                id='price'
+                name="price"
+                id="price"
                 placeholder="Set a price"
               />
-              {(touched.price && errors.price) && (
-                <p className='form-control-error'>{errors.price}</p>
+              {touched.price && errors.price && (
+                <p className="form-control-error">{errors.price}</p>
               )}
             </div>
             <div className="form-item">
-              <EstimatedFee
-                txSize={TRANSFER_TX_SIZE}
-              />
+              <EstimatedFee />
             </div>
             <div className="action-wrapper">
-              <SubmitButton
-                disabled={processing}
-                type='submit'>
+              <SubmitButton disabled={processing} type="submit">
                 {processing ? 'Processing...' : 'Confirm'}
               </SubmitButton>
             </div>
@@ -183,7 +204,7 @@ const ModalListTokenForSale: React.FC<IProps> = ({
         )}
       </Formik>
     </TransactorBaseModal>
-  )
-}
+  );
+};
 
 export default ModalListTokenForSale;

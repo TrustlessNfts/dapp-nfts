@@ -1,14 +1,22 @@
 import Button from '@/components/Button';
+import EstimatedFee from '@/components/EstimatedFee';
 import IconSVG from '@/components/IconSVG';
 import Text from '@/components/Text';
 import { CDN_URL } from '@/configs';
+import web3Provider from '@/connection/custom-web3-provider';
 import { MINT_TOOL_MAX_FILE_SIZE } from '@/constants/config';
-import { BLOCK_CHAIN_FILE_LIMIT, ZIP_EXTENSION } from '@/constants/file';
+import {
+  BLOCK_CHAIN_FILE_LIMIT,
+  STATIC_IMAGE_EXTENSIONS,
+  ZIP_EXTENSION,
+} from '@/constants/file';
+import { AssetsContext } from '@/contexts/assets-context';
 import useCreateNFTCollection, {
   ICreateNFTCollectionParams,
 } from '@/hooks/contract-operations/nft/useCreateNFTCollection';
 import useContractOperation from '@/hooks/contract-operations/useContractOperation';
 import { DeployContractResponse } from '@/interfaces/contract-operation';
+import logger from '@/services/logger';
 import {
   fileToBase64,
   getFileExtensionByFileName,
@@ -16,10 +24,12 @@ import {
   unzipFile,
 } from '@/utils';
 import { showToastError, showToastSuccess } from '@/utils/toast';
+import BigNumber from 'bignumber.js';
 import { Buffer } from 'buffer';
 import { Formik } from 'formik';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Modal } from 'react-bootstrap';
+import * as TC_SDK from 'trustless-computer-sdk';
 import DropFile from './DropFile';
 import {
   Checkboxes,
@@ -27,8 +37,6 @@ import {
   Title,
   WrapInput,
 } from './ModalCreate.styled';
-import { STATIC_IMAGE_EXTENSIONS } from '@/constants/file';
-import EstimatedFee from '@/components/EstimatedFee';
 
 interface IFormValue {
   name: string;
@@ -54,10 +62,15 @@ const ModalCreate = (props: Props) => {
   >({
     operation: useCreateNFTCollection,
   });
+  const { estimateGas } = useCreateNFTCollection();
   const [file, setFile] = useState<File | null>(null);
   const [isProcessingFile, setIsProcessingFile] = useState(false);
   const [showUploadField, setShowUploadField] = useState(false);
   const [listFiles, setListFiles] = useState<Array<Array<Buffer>> | null>();
+  const [estBTCFee, setEstBTCFee] = useState<string | null>(null);
+  const [estTCFee, setEstTCFee] = useState<string | null>(null);
+  const [preSubmitName, setPreSubmitName] = useState('');
+  const { feeRate } = useContext(AssetsContext);
 
   const onChangeFile = (file: File | null): void => {
     setFile(file);
@@ -87,7 +100,8 @@ const ModalCreate = (props: Props) => {
       const chunksSizeInKb = Buffer.byteLength(chunks) / 1000;
       if (chunksSizeInKb > BLOCK_CHAIN_FILE_LIMIT * 1000) {
         throw Error(
-          `File size error, maximum file size is ${BLOCK_CHAIN_FILE_LIMIT * 1000
+          `File size error, maximum file size is ${
+            BLOCK_CHAIN_FILE_LIMIT * 1000
           }kb.`,
         );
       }
@@ -141,7 +155,8 @@ const ModalCreate = (props: Props) => {
       });
 
       showToastSuccess({
-        message: 'Please go to your wallet to authorize the request for the Bitcoin transaction.'
+        message:
+          'Please go to your wallet to authorize the request for the Bitcoin transaction.',
       });
       handleClose();
     } catch (err) {
@@ -166,12 +181,57 @@ const ModalCreate = (props: Props) => {
   const totalFileSize = useMemo(() => {
     if (!listFiles) return 0;
     const tcTxSizeBytes = listFiles
-      .map((chunk) =>
-        chunk.reduce((prev, cur) => prev + Buffer.byteLength(cur), 0),
-      )
+      .map((chunk) => chunk.reduce((prev, cur) => prev + Buffer.byteLength(cur), 0))
       .reduce((prev, cur) => prev + cur, 0);
     return tcTxSizeBytes;
-  }, [listFiles])
+  }, [listFiles]);
+
+  const calculateEstBtcFee = useCallback(async () => {
+    try {
+      setEstBTCFee(null);
+
+      const tcTxSizeByte = totalFileSize;
+
+      const estimatedEconomyFee = TC_SDK.estimateInscribeFee({
+        tcTxSizeByte: tcTxSizeByte,
+        feeRatePerByte: feeRate.hourFee,
+      });
+
+      setEstBTCFee(estimatedEconomyFee.totalFee.toString());
+    } catch (err: unknown) {
+      logger.error(err);
+    }
+  }, [setEstBTCFee, feeRate.hourFee, totalFileSize]);
+
+  const calculateEstTcFee = useCallback(async () => {
+    if (!estimateGas) return;
+
+    setEstTCFee(null);
+    let payload: ICreateNFTCollectionParams;
+    try {
+      if (!listFiles) {
+        payload = {
+          name: preSubmitName,
+          listOfChunks: [],
+        };
+      } else {
+        payload = {
+          name: preSubmitName,
+          listOfChunks: listFiles,
+        };
+      }
+
+      const gasLimit = await estimateGas(payload);
+      const gasPrice = await web3Provider.getGasPrice();
+      const gasLimitBN = new BigNumber(gasLimit);
+      const gasPriceBN = new BigNumber(gasPrice);
+      const tcGas = gasLimitBN.times(gasPriceBN);
+      logger.debug('TC Gas', tcGas.toString());
+      setEstTCFee(tcGas.toString());
+    } catch (err: unknown) {
+      logger.error(err);
+    }
+  }, [setEstTCFee, estimateGas, listFiles]);
 
   useEffect(() => {
     if (file) {
@@ -208,6 +268,14 @@ const ModalCreate = (props: Props) => {
     }
   }, [file]);
 
+  useEffect(() => {
+    calculateEstBtcFee();
+  }, [calculateEstBtcFee]);
+
+  useEffect(() => {
+    calculateEstTcFee();
+  }, [calculateEstTcFee]);
+
   return (
     <StyledModalUpload show={show} onHide={handleClose} centered size="lg">
       <Modal.Header>
@@ -240,7 +308,10 @@ const ModalCreate = (props: Props) => {
                   type="text"
                   name="name"
                   onChange={handleChange}
-                  onBlur={handleBlur}
+                  onBlur={(e) => {
+                    handleBlur(e);
+                    setPreSubmitName(e.target.value);
+                  }}
                   value={values.name}
                   className="input"
                   placeholder={`Enter collection name`}
@@ -344,7 +415,11 @@ const ModalCreate = (props: Props) => {
                   </ul>
                 </div>
               )}
-              <EstimatedFee txSize={totalFileSize} />
+              <EstimatedFee
+                estimateBTCGas={estBTCFee}
+                estimateTCGas={estTCFee}
+                uploadModal
+              />
               <div className="confirm">
                 <Button
                   disabled={isProcessing}

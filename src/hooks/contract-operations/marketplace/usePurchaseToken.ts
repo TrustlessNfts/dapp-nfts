@@ -1,15 +1,15 @@
-import { ContractOperationHook, DAppType } from '@/interfaces/contract-operation';
 import MarketplaceABIJson from '@/abis/marketplace.json';
-import { useWeb3React } from '@web3-react/core';
-import { useCallback, useContext } from 'react';
-import { Transaction } from 'ethers';
-import { AssetsContext } from '@/contexts/assets-context';
-import BigNumber from 'bignumber.js';
-import * as TC_SDK from 'trustless-computer-sdk';
-import { formatBTCPrice } from '@/utils/format';
-import { getContract } from '@/utils';
-import logger from '@/services/logger';
 import { TC_MARKETPLACE_CONTRACT, TRANSFER_TX_SIZE } from '@/configs';
+import { AssetsContext } from '@/contexts/assets-context';
+import { ContractOperationHook, DAppType } from '@/interfaces/contract-operation';
+import logger from '@/services/logger';
+import { getContract } from '@/utils';
+import { formatBTCPrice } from '@/utils/format';
+import { useWeb3React } from '@web3-react/core';
+import BigNumber from 'bignumber.js';
+import { Transaction } from 'ethers';
+import { useCallback, useContext } from 'react';
+import * as TC_SDK from 'trustless-computer-sdk';
 
 export interface IPurchaseTokenParams {
   offerId: string;
@@ -43,7 +43,7 @@ const usePurchaseToken: ContractOperationHook<
 
         const estimatedFee = TC_SDK.estimateInscribeFee({
           tcTxSizeByte: TRANSFER_TX_SIZE,
-          feeRatePerByte: feeRate.fastestFee,
+          feeRatePerByte: feeRate.hourFee,
         });
 
         const balanceInBN = new BigNumber(btcBalance);
@@ -56,11 +56,10 @@ const usePurchaseToken: ContractOperationHook<
         }
 
         const offerIdBytes32 = '0x' + offerId;
-
         const transaction = await contract
           .connect(provider.getSigner())
           .purchaseToken(offerIdBytes32, {
-            gasLimit: '500000'
+            gasLimit: '500000',
           });
 
         return transaction;

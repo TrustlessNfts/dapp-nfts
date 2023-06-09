@@ -1,0 +1,17 @@
+.showMoreText {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;  
+  overflow: hidden;
+
+  &__full {
+    display: block;
+    overflow: visible;
+    line-clamp: inherit;
+  }
+}
+
+.showMoreBtn {
+  background-color: transparent;
+  color: #fff;
+  text-decoration: underline;
+}

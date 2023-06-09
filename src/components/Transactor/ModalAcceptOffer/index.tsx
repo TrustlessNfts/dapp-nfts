@@ -1,21 +1,30 @@
-import React, { useState } from 'react';
-import TransactorBaseModal from '../TransactorBaseModal';
-import { IInscriptionOffer } from '@/interfaces/api/inscription';
 import EstimatedFee from '@/components/EstimatedFee';
-import { Transaction } from 'ethers';
-import { TC_MARKETPLACE_CONTRACT, TRANSFER_TX_SIZE } from '@/configs';
-import { SubmitButton } from '../TransactorBaseModal/TransactorBaseModal.styled';
+import { TC_MARKETPLACE_CONTRACT } from '@/configs';
 import { ROUTE_PATH } from '@/constants/route-path';
+import useAcceptTokenOffer, {
+  IAcceptTokenOfferParams,
+} from '@/hooks/contract-operations/marketplace/useAcceptTokenOffer';
+import useSetApprovalForAll, {
+  ISetApprovalForAllParams,
+} from '@/hooks/contract-operations/marketplace/useSetApprovalForAll';
+import useIsApprovedForAll, {
+  IIsApprovedForAllParams,
+} from '@/hooks/contract-operations/nft/useIsApprovedForAll';
 import useContractOperation from '@/hooks/contract-operations/useContractOperation';
+import { IInscriptionOffer } from '@/interfaces/api/inscription';
 import logger from '@/services/logger';
 import { getUserSelector } from '@/state/user/selector';
-import { showToastSuccess, showToastError } from '@/utils/toast';
+import {
+  checkCacheApprovalPermission,
+  setCacheApprovalPermission,
+} from '@/utils/marketplace-storage';
+import { showToastError, showToastSuccess } from '@/utils/toast';
+import { Transaction } from 'ethers';
 import { useRouter } from 'next/router';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import useAcceptTokenOffer, { IAcceptTokenOfferParams } from '@/hooks/contract-operations/marketplace/useAcceptTokenOffer';
-import useSetApprovalForAll, { ISetApprovalForAllParams } from '@/hooks/contract-operations/marketplace/useSetApprovalForAll';
-import useIsApprovedForAll, { IIsApprovedForAllParams } from '@/hooks/contract-operations/nft/useIsApprovedForAll';
-import { checkCacheApprovalPermission, setCacheApprovalPermission } from '@/utils/marketplace-storage';
+import TransactorBaseModal from '../TransactorBaseModal';
+import { SubmitButton } from '../TransactorBaseModal/TransactorBaseModal.styled';
 
 interface IProps {
   show: boolean;
@@ -39,7 +48,7 @@ const ModalAcceptOffer = ({ show, handleClose, inscription }: IProps) => {
     Transaction | null
   >({
     operation: useSetApprovalForAll,
-    inscribeable: false
+    inscribeable: false,
   });
   const { run: acceptTokenOffer } = useContractOperation<
     IAcceptTokenOfferParams,
@@ -62,9 +71,11 @@ const ModalAcceptOffer = ({ show, handleClose, inscription }: IProps) => {
 
       const isApproved = await isTokenApproved({
         contractAddress: inscription.collectionContract,
-        operatorAddress: TC_MARKETPLACE_CONTRACT
+        operatorAddress: TC_MARKETPLACE_CONTRACT,
       });
-      const hasApprovalCache = checkCacheApprovalPermission(`${TC_MARKETPLACE_CONTRACT}_${inscription.collectionContract}`);
+      const hasApprovalCache = checkCacheApprovalPermission(
+        `${TC_MARKETPLACE_CONTRACT}_${inscription.collectionContract}`,
+      );
       if (!isApproved && !hasApprovalCache) {
         logger.debug(TC_MARKETPLACE_CONTRACT);
         logger.debug(inscription.collectionContract);
@@ -72,27 +83,30 @@ const ModalAcceptOffer = ({ show, handleClose, inscription }: IProps) => {
         await setApprovalForAll({
           operatorAddress: TC_MARKETPLACE_CONTRACT,
           contractAddress: inscription.collectionContract,
-        })
+        });
 
-        setCacheApprovalPermission(`${TC_MARKETPLACE_CONTRACT}_${inscription.collectionContract}`);
+        setCacheApprovalPermission(
+          `${TC_MARKETPLACE_CONTRACT}_${inscription.collectionContract}`,
+        );
       }
-      
+
       await acceptTokenOffer({
         offerId: inscription.offeringId,
-      })
+      });
       showToastSuccess({
-        message: 'Please go to your wallet to authorize the request for the Bitcoin transaction.'
-      })
+        message:
+          'Please go to your wallet to authorize the request for the Bitcoin transaction.',
+      });
       handleClose();
     } catch (err: unknown) {
       logger.error(err);
       showToastError({
-        message: (err as Error).message
-      })
+        message: (err as Error).message,
+      });
     } finally {
       setProcessing(false);
     }
-  }
+  };
 
   if (!inscription) {
     return <></>;
@@ -109,13 +123,10 @@ const ModalAcceptOffer = ({ show, handleClose, inscription }: IProps) => {
         acceptance from your wallet.
       </p>
       <div className="form-item">
-        <EstimatedFee txSize={TRANSFER_TX_SIZE} />
+        <EstimatedFee />
       </div>
       <div className="action-wrapper">
-        <SubmitButton
-          onClick={handleAcceptOffer}
-          disabled={processing}
-        >
+        <SubmitButton onClick={handleAcceptOffer} disabled={processing}>
           {processing ? 'Processing...' : 'Confirm'}
         </SubmitButton>
       </div>

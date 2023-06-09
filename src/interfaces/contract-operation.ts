@@ -13,6 +13,7 @@ export type ContractOperationHook<P, R> = (arg?: any) => {
   call: (args: P) => Promise<R>;
   dAppType: DAppType;
   operationName: string;
+  estimateGas?: (args: P) => Promise<string>;
 };
 
 export type DeployContractResponse = {

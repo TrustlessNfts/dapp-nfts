@@ -12,12 +12,12 @@ export const Wrapper = styled.div`
 
     th:first-child,
     td:first-child {
-      width: calc(600 / 2000  * 100%);
+      width: calc(600 / 2000 * 100%);
     }
 
     th:not(:first-child),
     td:not(:first-child) {
-      width: calc(350 / 2000  * 100%);
+      width: calc(350 / 2000 * 100%);
       text-align: right;
     }
 
@@ -25,17 +25,25 @@ export const Wrapper = styled.div`
       min-width: ${px2rem(900)};
       th:first-child,
       td:first-child {
-        position:sticky;
+        position: sticky;
         left: 0;
         z-index: 99;
-        width: calc(500 / 2000  * 100%);
+        width: calc(500 / 2000 * 100%);
       }
 
       th:not(:first-child),
       td:not(:first-child) {
-        width: calc(375 / 2000  * 100%);
+        width: calc(375 / 2000 * 100%);
       }
     }
+  }
+
+  .collection-index {
+    font-weight: 400;
+    font-size: ${px2rem(14)};
+    line-height: ${px2rem(20)};
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: -0.01em;
   }
 
   .collection-info {
