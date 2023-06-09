@@ -5,7 +5,11 @@ export const Wrapper = styled.div`
   padding-top: ${px2rem(60)};
   padding-bottom: ${px2rem(60)};
   display: flex;
-  align-items: center;
+  justify-content: space-between;
+
+  .title-wrapper {
+    flex: 1;
+  }
 
   .title {
     font-weight: 400;
@@ -19,11 +23,9 @@ export const Wrapper = styled.div`
   .description {
     font-weight: 300;
     font-size: ${px2rem(18)};
-    line-height: ${px2rem(24)};
+    line-height: ${px2rem(28)};
     color: rgba(255, 255, 255, 0.7);
     max-width: ${px2rem(772)};
-    margin-left: auto;
-    margin-right: auto;
     margin-bottom: ${px2rem(32)};
 
     span {

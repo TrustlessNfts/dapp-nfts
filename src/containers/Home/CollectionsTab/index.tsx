@@ -18,12 +18,15 @@ const CollectionsTab: React.FC = (): React.ReactElement => {
   const [collections, setCollections] = useState<Array<ICollection>>([]);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const handleSearch = useCallback(debounce(inputVal => fetchCollections(1, inputVal), 500), []);
+  const handleSearch = useCallback(
+    debounce((inputVal) => fetchCollections(1, inputVal), 500),
+    [],
+  );
 
   const fetchCollections = async (p?: number, query?: string) => {
     try {
       setLoading(true);
-      const page = p || (Math.floor(collections.length / FETCH_LIMIT) + 1);
+      const page = p || Math.floor(collections.length / FETCH_LIMIT) + 1;
       const res = await getCollectionList({
         page: page,
         name: query || searchTerm,
@@ -40,7 +43,7 @@ const CollectionsTab: React.FC = (): React.ReactElement => {
       if (page === 1) {
         setCollections(res);
       } else {
-        setCollections(prev => uniqBy([...prev, ...res], 'id'));
+        setCollections((prev) => uniqBy([...prev, ...res], 'id'));
       }
     } catch (err: unknown) {
       logger.error(err);
@@ -57,9 +60,7 @@ const CollectionsTab: React.FC = (): React.ReactElement => {
 
   return (
     <Wrapper>
-      <SearchInput
-        onChange={handleSearch}
-      />
+      <SearchInput onChange={handleSearch} />
       <InfiniteScroll
         className="collection-list"
         dataLength={collections.length}
@@ -68,17 +69,17 @@ const CollectionsTab: React.FC = (): React.ReactElement => {
             <div className="loading-wrapper">
               <Spinner />
             </div>
-          ) : <></>
+          ) : (
+            <></>
+          )
         }
         next={fetchCollections}
         hasMore={hasMore}
       >
-        <DataTable
-          collections={collections}
-        />
+        <DataTable collections={collections} />
       </InfiniteScroll>
     </Wrapper>
-  )
-}
+  );
+};
 
 export default CollectionsTab;

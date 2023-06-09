@@ -34,10 +34,7 @@ const useMintChunks: ContractOperationHook<
           provider,
           account,
         );
-        const gasLimit = await contract.estimateGas.mintChunks(
-          account,
-          [chunks],
-        );
+        const gasLimit = await contract.estimateGas.mintChunks(account, [chunks]);
         const gasLimitBN = new BigNumber(gasLimit.toString());
         const gasBuffer = gasLimitBN.times(1.1).decimalPlaces(0);
         logger.debug('useMintChunks estimate gas', gasBuffer.toString());
@@ -72,13 +69,11 @@ const useMintChunks: ContractOperationHook<
         }
         const gasLimit = await estimateGas(params);
         logger.debug('gasLimit', gasLimit);
-        const transaction = await contract.connect(provider.getSigner()).mintChunks(
-          account,
-          [chunks],
-          {
+        const transaction = await contract
+          .connect(provider.getSigner())
+          .mintChunks(account, [chunks], {
             gasLimit,
-          }
-        );
+          });
 
         return transaction;
       }

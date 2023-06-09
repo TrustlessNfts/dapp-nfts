@@ -13,6 +13,7 @@ import '@/styles/index.scss';
 import ClientOnly from '@/components/Utils/ClientOnly';
 import { CDN_URL } from '@/configs';
 import NextNprogress from 'nextjs-progressbar';
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
 export default function App({ Component, pageProps }: AppProps) {
   const { seoInfo = {} } = pageProps;

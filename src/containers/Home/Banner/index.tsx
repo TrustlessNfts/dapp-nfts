@@ -8,6 +8,7 @@ import { getIsAuthenticatedSelector } from '@/state/user/selector';
 import { showToastError } from '@/utils/toast';
 import { useRouter } from 'next/router';
 import { useSelector } from 'react-redux';
+import FeatureList from '../FeatureList';
 
 const Banner: React.FC = (): React.ReactElement => {
   const [showModal, setShowModal] = useState(false);
@@ -27,7 +28,7 @@ const Banner: React.FC = (): React.ReactElement => {
 
   return (
     <Wrapper>
-      <div className="">
+      <div className="title-wrapper">
         <h1 className="title">The complete Bitcoin NFTs platform</h1>
         <p className="description">
           BRC-721 is kind of NFT on Bitcoin chain.
@@ -51,7 +52,7 @@ const Banner: React.FC = (): React.ReactElement => {
           </Button>
         </div>
       </div>
-      <div className="feature-list"></div>
+      <FeatureList />
       <ModalCreate show={showModal} handleClose={() => setShowModal(false)} />
     </Wrapper>
   );
