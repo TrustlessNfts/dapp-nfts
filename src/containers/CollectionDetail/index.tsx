@@ -8,13 +8,35 @@ import ActivityList from './ActivityList';
 import CollectionDescription from './CollectionDescription';
 import CollectionHeader from './CollectionHeader';
 import CollectionTabNFT from './CollectionTabNFT';
+import CollectionFilter from './CollectionFilter';
+import { Tabs, Tab } from 'react-bootstrap';
+import { CDN_URL } from '@/configs';
+import ModalEdit from './ModalEdit';
+import { useSelector } from 'react-redux';
+import { getUserSelector } from '@/state/user/selector';
 
 const CollectionDetail = () => {
   const router = useRouter();
   const { contract } = router.query as {
     contract: string;
   };
+  const user = useSelector(getUserSelector);
+
   const [collection, setCollection] = useState<ICollection | null>(null);
+  const [showModalEdit, setShowModalEdit] = useState(false);
+  const [showEditButton, setShowEditButton] = useState(false);
+
+  const [qsCollections, setQsCollections] = useState({
+    rarity: '',
+    attributes: '',
+    token_id: '',
+    sort_by: '',
+    sort: '',
+    contract_address: contract,
+  });
+
+  const isOwner =
+    user?.walletAddress?.toLowerCase() === collection?.creator.toLowerCase();
 
   const fetchCollectionInfo = async (): Promise<void> => {
     if (!contract) return;
@@ -25,6 +47,10 @@ const CollectionDetail = () => {
     } catch (err: unknown) {
       logger.error(err);
     }
+  };
+
+  const handleOpenEditModal = () => {
+    setShowModalEdit(true);
   };
 
   useEffect(() => {
@@ -39,17 +65,44 @@ const CollectionDetail = () => {
       </div>
       <div className="collection-trading-info-wrapper">
         <div className="item-info-wrapper">
-          <CollectionDescription collection={collection} />
+          <Tabs
+            defaultActiveKey="description"
+            id="collection-info"
+            className="tabs"
+            onSelect={(key) => {
+              setShowEditButton(key === 'description');
+            }}
+          >
+            <Tab mountOnEnter eventKey="filter" title={`Filter`}>
+              <CollectionFilter query={qsCollections} setQuery={setQsCollections} />
+            </Tab>
+            <Tab mountOnEnter eventKey="description" title={`Description`}>
+              <CollectionDescription collection={collection} />
+            </Tab>
+          </Tabs>
+          {isOwner && showEditButton && (
+            <button className="edit-btn" onClick={handleOpenEditModal}>
+              <img src={`${CDN_URL}/icons/edit-03.svg`} alt="edit-03" />
+            </button>
+          )}
         </div>
         <div className="item-list-wrapper">
-          <CollectionTabNFT collection={collection} />
+          <CollectionTabNFT collection={collection} query={qsCollections} />
         </div>
         <div className="item-activities-wrapper">
           <ActivityList collection={collection} />
         </div>
       </div>
+      {collection && showModalEdit && (
+        <ModalEdit
+          collection={collection}
+          show={showModalEdit}
+          handleClose={() => setShowModalEdit(false)}
+          onUpdateSuccess={() => window.location.reload()}
+        />
+      )}
     </Container>
-  )
+  );
 };
 
 export default React.memo(CollectionDetail);

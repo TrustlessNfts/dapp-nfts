@@ -15,7 +15,11 @@ import useContractOperation from '@/hooks/contract-operations/useContractOperati
 import { IInscription } from '@/interfaces/api/inscription';
 import logger from '@/services/logger';
 import { getUserSelector } from '@/state/user/selector';
-import { exponentialToDecimal, formatEthPrice, mappingERC20ToSymbol } from '@/utils/format';
+import {
+  exponentialToDecimal,
+  formatEthPrice,
+  mappingERC20ToSymbol,
+} from '@/utils/format';
 import {
   checkCacheApprovalTokenPermission,
   setCacheApprovalTokenPermission,
@@ -28,7 +32,9 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import TransactorBaseModal from '../TransactorBaseModal';
 import { SubmitButton } from '../TransactorBaseModal/TransactorBaseModal.styled';
-import useTokenBalance, { IGetTokenBalanceParams } from '@/hooks/contract-operations/erc20/useTokenBalance';
+import useTokenBalance, {
+  IGetTokenBalanceParams,
+} from '@/hooks/contract-operations/erc20/useTokenBalance';
 import Web3 from 'web3';
 
 interface IProps {
@@ -106,9 +112,9 @@ const ModalPurchase = ({ show, handleClose, inscription }: IProps) => {
         showToastError({
           message: `Insufficient ${mappingERC20ToSymbol(
             listingInfo.erc20Token,
-          )} balance. Require ${new BigNumber(listingInfo.price).dividedBy(1e18)} ${mappingERC20ToSymbol(
-            listingInfo.erc20Token,
-          )}. You have ${balanceBN
+          )} balance. Require ${new BigNumber(listingInfo.price).dividedBy(
+            1e18,
+          )} ${mappingERC20ToSymbol(listingInfo.erc20Token)}. You have ${balanceBN
             .dividedBy(1e18)
             .toString()} ${mappingERC20ToSymbol(listingInfo.erc20Token)}.`,
         });

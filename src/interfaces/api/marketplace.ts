@@ -85,6 +85,9 @@ export interface IGetCollectionNFTListParams extends IPagingParams {
   sort_by?: string;
   sort?: string;
   contract_address: string;
+  is_buy_now?: boolean;
+  from_price?: string;
+  to_price?: string;
 }
 
 export interface IGetCollectionActivityListParams extends IPagingParams {
@@ -108,3 +111,17 @@ export interface ICollectionActivity {
   txHash: string;
   thumbnail: string;
 }
+
+export interface IGetCollectionAttributesParams extends IPagingParams {
+  trait_type?: string;
+  value?: string;
+  contract_address: string;
+}
+
+export type TraitStats = {
+  traitName: string;
+  traitValuesStat: {
+    value: string;
+    rarity: number;
+  }[];
+};
