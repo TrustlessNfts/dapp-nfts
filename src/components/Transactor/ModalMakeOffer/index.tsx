@@ -106,7 +106,7 @@ const ModalMakeOffer: React.FC<IProps> = ({
 
       const balanceBN = new BigNumber(tokenBalance);
       const priceBN = new BigNumber(
-        Web3.utils.toWei(exponentialToDecimal(Number())),
+        Web3.utils.toWei(exponentialToDecimal(Number(price))),
       );
 
       logger.debug(
