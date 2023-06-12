@@ -143,7 +143,6 @@ export const WalletProvider: React.FC<PropsWithChildren> = ({ children }: PropsW
 
   useEffect(() => {
     const { tcAddress, tpAddress } = router.query as { tcAddress: string, tpAddress: string };
-    console.log(tcAddress)
     if (tpAddress) {
       dispatch(updateTaprootWallet(tpAddress));
       bitcoinStorage.setUserTaprootAddress(tcAddress, tpAddress);

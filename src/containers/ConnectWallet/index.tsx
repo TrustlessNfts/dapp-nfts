@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Wrapper, ConnectWalletButton } from './ConnectWallet.styled';
 import { WalletContext } from '@/contexts/wallet-context';
 import { useSelector } from 'react-redux';
-import { getIsAuthenticatedSelector, getUserSelector } from '@/state/user/selector';
+import { getIsAuthenticatedSelector } from '@/state/user/selector';
 import { CDN_URL } from '@/configs';
 import { Container } from '@/layouts';
 import { ROUTE_PATH } from '@/constants/route-path';
@@ -13,7 +13,6 @@ import logger from '@/services/logger';
 const ConnectWallet: React.FC = (): React.ReactElement => {
   const { onConnect, requestBtcAddress, onDisconnect } = useContext(WalletContext);
   const isAuthenticated = useSelector(getIsAuthenticatedSelector);
-  const user = useSelector(getUserSelector);
   const router = useRouter();
   const [isConnecting, setIsConnecting] = useState(false);
 
@@ -37,7 +36,7 @@ const ConnectWallet: React.FC = (): React.ReactElement => {
     if (isAuthenticated) {
       router.push(ROUTE_PATH.HOME);
     }
-  }, [isAuthenticated, router, user]);
+  }, [isAuthenticated]);
 
   return (
     <Container>
