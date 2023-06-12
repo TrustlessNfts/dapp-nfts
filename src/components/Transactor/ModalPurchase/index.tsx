@@ -15,7 +15,7 @@ import useContractOperation from '@/hooks/contract-operations/useContractOperati
 import { IInscription } from '@/interfaces/api/inscription';
 import logger from '@/services/logger';
 import { getUserSelector } from '@/state/user/selector';
-import { exponentialToDecimal, formatEthPrice, mappingERC20ToSymbol } from '@/utils/format';
+import { formatEthPrice, mappingERC20ToSymbol } from '@/utils/format';
 import {
   checkCacheApprovalTokenPermission,
   setCacheApprovalTokenPermission,
@@ -29,7 +29,6 @@ import { useSelector } from 'react-redux';
 import TransactorBaseModal from '../TransactorBaseModal';
 import { SubmitButton } from '../TransactorBaseModal/TransactorBaseModal.styled';
 import useTokenBalance, { IGetTokenBalanceParams } from '@/hooks/contract-operations/erc20/useTokenBalance';
-import Web3 from 'web3';
 
 interface IProps {
   show: boolean;
@@ -91,11 +90,16 @@ const ModalPurchase = ({ show, handleClose, inscription }: IProps) => {
       });
 
       const balanceBN = new BigNumber(tokenBalance);
-      const priceBN = new BigNumber(
-        Web3.utils.toWei(exponentialToDecimal(Number(listingInfo.price))),
-      );
+      const priceBN = new BigNumber(listingInfo.price);
 
       logger.debug(
+        'Price',
+        `${priceBN.dividedBy(1e18).toString()} ${mappingERC20ToSymbol(
+          listingInfo.erc20Token,
+        )}`,
+      );
+      logger.debug(
+        'Account balance',
         `${balanceBN.dividedBy(1e18).toString()} ${mappingERC20ToSymbol(
           listingInfo.erc20Token,
         )}`,
