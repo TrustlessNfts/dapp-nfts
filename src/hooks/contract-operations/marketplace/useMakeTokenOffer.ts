@@ -82,7 +82,7 @@ const useMakeTokenOffer: ContractOperationHook<
         const transaction = await contract
           .connect(provider.getSigner())
           .makeOffer(payload, {
-            gasLimit: '500000'
+            gasLimit: '400000'
           });
 
         return transaction;

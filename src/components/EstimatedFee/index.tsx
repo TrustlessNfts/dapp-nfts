@@ -48,7 +48,7 @@ const EstimatedFee: React.FC<IProps> = ({
   const calculateEstTcFee = useCallback(async () => {
     setEstTCFee(null);
     try {
-      const gasLimit = '5000000';
+      const gasLimit = '400000';
       const gasPrice = await web3Provider.getGasPrice();
       const gasLimitBN = new BigNumber(gasLimit);
       const gasPriceBN = new BigNumber(gasPrice);
