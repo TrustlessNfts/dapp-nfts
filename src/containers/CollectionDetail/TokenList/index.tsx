@@ -84,13 +84,12 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
 
   return (
     <>
-      <Wrapper>
+      <Wrapper className="disable-scrollbar">
         <InfiniteScroll
           className="disable-scrollbar"
           hasMore={hasMore}
           dataLength={nftList.length}
           next={fetchNFTList}
-          height={600}
           style={{ overflow: 'hidden auto' }}
           loader={
             loading ? (
@@ -158,7 +157,7 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
                               className="purchase-btn"
                               onClick={() => handleOpenPurchase(token)}
                             >
-                              <span>{`${formatEthPrice(
+                              <span>{`Buy ${formatEthPrice(
                                 token.priceErc20.price,
                               )}`}</span>
                               <img
