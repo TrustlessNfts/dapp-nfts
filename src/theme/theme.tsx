@@ -5,9 +5,9 @@ import {
   ThemeProvider as StyledComponentsThemeProvider,
 } from 'styled-components';
 import { getTheme } from '@/theme/index';
-import { Inter } from 'next/font/google';
+import { Red_Hat_Display } from 'next/font/google';
 
-const inter = Inter({
+const redHatDisplay = Red_Hat_Display({
   weight: ['300', '400', '500', '600', '700'],
   subsets: ['latin'],
 });
@@ -30,7 +30,7 @@ export const ThemedGlobalStyle = createGlobalStyle`
     background-color: ${({ theme }) => theme.bgColor};
 
     body{
-      --bs-body-font-family: ${inter.style.fontFamily};
+      --bs-body-font-family: ${redHatDisplay.style.fontFamily};
     }
 
     @media screen and (min-width: 1920px) {
