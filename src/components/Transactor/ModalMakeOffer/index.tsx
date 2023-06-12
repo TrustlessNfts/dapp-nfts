@@ -106,10 +106,18 @@ const ModalMakeOffer: React.FC<IProps> = ({
 
       const balanceBN = new BigNumber(tokenBalance);
       const priceBN = new BigNumber(
-        Web3.utils.toWei(exponentialToDecimal(Number(price))),
+        Web3.utils.toWei(exponentialToDecimal(Number())),
       );
 
       logger.debug(
+        'Price',
+        `${priceBN.dividedBy(1e18).toString()} ${mappingERC20ToSymbol(
+          erc20Token,
+        )}`,
+      );
+
+      logger.debug(
+        'Account balance',
         `${balanceBN.dividedBy(1e18).toString()} ${mappingERC20ToSymbol(
           erc20Token,
         )}`,
