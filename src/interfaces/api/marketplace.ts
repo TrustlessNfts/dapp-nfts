@@ -1,4 +1,4 @@
-import { IPagingParams } from "./query";
+import { IPagingParams } from './query';
 
 export interface ICollectionSocial {
   website: string;
@@ -90,6 +90,7 @@ export interface IGetCollectionNFTListParams extends IPagingParams {
 export interface IGetCollectionActivityListParams extends IPagingParams {
   status?: number;
   contract_address: string;
+  types?: string;
 }
 
 export interface ICollectionActivity {

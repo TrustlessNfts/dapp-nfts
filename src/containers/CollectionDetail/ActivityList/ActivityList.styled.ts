@@ -19,14 +19,14 @@ export const StyledActivityList = styled(StyledTableList)`
       position: sticky;
       top: 0;
       z-index: 2;
-      
+
       .tableHead_item {
         padding: ${px2rem(12)};
         font-weight: 500;
         font-size: ${px2rem(10)};
         line-height: 1.2;
         text-transform: uppercase;
-        color: #FFFFFF;
+        color: #ffffff;
         vertical-align: middle;
       }
     }
@@ -38,7 +38,7 @@ export const StyledActivityList = styled(StyledTableList)`
         font-size: ${px2rem(10)};
         line-height: 1.2;
         text-transform: uppercase;
-        color: #FFFFFF;
+        color: #ffffff;
         vertical-align: middle;
       }
     }
