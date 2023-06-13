@@ -5,6 +5,8 @@ import { ICollection } from '@/interfaces/api/marketplace';
 import { useRouter } from 'next/router';
 import React from 'react';
 import { Wrapper } from './DataTable.styled';
+import { CDN_URL } from '@/configs';
+import { ceilPrecised } from '@/utils/format';
 
 interface IProps {
   collections: Array<ICollection>;
@@ -24,13 +26,13 @@ const DataTable: React.FC<IProps> = ({
   const tableData = collections?.map((collection: ICollection) => {
     const {
       name,
-      floorPrice,
-      volume,
       totalItems,
       totalOwners,
       thumbnail,
       contract,
       id,
+      btcVolume,
+      btcFloorPrice,
     } = collection;
 
     return {
@@ -53,25 +55,35 @@ const DataTable: React.FC<IProps> = ({
 
         floorPrice: (
           <div className={'floor-price'}>
-            {floorPrice > 0
-              ? floorPrice.toLocaleString('en-US', {
-                  style: 'currency',
-                  currency: 'USD',
-                  maximumFractionDigits: 6,
-                })
-              : '-'}
+            {btcFloorPrice > 0 ? (
+              <span>
+                {ceilPrecised(btcFloorPrice)}{' '}
+                <img
+                  className="token-icon"
+                  src={`${CDN_URL}/icons/ic-btc-24.svg`}
+                  alt="token icon"
+                />
+              </span>
+            ) : (
+              '-'
+            )}
           </div>
         ),
 
         volume: (
           <div className={'volume'}>
-            {volume > 0
-              ? volume.toLocaleString('en-US', {
-                  style: 'currency',
-                  currency: 'USD',
-                  maximumFractionDigits: 6,
-                })
-              : '-'}
+            {btcVolume > 0 ? (
+              <span>
+                {ceilPrecised(btcVolume)}{' '}
+                <img
+                  className="token-icon"
+                  src={`${CDN_URL}/icons/ic-btc-24.svg`}
+                  alt="token icon"
+                />
+              </span>
+            ) : (
+              '-'
+            )}
           </div>
         ),
 

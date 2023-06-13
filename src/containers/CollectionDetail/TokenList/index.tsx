@@ -16,6 +16,7 @@ import { useRouter } from 'next/router';
 import React, { useContext, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Wrapper } from './TokenList.styled';
+import { Spinner } from 'react-bootstrap';
 
 interface IProps {
   collection: ICollection | null;
@@ -29,6 +30,8 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
     nfts: nftList,
     loadingNfts: loading,
     fetchNFTList,
+    totalNfts,
+    filterLoading,
   } = useContext(CollectionContext);
 
   const [showPurchase, setShowPurchase] = useState(false);
@@ -53,13 +56,17 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
 
   if (!nftList) return <> </>;
 
-  const hasMore = !!collection && nftList.length < collection.totalItems;
+  const hasMore = !!collection && nftList.length < totalNfts;
 
   return (
     <>
       <Wrapper className="disable-scrollbar">
         {!loading && nftList.length === 0 && <Empty />}
-
+        {filterLoading && (
+          <div className="filter-loading">
+            <Spinner variant="light" />
+          </div>
+        )}
         {nftList.length > 0 && (
           <table className="data-table">
             <thead>

@@ -4,6 +4,20 @@ import px2rem from '@/utils/px2rem';
 export const Wrapper = styled.div`
   height: calc(100vh - 276px);
   overflow: hidden auto;
+  position: relative;
+
+  .filter-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    background: #1a1a1a;
+    opacity: 0.6;
+  }
 
   .loading-wrapper {
     padding: ${px2rem(48)};

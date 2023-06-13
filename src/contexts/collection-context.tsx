@@ -30,6 +30,7 @@ export interface ICollectionContext {
   loadingNfts: boolean;
   fetchNFTList: (p?: number) => void;
   totalNfts: number;
+  filterLoading: boolean;
 }
 
 const initialValue: ICollectionContext = {
@@ -53,6 +54,7 @@ const initialValue: ICollectionContext = {
     return;
   },
   totalNfts: 0,
+  filterLoading: false,
 };
 
 const FETCH_LIMIT = 32;
@@ -72,6 +74,7 @@ export const CollectionProvider: React.FC<PropsWithChildren> = ({
     Omit<IGetCollectionNFTListParams, 'contract_address'>
   >({});
   const [loadingNfts, setLoadingNfts] = useState(false);
+  const [filterLoading, setFilterLoading] = useState(false);
 
   const fetchNFTList = useCallback(
     async (p?: number): Promise<void> => {
@@ -79,6 +82,7 @@ export const CollectionProvider: React.FC<PropsWithChildren> = ({
 
       try {
         setLoadingNfts(true);
+        if (p === 1) setFilterLoading(true);
         const page = p || Math.floor(nfts.length / FETCH_LIMIT) + 1;
         const res = await getCollectionNFTList({
           contract_address: contract,
@@ -98,6 +102,7 @@ export const CollectionProvider: React.FC<PropsWithChildren> = ({
         logger.error(err);
       } finally {
         setLoadingNfts(false);
+        setFilterLoading(false);
       }
     },
     [contract, query, setNfts, nfts.length],
@@ -135,8 +140,18 @@ export const CollectionProvider: React.FC<PropsWithChildren> = ({
       loadingNfts,
       fetchNFTList,
       totalNfts,
+      filterLoading,
     };
-  }, [nfts, query, setQuery, loadingNfts, fetchNFTList, collectionAttrs, totalNfts]);
+  }, [
+    nfts,
+    query,
+    setQuery,
+    loadingNfts,
+    fetchNFTList,
+    collectionAttrs,
+    totalNfts,
+    filterLoading,
+  ]);
 
   return (
     <CollectionContext.Provider value={contextValues}>

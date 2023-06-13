@@ -29,6 +29,8 @@ export interface ICollection {
   floorPrice: number;
   volume: number;
   description: string;
+  btcFloorPrice: number;
+  btcVolume: number;
 }
 
 export interface ITokenSaleInfo {
