@@ -75,7 +75,7 @@ const FilterMinMax = (props: Props) => {
   return (
     <StyledFilterMinMax className={`${'wrapper'}`} ref={dropdownRef}>
       <div className={'dropdown_box'} onClick={() => setShowDropdown(!showDropdown)}>
-        <p>
+        <p style={{ opacity: hasValue ? '1' : '0.7' }}>
           {label}
           {hasValue && ':'}
           {filter?.from &&

@@ -68,6 +68,7 @@ export interface IToken {
   priceErc20: IErc20PriceInfo;
   collection: ICollection;
   size: number;
+  imageCapture?: string;
 }
 
 export interface IGetCollectionNFTListResponse {
