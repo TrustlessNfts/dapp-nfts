@@ -32,15 +32,15 @@ const Banner: React.FC = (): React.ReactElement => {
 
   return (
     <>
-      <TopBar>
-        <div className="text">
-          <span>Are you a creator? </span>
-          <span className="create-link" onClick={handleOpenModal}>
-            Create BRC-721
-          </span>
-        </div>
-      </TopBar>
       <Wrapper>
+        <TopBar>
+          <div className="text">
+            <span>Are you a creator? </span>
+            <span className="create-link" onClick={handleOpenModal}>
+              Create BRC-721
+            </span>
+          </div>
+        </TopBar>
         <div className="title-wrapper">
           <h1 className="title">
             The complete

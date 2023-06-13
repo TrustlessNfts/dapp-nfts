@@ -132,6 +132,7 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
                         href={`${TC_EXPLORER}/address/${token.owner}`}
                         target="_blank"
                         className="token-owner-link"
+                        onClick={(e) => e.stopPropagation()}
                       >
                         {shortenAddress(token.owner)}
                       </Link>
@@ -147,7 +148,10 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
                           token.owner.toLowerCase() && (
                           <button
                             className="purchase-btn"
-                            onClick={() => handleOpenPurchase(token)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOpenPurchase(token);
+                            }}
                           >
                             <span>{`${formatEthPrice(
                               token.priceErc20.price,
