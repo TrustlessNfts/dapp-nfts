@@ -4,7 +4,7 @@ import px2rem from '@/utils/px2rem';
 export const Wrapper = styled.div`
   height: calc(100vh - 276px);
   overflow: hidden auto;
-  position: relative;
+  /* position: relative; */
 
   .filter-loading {
     position: absolute;

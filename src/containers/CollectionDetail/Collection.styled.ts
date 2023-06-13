@@ -48,6 +48,7 @@ export const Container = styled.div`
     .item-list-wrapper {
       border-left: 1px solid #353945;
       border-right: 1px solid #353945;
+      position: relative;
     }
   }
 `;

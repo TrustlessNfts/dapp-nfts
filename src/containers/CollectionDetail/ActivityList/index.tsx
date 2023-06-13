@@ -200,14 +200,18 @@ const ActivityList: React.FC<IProps> = () => {
           />
         </StyledSelect>
       </div>
-      <div className="data-list">
+      <div className="data-list disable-scrollbar">
         <StyledActivityList>
           <Table
             tableHead={[`Items`, 'price', 'from', 'to', 'event']}
             data={tableData}
             className="activity-table"
           />
-          <InfiniteLoading fetchMoreData={fetchActivities} isLoading={loading} hasMoreData={hasMore} />
+          <InfiniteLoading
+            fetchMoreData={fetchActivities}
+            isLoading={loading}
+            hasMoreData={hasMore}
+          />
         </StyledActivityList>
       </div>
     </Wrapper>
