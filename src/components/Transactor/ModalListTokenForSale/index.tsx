@@ -27,6 +27,8 @@ import React, { useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import TransactorBaseModal from '../TransactorBaseModal';
 import { SubmitButton } from '../TransactorBaseModal/TransactorBaseModal.styled';
+import { useSelector } from 'react-redux';
+import { getUserSelector } from '@/state/user/selector';
 
 interface IProps {
   show: boolean;
@@ -44,6 +46,7 @@ const ModalListTokenForSale: React.FC<IProps> = ({
   handleClose,
   inscription,
 }: IProps) => {
+  const user = useSelector(getUserSelector);
   const [processing, setProcessing] = useState(false);
   const { run: isTokenApproved } = useContractOperation<
     IIsApprovedForAllParams,
@@ -91,7 +94,7 @@ const ModalListTokenForSale: React.FC<IProps> = ({
         operatorAddress: TC_MARKETPLACE_CONTRACT,
       });
       const hasApprovalCache = checkCacheApprovalPermission(
-        `${TC_MARKETPLACE_CONTRACT}_${inscription.collectionAddress}`,
+        `${user.walletAddress}_${TC_MARKETPLACE_CONTRACT}_${inscription.collectionAddress}`,
       );
       if (!isApproved && !hasApprovalCache) {
         logger.debug(TC_MARKETPLACE_CONTRACT);
@@ -103,7 +106,7 @@ const ModalListTokenForSale: React.FC<IProps> = ({
         });
 
         setCacheApprovalPermission(
-          `${TC_MARKETPLACE_CONTRACT}_${inscription.collectionAddress}`,
+          `${user.walletAddress}_${TC_MARKETPLACE_CONTRACT}_${inscription.collectionAddress}`,
         );
       }
 

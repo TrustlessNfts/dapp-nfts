@@ -25,12 +25,16 @@ const ContentWrapper = styled.div`
   }
 `;
 
-const Layout: React.FC<PropsWithChildren> = ({ children }) => {
+type Props = {
+  hideFooter?: boolean;
+};
+
+const Layout = ({ children, hideFooter = false }: PropsWithChildren<Props>) => {
   return (
     <Container>
       <Header height={HEADER_HEIGHT} />
       <ContentWrapper>{children}</ContentWrapper>
-      <Footer height={FO0TER_HEIGHT} />
+      {!hideFooter && <Footer height={FO0TER_HEIGHT} />}
     </Container>
   );
 };
