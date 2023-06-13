@@ -85,7 +85,7 @@ export interface IGetCollectionNFTListParams extends IPagingParams {
   sort_by?: string;
   sort?: string;
   contract_address: string;
-  is_buy_now?: boolean;
+  buyable?: boolean;
   from_price?: string;
   to_price?: string;
 }

@@ -6,7 +6,6 @@ const Wrapper = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  margin-top: ${px2rem(80)};
   flex-wrap: wrap;
   gap: ${px2rem(32)};
 

@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import px2rem from '@/utils/px2rem';
 
 export const Wrapper = styled.div`
-  max-height: 600px;
+  max-height: calc(100vh - 400px);
   overflow: auto;
 
   .loading-wrapper {
@@ -18,16 +18,15 @@ export const Wrapper = styled.div`
     th:nth-child(2),
     td:nth-child(1),
     td:nth-child(2) {
-      width: calc(400 / 2000  * 100%);
+      width: calc(400 / 2000 * 100%);
     }
 
     th:nth-child(3),
     th:nth-child(4),
     td:nth-child(3),
     td:nth-child(4) {
-      width: calc(600 / 2000  * 100%);
+      width: calc(600 / 2000 * 100%);
     }
-
 
     th:nth-child(3),
     th:nth-child(4),
@@ -37,7 +36,7 @@ export const Wrapper = styled.div`
     }
 
     thead {
-      background: #1E1E22;
+      background: #1e1e22;
       z-index: 2;
       position: sticky;
       top: 0;
@@ -48,7 +47,7 @@ export const Wrapper = styled.div`
         font-size: ${px2rem(12)};
         line-height: ${px2rem(22)};
         text-transform: uppercase;
-        color: #FFFFFF;
+        color: #ffffff;
         vertical-align: middle;
       }
     }
@@ -59,7 +58,7 @@ export const Wrapper = styled.div`
         font-weight: 500;
         font-size: ${px2rem(12)};
         line-height: ${px2rem(22)};
-        color: #FFFFFF;
+        color: #ffffff;
         vertical-align: middle;
       }
     }
@@ -87,7 +86,7 @@ export const Wrapper = styled.div`
         font-size: ${px2rem(14)};
         line-height: ${px2rem(28)};
         letter-spacing: -0.01em;
-        color: #FFFFFF;
+        color: #ffffff;
       }
     }
 
@@ -102,15 +101,17 @@ export const Wrapper = styled.div`
 
     .purchase-btn {
       padding: ${px2rem(8)} ${px2rem(24)};
-      background-color: #FFFFFF;
+      background-color: #ffffff;
       border-radius: 8px;
       font-weight: 500;
       font-size: ${px2rem(14)};
       line-height: ${px2rem(26)};
-      color: #1C1C1C;
+      color: #1c1c1c;
       display: inline-flex;
       align-items: center;
       gap: ${px2rem(8)};
+      width: ${px2rem(171)};
+      justify-content: center;
 
       .token-icon {
         width: ${px2rem(20)};

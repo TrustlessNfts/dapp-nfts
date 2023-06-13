@@ -1,5 +1,5 @@
 import { ROUTE_PATH } from '@/constants/route-path';
-import { SEO_IMAGE, SEO_TITLE } from '@/constants/seo';
+import { SEO_DESCRIPTION, SEO_IMAGE, SEO_TITLE } from '@/constants/seo';
 import TokenDetail from '@/containers/TokenDetail';
 import Layout from '@/layouts';
 import logger from '@/services/logger';
@@ -26,8 +26,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     return {
       props: {
         seoInfo: {
-          title: `${SEO_TITLE} | ${data.name} #${data.tokenId} `,
-          image: data.image || SEO_IMAGE,
+          title: `${SEO_TITLE} | ${data.name} `,
+          description: SEO_DESCRIPTION,
+          image: data?.image || SEO_IMAGE,
         },
       },
     };

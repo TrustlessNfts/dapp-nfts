@@ -110,6 +110,14 @@ const ModalMakeOffer: React.FC<IProps> = ({
       );
 
       logger.debug(
+        'Price',
+        `${priceBN.dividedBy(1e18).toString()} ${mappingERC20ToSymbol(
+          erc20Token,
+        )}`,
+      );
+
+      logger.debug(
+        'Account balance',
         `${balanceBN.dividedBy(1e18).toString()} ${mappingERC20ToSymbol(
           erc20Token,
         )}`,

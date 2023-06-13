@@ -9,7 +9,7 @@ import { GetServerSidePropsContext, NextPage } from 'next';
 
 const CollectionDetailPage: NextPage = () => {
   return (
-    <Layout>
+    <Layout hideFooter>
       <CollectionProvider>
         <CollectionDetail />
       </CollectionProvider>

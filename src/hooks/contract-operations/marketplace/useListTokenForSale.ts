@@ -85,7 +85,7 @@ const useListTokenForSale: ContractOperationHook<
         const transaction = await contract
           .connect(provider.getSigner())
           .listToken(payload, {
-            gasLimit: '500000'
+            gasLimit: '400000'
           });
 
         return transaction;

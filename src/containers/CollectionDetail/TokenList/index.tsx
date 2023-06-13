@@ -1,10 +1,8 @@
 import Empty from '@/components/Empty';
 import ImageWrapper from '@/components/ImageWrapper';
-import ModalMakeOffer from '@/components/Transactor/ModalMakeOffer';
 import ModalPurchase from '@/components/Transactor/ModalPurchase';
 import { ROUTE_PATH } from '@/constants/route-path';
 import { TC_EXPLORER } from '@/constants/url';
-import { CollectionContext } from '@/contexts/collection-context';
 import { IInscription } from '@/interfaces/api/inscription';
 import { ICollection, IToken } from '@/interfaces/api/marketplace';
 import { getUserSelector } from '@/state/user/selector';
@@ -18,6 +16,7 @@ import { Spinner } from 'react-bootstrap';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useSelector } from 'react-redux';
 import { Wrapper } from './TokenList.styled';
+import { CollectionContext } from '@/contexts/collection-context';
 
 interface IProps {
   collection: ICollection | null;
@@ -26,8 +25,8 @@ interface IProps {
 
 const TokenList: React.FC<IProps> = ({
   collection,
-  query,
-}: IProps): React.ReactElement => {
+}: // query,
+IProps): React.ReactElement => {
   const router = useRouter();
   const user = useSelector(getUserSelector);
   const {
@@ -36,7 +35,6 @@ const TokenList: React.FC<IProps> = ({
     fetchNFTList,
   } = useContext(CollectionContext);
   const [showPurchase, setShowPurchase] = useState(false);
-  const [showMakeOffer, setShowMakeOffer] = useState(false);
   const [selectedToken, setSelectedToken] = useState<IToken | null>(null);
 
   const handleOpenPurchase = (data: IToken) => {
@@ -56,22 +54,29 @@ const TokenList: React.FC<IProps> = ({
     setSelectedToken(null);
   };
 
-  const handleOpenMakeOffer = (data: IToken) => {
-    if (!user.walletAddress) {
-      router.push(ROUTE_PATH.CONNECT_WALLET);
-      showToastError({
-        message: 'Please connect wallet to continue.',
-      });
-      return;
-    }
-    setShowMakeOffer(true);
-    setSelectedToken(data);
-  };
+  // const fetchNFTList = async (p?: number): Promise<void> => {
+  //   if (!collection) return;
 
-  const handleCloseMakeOffer = () => {
-    setShowMakeOffer(false);
-    setSelectedToken(null);
-  };
+  //   try {
+  //     setLoading(true);
+  //     const page = p || Math.floor(nftList.length / FETCH_LIMIT) + 1;
+  //     const res = await getCollectionNFTList({
+  //       contract_address: collection.contract,
+  //       page: page,
+  //       limit: FETCH_LIMIT,
+  //     });
+
+  //     if (page === 1) {
+  //       setNftList(res);
+  //     } else {
+  //       setNftList((prev) => uniqBy([...prev, ...res], 'tokenId'));
+  //     }
+  //   } catch (err: unknown) {
+  //     logger.error(err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   if (!nftList) return <> </>;
 
@@ -79,13 +84,12 @@ const TokenList: React.FC<IProps> = ({
 
   return (
     <>
-      <Wrapper>
+      <Wrapper className="disable-scrollbar">
         <InfiniteScroll
           className="disable-scrollbar"
           hasMore={hasMore}
           dataLength={nftList.length}
           next={fetchNFTList}
-          height={600}
           style={{ overflow: 'hidden auto' }}
           loader={
             loading ? (
@@ -106,7 +110,6 @@ const TokenList: React.FC<IProps> = ({
                   <th>{`Items`}</th>
                   <th>Owner</th>
                   <th>Buy now</th>
-                  <th>Offer</th>
                 </tr>
               </thead>
               <tbody>
@@ -154,7 +157,7 @@ const TokenList: React.FC<IProps> = ({
                               className="purchase-btn"
                               onClick={() => handleOpenPurchase(token)}
                             >
-                              <span>{`${formatEthPrice(
+                              <span>{`Buy ${formatEthPrice(
                                 token.priceErc20.price,
                               )}`}</span>
                               <img
@@ -164,17 +167,6 @@ const TokenList: React.FC<IProps> = ({
                               />
                             </button>
                           )}
-                      </td>
-                      <td className="make-offer">
-                        {user?.walletAddress?.toLowerCase() !==
-                          token.owner.toLowerCase() && (
-                          <button
-                            className="make-offer-btn"
-                            onClick={() => handleOpenMakeOffer(token)}
-                          >
-                            Make offer
-                          </button>
-                        )}
                       </td>
                     </tr>
                   );
@@ -189,11 +181,6 @@ const TokenList: React.FC<IProps> = ({
         show={showPurchase}
         inscription={selectedToken as unknown as IInscription}
         handleClose={handleClosePurchase}
-      />
-      <ModalMakeOffer
-        show={showMakeOffer}
-        inscription={selectedToken as unknown as IInscription}
-        handleClose={handleCloseMakeOffer}
       />
     </>
   );

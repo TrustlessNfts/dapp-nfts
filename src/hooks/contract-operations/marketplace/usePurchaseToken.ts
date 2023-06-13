@@ -59,7 +59,7 @@ const usePurchaseToken: ContractOperationHook<
         const transaction = await contract
           .connect(provider.getSigner())
           .purchaseToken(offerIdBytes32, {
-            gasLimit: '500000',
+            gasLimit: '400000',
           });
 
         return transaction;

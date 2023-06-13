@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { StyledCollectionFilter } from './CollectionFilter.styled';
 import RadioGroups from '@/components/RadioGroups';
 import FilterMinMax from './FilterMinMax';
@@ -15,18 +15,26 @@ const CollectionFilter = () => {
   const { mobileScreen } = useWindowSize();
   const { rarity, attributes: qsAttrs } = query;
 
-  const [currentTraitOpen, setCurrentTraitOpen] = useState('');
+  const [currentTraitOpen, setCurrentTraitOpen] = useState<string | null>(null);
   const [filterRarity, setFilterRarity] = useState({
     from: rarity ? rarity.split(',')[0] : '',
     to: rarity ? rarity.split(',')[1] : '',
   });
   const [filterTraits, setFilterTraits] = useState(qsAttrs);
-  console.log('🚀 ~ CollectionFilter ~ filterTraits:', filterTraits);
 
   const buyNowOptions = [
     { key: 'true', value: 'Only buy now' },
     { key: 'false', value: 'Show all' },
   ];
+
+  useEffect(() => {
+    if (filterTraits) {
+      setQuery({
+        ...query,
+        attributes: filterTraits,
+      });
+    }
+  }, [filterTraits]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const Option = (props: any) => {
@@ -86,12 +94,14 @@ const CollectionFilter = () => {
       <RadioGroups
         options={buyNowOptions}
         name="buyNow"
-        defaultValue={buyNowOptions[0].key}
+        defaultValue={buyNowOptions[1].key}
         className={'radio_buynow'}
-        onChange={() => {}}
-        // setFilterBuyNow(e.target.value === 'true');
-        //   setPage(1);
-        // }}
+        onChange={(e) => {
+          setQuery({
+            ...query,
+            buyable: e.target.value === 'true' ? true : undefined,
+          });
+        }}
       />
       {attributes && attributes?.length > 0 && (
         <div className={'rarity'}>
@@ -152,13 +162,13 @@ const CollectionFilter = () => {
                             Option,
                           }}
                           onMenuOpen={() => setCurrentTraitOpen(attr.traitName)}
-                          onBlur={() => setCurrentTraitOpen('')}
+                          onBlur={() => setCurrentTraitOpen(null)}
                           classNamePrefix="select"
                           closeMenuOnSelect={false}
                           hideSelectedOptions={false}
                           controlShouldRenderValue={false}
                           isClearable={false}
-                          placeholder={attr.traitName}
+                          placeholder={attr.traitName ? attr.traitName : 'Unknown'}
                           autoFocus={currentTraitOpen === attr.traitName}
                           menuPosition="fixed"
                           menuPlacement={
