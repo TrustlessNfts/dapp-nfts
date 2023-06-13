@@ -28,7 +28,9 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import TransactorBaseModal from '../TransactorBaseModal';
 import { SubmitButton } from '../TransactorBaseModal/TransactorBaseModal.styled';
-import useTokenBalance, { IGetTokenBalanceParams } from '@/hooks/contract-operations/erc20/useTokenBalance';
+import useTokenBalance, {
+  IGetTokenBalanceParams,
+} from '@/hooks/contract-operations/erc20/useTokenBalance';
 
 interface IProps {
   show: boolean;
@@ -110,9 +112,9 @@ const ModalPurchase = ({ show, handleClose, inscription }: IProps) => {
         showToastError({
           message: `Insufficient ${mappingERC20ToSymbol(
             listingInfo.erc20Token,
-          )} balance. Require ${new BigNumber(listingInfo.price).dividedBy(1e18)} ${mappingERC20ToSymbol(
-            listingInfo.erc20Token,
-          )}. You have ${balanceBN
+          )} balance. Require ${new BigNumber(listingInfo.price).dividedBy(
+            1e18,
+          )} ${mappingERC20ToSymbol(listingInfo.erc20Token)}. You have ${balanceBN
             .dividedBy(1e18)
             .toString()} ${mappingERC20ToSymbol(listingInfo.erc20Token)}.`,
         });
@@ -125,7 +127,7 @@ const ModalPurchase = ({ show, handleClose, inscription }: IProps) => {
       });
       const allowanceAmountBN = new BigNumber(allowanceAmount);
       const hasApprovalCache = checkCacheApprovalTokenPermission(
-        `${TC_MARKETPLACE_CONTRACT}_${listingInfo.erc20Token}`,
+        `${user.walletAddress}_${TC_MARKETPLACE_CONTRACT}_${listingInfo.erc20Token}`,
       );
 
       logger.debug('allowanceAmountBN', allowanceAmountBN.toString());
@@ -142,7 +144,7 @@ const ModalPurchase = ({ show, handleClose, inscription }: IProps) => {
         });
 
         setCacheApprovalTokenPermission(
-          `${TC_MARKETPLACE_CONTRACT}_${listingInfo.erc20Token}`,
+          `${user.walletAddress}_${TC_MARKETPLACE_CONTRACT}_${listingInfo.erc20Token}`,
         );
       }
 

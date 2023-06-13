@@ -13,9 +13,9 @@ export const exponentialToDecimal = (exponential: number): string => {
       let i = 0;
       i <
       +exponentialSplitted[1] -
-      (exponentialSplitted[0].includes('.')
-        ? exponentialSplitted[0].split('.')[1].length
-        : 0);
+        (exponentialSplitted[0].includes('.')
+          ? exponentialSplitted[0].split('.')[1].length
+          : 0);
       i++
     ) {
       postfix += '0';
@@ -99,6 +99,15 @@ export const formatEthPriceInput = (
 ): string => {
   if (!price) return emptyStr || '-';
   const priceNumb = new BigNumber(price).dividedBy(1e18).toNumber();
+  return ceilPrecised(priceNumb, 4).toString().replace(',', '.');
+};
+
+export const formatBTCPriceInput = (
+  price: string | null,
+  emptyStr?: string,
+): string => {
+  if (!price) return emptyStr || '-';
+  const priceNumb = new BigNumber(price).multipliedBy(1e18).toNumber();
   return ceilPrecised(priceNumb, 4).toString().replace(',', '.');
 };
 

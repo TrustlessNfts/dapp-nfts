@@ -54,7 +54,7 @@ export const Wrapper = styled.div`
       font-size: ${px2rem(14)};
       line-height: ${px2rem(22)};
       text-transform: uppercase;
-      color: #A1A8B8;
+      color: #a1a8b8;
     }
 
     .info-value {
@@ -62,7 +62,10 @@ export const Wrapper = styled.div`
       font-size: ${px2rem(16)};
       line-height: ${px2rem(28)};
       letter-spacing: -0.01em;
-      color: #FFFFFF;
+      color: #ffffff;
+      span img {
+        margin-left: ${px2rem(4)};
+      }
     }
   }
 `;

@@ -36,16 +36,21 @@ const Inscription = () => {
     [inscription?.owner, userTcWallet],
   );
 
-  const isBNS = useMemo(() => inscription?.collectionAddress.toLocaleLowerCase() ===
-    BNS_CONTRACT.toLocaleLowerCase(),
-    [inscription]
+  const isBNS = useMemo(
+    () =>
+      inscription?.collectionAddress.toLocaleLowerCase() ===
+      BNS_CONTRACT.toLocaleLowerCase(),
+    [inscription],
   );
 
   const fetchInscriptionDetail = useCallback(async () => {
     if (!contract || !tokenId) return;
 
     try {
-      const data = await getNFTDetail({ contractAddress: contract, tokenId: tokenId });
+      const data = await getNFTDetail({
+        contractAddress: contract,
+        tokenId: tokenId,
+      });
       setInscription(data);
     } catch (error) {
       logger.error(error);
@@ -138,7 +143,7 @@ const Inscription = () => {
       <Container>
         <div className="content">
           <div className="left-container">
-            {(inscription && !isBNS) && (
+            {inscription && !isBNS && (
               <NFTDisplayBox
                 collectionID={inscription?.collectionAddress}
                 contentClass="thumbnail"
@@ -147,8 +152,8 @@ const Inscription = () => {
                 type={inscription?.contentType}
               />
             )}
-            {(inscription && isBNS) && (
-              <div className='bns-wrapper'>{inscription.name}</div>
+            {inscription && isBNS && (
+              <div className="bns-wrapper">{inscription.name || 'Sudos'}</div>
             )}
           </div>
           <div className="right-container">
@@ -158,11 +163,9 @@ const Inscription = () => {
                   {shortenAddress(inscription?.collection?.creator)}
                 </p>
               )}
-              <Link
-                href={`${ROUTE_PATH.COLLECTION}/${contract}`}
-                className="title"
-              >
-                {contract.toLocaleLowerCase() === ARTIFACT_CONTRACT.toLocaleLowerCase()
+              <Link href={`${ROUTE_PATH.COLLECTION}/${contract}`} className="title">
+                {contract.toLocaleLowerCase() ===
+                ARTIFACT_CONTRACT.toLocaleLowerCase()
                   ? `Artifact #${inscription?.tokenId}`
                   : collectionName}
               </Link>
@@ -171,18 +174,12 @@ const Inscription = () => {
                   <p>{inscription?.name}</p>
                 </div>
               )}
-              <CTAButtons
-                isOwner={isOwner}
-                inscription={inscription}
-              />
+              <CTAButtons isOwner={isOwner} inscription={inscription} />
             </div>
 
             {inscription?.makeOffers && inscription?.makeOffers.length > 0 && (
               <Accordion header="Offers">
-                <OfferList
-                  offers={inscription.makeOffers}
-                  isOwner={isOwner}
-                />
+                <OfferList offers={inscription.makeOffers} isOwner={isOwner} />
               </Accordion>
             )}
             <Accordion header="Artifact Details">{renderDetailsList}</Accordion>

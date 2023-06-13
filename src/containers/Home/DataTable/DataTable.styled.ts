@@ -57,4 +57,11 @@ export const Wrapper = styled.div`
       object-fit: cover;
     }
   }
+
+  .floor-price,
+  .volume {
+    span img {
+      margin-left: ${px2rem(4)};
+    }
+  }
 `;

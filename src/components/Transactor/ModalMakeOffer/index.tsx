@@ -32,6 +32,8 @@ import Form from 'react-bootstrap/Form';
 import Web3 from 'web3';
 import TransactorBaseModal from '../TransactorBaseModal';
 import { SubmitButton } from '../TransactorBaseModal/TransactorBaseModal.styled';
+import { useSelector } from 'react-redux';
+import { getUserSelector } from '@/state/user/selector';
 
 interface IProps {
   show: boolean;
@@ -49,6 +51,7 @@ const ModalMakeOffer: React.FC<IProps> = ({
   handleClose,
   inscription,
 }: IProps) => {
+  const user = useSelector(getUserSelector);
   const [processing, setProcessing] = useState(false);
   const { run: getTokenBalance } = useContractOperation<
     IGetTokenBalanceParams,
@@ -143,7 +146,7 @@ const ModalMakeOffer: React.FC<IProps> = ({
       });
       const allowanceAmountBN = new BigNumber(allowanceAmount);
       const hasApprovalCache = checkCacheApprovalTokenPermission(
-        `${TC_MARKETPLACE_CONTRACT}_${erc20Token}`,
+        `${user.walletAddress}_${TC_MARKETPLACE_CONTRACT}_${erc20Token}`
       );
 
       logger.debug('allowanceAmountBN', allowanceAmountBN.toString());
@@ -159,7 +162,9 @@ const ModalMakeOffer: React.FC<IProps> = ({
           amount: MAX_HEX_VALUE,
         });
 
-        setCacheApprovalTokenPermission(`${TC_MARKETPLACE_CONTRACT}_${erc20Token}`);
+        setCacheApprovalTokenPermission(
+          `${user.walletAddress}_${TC_MARKETPLACE_CONTRACT}_${erc20Token}`
+        );
       }
 
       logger.debug({

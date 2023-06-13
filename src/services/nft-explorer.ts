@@ -6,6 +6,7 @@ import { apiClient } from '.';
 import { camelCaseKeys } from '@/utils/helpers';
 
 const API_PATH = API_URL + '/nft-explorer';
+const MARKETPLACE_API_PATH = API_URL + '/marketplace';
 
 export const getCollections = async (
   page: number,
@@ -55,7 +56,7 @@ export const getCollectionNfts = async ({
   //   `${API_PATH}/collections/${contractAddress}/nfts?limit=${limit}&page=${page}&owner=${owner}`,
   // );
   const res = await apiClient.get(
-    `/marketplace/collections/${contractAddress}/nfts?limit=${limit}&page=${page}&owner=${owner}`,
+    `${MARKETPLACE_API_PATH}/collections/${contractAddress}/nfts?limit=${limit}&page=${page}&owner=${owner}`,
   );
   return Object(camelCaseKeys(res));
 };
@@ -68,7 +69,7 @@ export const getNFTDetail = async ({
   tokenId: string;
 }): Promise<IInscription> => {
   const res = await apiClient.get(
-    `${API_PATH}/collections/${contractAddress}/nfts/${tokenId}`,
+    `${MARKETPLACE_API_PATH}/collections/${contractAddress}/nfts/${tokenId}`,
   );
   return Object(camelCaseKeys(res));
 };

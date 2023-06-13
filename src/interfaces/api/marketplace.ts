@@ -1,4 +1,4 @@
-import { IPagingParams } from "./query";
+import { IPagingParams } from './query';
 
 export interface ICollectionSocial {
   website: string;
@@ -29,6 +29,8 @@ export interface ICollection {
   floorPrice: number;
   volume: number;
   description: string;
+  btcFloorPrice: number;
+  btcVolume: number;
 }
 
 export interface ITokenSaleInfo {
@@ -68,6 +70,11 @@ export interface IToken {
   size: number;
 }
 
+export interface IGetCollectionNFTListResponse {
+  items: IToken[];
+  totalItem: number;
+}
+
 export interface IGetCollectionListParams extends IPagingParams {
   owner?: string;
   contract?: string;
@@ -79,17 +86,22 @@ export interface IGetCollectionListParams extends IPagingParams {
 
 export interface IGetCollectionNFTListParams extends IPagingParams {
   rarity?: string;
+  price?: string;
   attributes?: string;
   token_id?: string;
   is_big_file?: boolean;
   sort_by?: string;
   sort?: string;
   contract_address: string;
+  buyable?: boolean;
+  from_price?: string;
+  to_price?: string;
 }
 
 export interface IGetCollectionActivityListParams extends IPagingParams {
   status?: number;
   contract_address: string;
+  types?: string;
 }
 
 export interface ICollectionActivity {
@@ -107,3 +119,17 @@ export interface ICollectionActivity {
   txHash: string;
   thumbnail: string;
 }
+
+export interface IGetCollectionAttributesParams extends IPagingParams {
+  trait_type?: string;
+  value?: string;
+  contract_address: string;
+}
+
+export type TraitStats = {
+  traitName: string;
+  traitValuesStat: {
+    value: string;
+    rarity: number;
+  }[];
+};
