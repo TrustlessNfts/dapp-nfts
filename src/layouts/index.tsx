@@ -18,7 +18,7 @@ export const Container = styled.div`
 const ContentWrapper = styled.div`
   min-height: calc(100vh - 80px);
   width: 100%;
-  overflow-x: hidden;
+  /* overflow-x: hidden; */
 
   > div {
     width: 100%;
@@ -33,6 +33,7 @@ const Layout = ({ children, hideFooter = false }: PropsWithChildren<Props>) => {
   return (
     <Container>
       <Header height={HEADER_HEIGHT} />
+
       <ContentWrapper>{children}</ContentWrapper>
       {!hideFooter && <Footer height={FO0TER_HEIGHT} />}
     </Container>
