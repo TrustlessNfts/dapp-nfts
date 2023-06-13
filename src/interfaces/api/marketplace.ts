@@ -68,6 +68,11 @@ export interface IToken {
   size: number;
 }
 
+export interface IGetCollectionNFTListResponse {
+  items: IToken[];
+  totalItem: number;
+}
+
 export interface IGetCollectionListParams extends IPagingParams {
   owner?: string;
   contract?: string;
@@ -79,6 +84,7 @@ export interface IGetCollectionListParams extends IPagingParams {
 
 export interface IGetCollectionNFTListParams extends IPagingParams {
   rarity?: string;
+  price?: string;
   attributes?: string;
   token_id?: string;
   is_big_file?: boolean;

@@ -70,6 +70,15 @@ export const StyledCollectionFilter = styled.div`
       display: flex;
       align-items: center;
       justify-content: space-between;
+      &:hover {
+        background: #c6c7f8;
+        color: black;
+      }
+    }
+    .select__option--is-focused,
+    .select__option--is-selected {
+      background: transparent;
+      color: white;
     }
   }
 `;

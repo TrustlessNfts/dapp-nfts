@@ -9,7 +9,7 @@ import {
   IGetCollectionActivityListParams,
   IGetCollectionListParams,
   IGetCollectionNFTListParams,
-  IToken,
+  IGetCollectionNFTListResponse,
 } from '@/interfaces/api/marketplace';
 
 const API_PATH = '/marketplace';
@@ -31,7 +31,7 @@ export const getCollectionDetail = async (
 
 export const getCollectionNFTList = async (
   params: IGetCollectionNFTListParams,
-): Promise<Array<IToken>> => {
+): Promise<IGetCollectionNFTListResponse> => {
   const { contract_address, ...rest } = params;
   const qs = queryString.stringify(rest);
   const res = await apiClient.get(

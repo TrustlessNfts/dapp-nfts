@@ -1,8 +1,10 @@
 import Empty from '@/components/Empty';
 import ImageWrapper from '@/components/ImageWrapper';
+import InfiniteLoading from '@/components/InfiniteLoading';
 import ModalPurchase from '@/components/Transactor/ModalPurchase';
 import { ROUTE_PATH } from '@/constants/route-path';
 import { TC_EXPLORER } from '@/constants/url';
+import { CollectionContext } from '@/contexts/collection-context';
 import { IInscription } from '@/interfaces/api/inscription';
 import { ICollection, IToken } from '@/interfaces/api/marketplace';
 import { getUserSelector } from '@/state/user/selector';
@@ -14,18 +16,13 @@ import { useRouter } from 'next/router';
 import React, { useContext, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Wrapper } from './TokenList.styled';
-import { CollectionContext } from '@/contexts/collection-context';
-import InfiniteLoading from '@/components/InfiniteLoading';
 
 interface IProps {
   collection: ICollection | null;
   query?: string;
 }
 
-const TokenList: React.FC<IProps> = ({
-  collection,
-}:
-  IProps): React.ReactElement => {
+const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement => {
   const router = useRouter();
   const user = useSelector(getUserSelector);
   const {
@@ -33,6 +30,7 @@ const TokenList: React.FC<IProps> = ({
     loadingNfts: loading,
     fetchNFTList,
   } = useContext(CollectionContext);
+
   const [showPurchase, setShowPurchase] = useState(false);
   const [selectedToken, setSelectedToken] = useState<IToken | null>(null);
 
@@ -52,7 +50,6 @@ const TokenList: React.FC<IProps> = ({
     setShowPurchase(false);
     setSelectedToken(null);
   };
-
 
   if (!nftList) return <> </>;
 
@@ -112,7 +109,7 @@ const TokenList: React.FC<IProps> = ({
                         token.priceErc20.erc20Token &&
                         token.priceErc20.offeringId &&
                         user?.walletAddress?.toLowerCase() !==
-                        token.owner.toLowerCase() && (
+                          token.owner.toLowerCase() && (
                           <button
                             className="purchase-btn"
                             onClick={() => handleOpenPurchase(token)}
@@ -134,7 +131,11 @@ const TokenList: React.FC<IProps> = ({
             </tbody>
           </table>
         )}
-        <InfiniteLoading fetchMoreData={fetchNFTList} isLoading={loading} hasMoreData={hasMore} />
+        <InfiniteLoading
+          fetchMoreData={fetchNFTList}
+          isLoading={loading}
+          hasMoreData={hasMore}
+        />
       </Wrapper>
 
       <ModalPurchase

@@ -1,26 +1,33 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { StyledCollectionFilter } from './CollectionFilter.styled';
 import RadioGroups from '@/components/RadioGroups';
-import FilterMinMax from './FilterMinMax';
-import { CollectionContext } from '@/contexts/collection-context';
-import { TraitStats } from '@/interfaces/api/marketplace';
-import { Stack } from 'react-bootstrap';
 import Text from '@/components/Text';
-import Select, { components } from 'react-select';
-import { useWindowSize } from '@trustless-computer/dapp-core';
 import { StyledSelect } from '@/components/global/Select.styled';
+import { CollectionContext } from '@/contexts/collection-context';
+import { useWindowSize } from '@trustless-computer/dapp-core';
+import { useContext, useEffect, useState } from 'react';
+import { Stack } from 'react-bootstrap';
+import Select, { components } from 'react-select';
+import { StyledCollectionFilter } from './CollectionFilter.styled';
+import FilterMinMax from './FilterMinMax';
 
-const CollectionFilter = () => {
+type IProps = {
+  floorPrice: number;
+};
+
+const CollectionFilter = ({ floorPrice }: IProps) => {
   const { attributes, query, setQuery } = useContext(CollectionContext);
   const { mobileScreen } = useWindowSize();
-  const { rarity, attributes: qsAttrs } = query;
+  const { rarity, attributes: qsAttrs, price } = query;
 
   const [currentTraitOpen, setCurrentTraitOpen] = useState<string | null>(null);
   const [filterRarity, setFilterRarity] = useState({
     from: rarity ? rarity.split(',')[0] : '',
     to: rarity ? rarity.split(',')[1] : '',
   });
-  const [filterTraits, setFilterTraits] = useState(qsAttrs);
+  const [filterPrice, setFilterPrice] = useState({
+    from: price ? price.split(',')[0] : '',
+    to: price ? price.split(',')[1] : '',
+  });
+  const [filterTraits, setFilterTraits] = useState<string>('');
 
   const buyNowOptions = [
     { key: 'true', value: 'Only buy now' },
@@ -28,13 +35,33 @@ const CollectionFilter = () => {
   ];
 
   useEffect(() => {
-    if (filterTraits) {
-      setQuery({
-        ...query,
-        attributes: filterTraits,
-      });
-    }
+    setQuery({
+      ...query,
+      attributes: filterTraits,
+    });
   }, [filterTraits]);
+
+  useEffect(() => {
+    setQuery({
+      ...query,
+      rarity: `${filterRarity.from ? filterRarity.from : 0},${
+        filterRarity.to || 100
+      }`,
+    });
+  }, [filterRarity]);
+
+  useEffect(() => {
+    setQuery({
+      ...query,
+      price: `${filterPrice.from ? filterPrice.from : 0},${
+        filterPrice.to ? filterPrice.to : -1
+      }`,
+    });
+  }, [filterPrice]);
+
+  useEffect(() => {
+    setFilterTraits(qsAttrs || '');
+  }, [qsAttrs]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const Option = (props: any) => {
@@ -55,7 +82,7 @@ const CollectionFilter = () => {
           const list = prev.split(',');
           const newList = list.filter((item) => item !== str);
 
-          return newList.length > 1 ? newList.join(',') : newList[0];
+          return newList.length > 1 ? newList.join(',') : newList[0] ?? '';
         } else {
           return `${prev},${str}`;
         }
@@ -111,6 +138,18 @@ const CollectionFilter = () => {
             placeholderMax="100"
             filter={filterRarity}
             setFilter={setFilterRarity}
+          />
+        </div>
+      )}
+      {floorPrice && floorPrice > 0 && (
+        <div className={'rarity'}>
+          <FilterMinMax
+            filterPrice
+            label="Price"
+            placeholderMin="0.001"
+            placeholderMax="0.001"
+            filter={filterPrice}
+            setFilter={setFilterPrice}
           />
         </div>
       )}

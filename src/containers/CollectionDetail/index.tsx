@@ -25,15 +25,6 @@ const CollectionDetail = () => {
   const [showModalEdit, setShowModalEdit] = useState(false);
   const [showEditButton, setShowEditButton] = useState(false);
 
-  const [qsCollections, setQsCollections] = useState({
-    rarity: '',
-    attributes: '',
-    token_id: '',
-    sort_by: '',
-    sort: '',
-    contract_address: contract,
-  });
-
   const isOwner =
     user?.walletAddress?.toLowerCase() === collection?.creator.toLowerCase();
 
@@ -57,6 +48,8 @@ const CollectionDetail = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contract]);
 
+  if (!collection) return <></>;
+
   return (
     <Container>
       <div className="collection-summary">
@@ -73,7 +66,7 @@ const CollectionDetail = () => {
             }}
           >
             <Tab mountOnEnter eventKey="filter" title={`Filter`}>
-              <CollectionFilter query={qsCollections} setQuery={setQsCollections} />
+              <CollectionFilter floorPrice={collection?.floorPrice} />
             </Tab>
             <Tab mountOnEnter eventKey="description" title={`Description`}>
               <CollectionDescription collection={collection} />
@@ -86,7 +79,7 @@ const CollectionDetail = () => {
           )}
         </div>
         <div className="item-list-wrapper">
-          <CollectionTabNFT collection={collection} query={qsCollections} />
+          <CollectionTabNFT collection={collection} />
         </div>
         <div className="item-activities-wrapper">
           <ActivityList collection={collection} />

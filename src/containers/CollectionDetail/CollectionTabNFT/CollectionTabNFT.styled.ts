@@ -30,4 +30,27 @@ export const Wrapper = styled.div`
       }
     }
   }
-`
+
+  .filterList {
+    display: flex;
+    align-items: center;
+    gap: ${px2rem(10)};
+    margin-bottom: ${px2rem(12)};
+    margin-top: ${px2rem(12)};
+    flex-wrap: wrap;
+
+    > button {
+      max-height: ${px2rem(48)};
+      font-weight: 500;
+      color: white;
+    }
+  }
+
+  .filterItem {
+    gap: ${px2rem(10)};
+    border: 1px solid #5b5b5b;
+    padding: ${px2rem(11)} ${px2rem(12)};
+    border-radius: 8px;
+    width: fit-content;
+  }
+`;

@@ -57,10 +57,10 @@ export const StyledFilterMinMax = styled.div`
         }
 
         .divider {
-          /* width: 1px; */
-          border-left: 1px solid #353945;
+          width: 1px;
+          /* border-left: 1px solid #353945; */
           height: ${px2rem(18)};
-          /* background-color: #353945; */
+          background-color: #353945;
         }
 
         .input {
@@ -73,6 +73,8 @@ export const StyledFilterMinMax = styled.div`
           input {
             flex: 1;
             color: white;
+            width: 100%;
+            /* max-width: ${px2rem(80)}; */
 
             &::placeholder {
               color: white;

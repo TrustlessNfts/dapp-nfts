@@ -29,6 +29,7 @@ export interface ICollectionContext {
   >;
   loadingNfts: boolean;
   fetchNFTList: (p?: number) => void;
+  totalNfts: number;
 }
 
 const initialValue: ICollectionContext = {
@@ -40,7 +41,7 @@ const initialValue: ICollectionContext = {
     token_id: '',
     sort_by: '',
     sort: '',
-    is_buy_now: false,
+    buyable: false,
     from_price: '',
     to_price: '',
   },
@@ -51,6 +52,7 @@ const initialValue: ICollectionContext = {
   fetchNFTList: () => {
     return;
   },
+  totalNfts: 0,
 };
 
 const FETCH_LIMIT = 32;
@@ -64,6 +66,7 @@ export const CollectionProvider: React.FC<PropsWithChildren> = ({
   const router = useRouter();
   const { contract } = router.query as { contract: string };
   const [nfts, setNfts] = React.useState<Array<IToken>>([]);
+  const [totalNfts, setTotalNfts] = useState(0);
   const [collectionAttrs, setCollectionAttrs] = useState<TraitStats[]>([]);
   const [query, setQuery] = React.useState<
     Omit<IGetCollectionNFTListParams, 'contract_address'>
@@ -83,11 +86,13 @@ export const CollectionProvider: React.FC<PropsWithChildren> = ({
           limit: FETCH_LIMIT,
           ...query,
         });
-
-        if (page === 1) {
-          setNfts(res);
-        } else {
-          setNfts((prev) => uniqBy([...prev, ...res], 'tokenId'));
+        if (res && res.items) {
+          if (page === 1) {
+            setNfts(res.items);
+          } else {
+            setNfts((prev) => uniqBy([...prev, ...res.items], 'tokenId'));
+          }
+          setTotalNfts(res.totalItem);
         }
       } catch (err: unknown) {
         logger.error(err);
@@ -129,8 +134,9 @@ export const CollectionProvider: React.FC<PropsWithChildren> = ({
       setQuery,
       loadingNfts,
       fetchNFTList,
+      totalNfts,
     };
-  }, [nfts, query, setQuery, loadingNfts, fetchNFTList, collectionAttrs]);
+  }, [nfts, query, setQuery, loadingNfts, fetchNFTList, collectionAttrs, totalNfts]);
 
   return (
     <CollectionContext.Provider value={contextValues}>

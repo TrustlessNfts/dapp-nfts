@@ -1,7 +1,6 @@
 import IconSVG from '@/components/IconSVG';
 import { CDN_URL } from '@/configs';
 import useOnClickOutside from '@/hooks/useOnClickOutSide';
-import { formatEthPriceInput } from '@/utils/format';
 import { debounce } from 'lodash';
 import { useMemo, useRef, useState } from 'react';
 import { StyledFilterMinMax } from './FilterMinMax.styled';
@@ -36,7 +35,7 @@ const FilterMinMax = (props: Props) => {
 
   const handleMinInputChange = (value: string) => {
     if (value) {
-      const _value = filterPrice ? formatEthPriceInput(value) : value;
+      const _value = value;
       setFilter({
         ...filter,
         from: `${_value}`,
@@ -51,7 +50,7 @@ const FilterMinMax = (props: Props) => {
 
   const handleMaxInputChange = (value: string) => {
     if (value) {
-      const _value = filterPrice ? formatEthPriceInput(value) : value;
+      const _value = value;
 
       setFilter({
         ...filter,
@@ -69,9 +68,9 @@ const FilterMinMax = (props: Props) => {
     return filter?.from || filter?.to;
   }, [filter?.from, filter?.to]);
 
-  const fromValue = filterPrice ? formatEthPriceInput(filter?.from) : filter?.from;
+  const fromValue = filter?.from;
 
-  const toValue = filterPrice ? formatEthPriceInput(filter?.to) : filter?.to;
+  const toValue = filter?.to;
 
   return (
     <StyledFilterMinMax className={`${'wrapper'}`} ref={dropdownRef}>
