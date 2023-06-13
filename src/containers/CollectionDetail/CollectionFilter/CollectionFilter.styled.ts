@@ -31,6 +31,7 @@ export const StyledCollectionFilter = styled.div`
     .select__control {
       background: #1e1e22;
       padding: ${px2rem(12)} ${px2rem(16)};
+      font-size: ${px2rem(12)};
     }
     .select__value-container {
       padding: 0;
@@ -68,6 +69,8 @@ export const StyledCollectionFilter = styled.div`
       display: flex;
       align-items: center;
       justify-content: space-between;
+      font-size: ${px2rem(12)};
+
       &:hover {
         background: #c6c7f8;
         color: black;

@@ -50,7 +50,6 @@ export const Wrapper = styled.div`
     }
 
     .info-label {
-      font-weight: 500;
       font-size: ${px2rem(14)};
       line-height: ${px2rem(22)};
       text-transform: uppercase;

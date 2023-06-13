@@ -25,20 +25,28 @@ export const StyledTable = styled.div`
         color: #fff;
         z-index: 10;
         font-size: 14px;
-        background: #1E1E22;
+        background: #1e1e22;
         vertical-align: middle;
 
-        @media screen and (max-width: ${({ theme }: { theme: DefaultTheme }) => theme.breakpoint.lg}) {
+        @media screen and (max-width: ${({ theme }: { theme: DefaultTheme }) =>
+            theme.breakpoint.lg}) {
           font-size: ${px2rem(14)};
         }
 
-        @media screen and (max-width: ${({ theme }: { theme: DefaultTheme }) => theme.breakpoint.sm}) {
+        @media screen and (max-width: ${({ theme }: { theme: DefaultTheme }) =>
+            theme.breakpoint.sm}) {
           white-space: nowrap;
         }
       }
     }
 
     .tableData {
+      cursor: pointer;
+
+      &:hover {
+        background: #1e1e22;
+      }
+
       &:not(:last-child) {
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       }

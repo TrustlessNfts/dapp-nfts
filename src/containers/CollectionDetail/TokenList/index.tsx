@@ -14,9 +14,9 @@ import { shortenAddress } from '@trustless-computer/dapp-core';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useContext, useState } from 'react';
+import { Spinner } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import { Wrapper } from './TokenList.styled';
-import { Spinner } from 'react-bootstrap';
 
 interface IProps {
   collection: ICollection | null;
@@ -73,29 +73,51 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
               <tr>
                 <th>{`Items`}</th>
                 <th>Owner</th>
+                <th>Best offer</th>
+                {/* <th>Last Sale</th> */}
                 <th>Buy now</th>
               </tr>
             </thead>
             <tbody>
               {nftList.map((token: IToken) => {
+                const bestOffer = () => {
+                  if (!token.makeOffers || token.makeOffers.length === 0)
+                    return null;
+                  //get largest price from makeOffers array
+                  const largestPrice = token.makeOffers.reduce((prev, current) =>
+                    prev.price > current.price ? prev : current,
+                  );
+                  return (
+                    <div className="token-price">
+                      <span>{formatEthPrice(largestPrice.price)}</span>
+                      <img
+                        className="token-icon"
+                        src={mappingERC20ToIcon(largestPrice.erc20Token)}
+                        alt="token icon"
+                      />
+                    </div>
+                  );
+                };
+
                 return (
-                  <tr key={token.tokenId}>
+                  <tr
+                    key={token.tokenId}
+                    onClick={() =>
+                      router.push(
+                        `${ROUTE_PATH.COLLECTION}/${token.collectionAddress}/token/${token.tokenId}`,
+                      )
+                    }
+                  >
                     <td className="token-info">
                       <div className="token-info-wrapper">
                         <div className="thumbnail-wrapper">
-                          <Link
-                            href={`${ROUTE_PATH.COLLECTION}/${token.collectionAddress}/token/${token.tokenId}`}
-                          >
-                            <ImageWrapper
-                              className="token-thumbnail"
-                              src={
-                                token?.imageCapture
-                                  ? token.imageCapture
-                                  : token.image
-                              }
-                              alt={collection?.name}
-                            />
-                          </Link>
+                          <ImageWrapper
+                            className="token-thumbnail"
+                            src={
+                              token?.imageCapture ? token.imageCapture : token.image
+                            }
+                            alt={collection?.name}
+                          />
                         </div>
                         <div className="token-info">
                           <Link
@@ -114,6 +136,8 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
                         {shortenAddress(token.owner)}
                       </Link>
                     </td>
+                    <td className="token-offer">{bestOffer() || '-'}</td>
+                    {/* <td className="token-last-sale"></td> */}
                     <td className="buy-now">
                       {token.buyable &&
                         token.priceErc20.price &&
@@ -125,7 +149,7 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
                             className="purchase-btn"
                             onClick={() => handleOpenPurchase(token)}
                           >
-                            <span>{`Buy ${formatEthPrice(
+                            <span>{`${formatEthPrice(
                               token.priceErc20.price,
                             )}`}</span>
                             <img
