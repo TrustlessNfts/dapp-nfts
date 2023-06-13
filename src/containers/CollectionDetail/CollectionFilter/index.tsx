@@ -157,7 +157,7 @@ const CollectionFilter = ({ floorPrice }: IProps) => {
         <>
           <div className={'filter_traits'}>
             <Stack direction="horizontal" className="justify-between">
-              <Text size="medium" fontWeight="medium">
+              <Text size="regular" fontWeight="medium">
                 Attributes
               </Text>
             </Stack>

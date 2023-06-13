@@ -86,7 +86,7 @@ export const Wrapper = styled.div`
 
   .table-name {
     font-weight: 500;
-    font-size: ${px2rem(16)};
+    font-size: ${px2rem(14)};
     line-height: 1.4;
     color: #fff;
     text-transform: uppercase;
@@ -102,8 +102,8 @@ export const Wrapper = styled.div`
   }
 
   .token-thumbnail {
-    width: ${px2rem(40)};
-    height: ${px2rem(40)};
+    width: ${px2rem(28)};
+    height: ${px2rem(28)};
     border-radius: 4px;
     object-fit: contain;
   }

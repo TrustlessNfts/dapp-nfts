@@ -1,3 +1,4 @@
+import { IInscriptionOffer } from './inscription';
 import { IPagingParams } from './query';
 
 export interface ICollectionSocial {
@@ -64,6 +65,7 @@ export interface IToken {
   image: string;
   mintedAt: number;
   listingForSales: Array<ITokenSaleInfo>;
+  makeOffers?: IInscriptionOffer[];
   buyable: boolean;
   priceErc20: IErc20PriceInfo;
   collection: ICollection;

@@ -8,7 +8,11 @@ interface InfiniteLoadingProps {
   hasMoreData: boolean;
 }
 
-const InfiniteLoading: React.FC<InfiniteLoadingProps> = ({ fetchMoreData, isLoading, hasMoreData }) => {
+const InfiniteLoading: React.FC<InfiniteLoadingProps> = ({
+  fetchMoreData,
+  isLoading,
+  hasMoreData,
+}) => {
   const loaderRef = useRef<HTMLDivElement>(null);
 
   const handleObserver: IntersectionObserverCallback = (entries) => {
@@ -21,8 +25,8 @@ const InfiniteLoading: React.FC<InfiniteLoadingProps> = ({ fetchMoreData, isLoad
   useEffect(() => {
     const options = {
       root: null,
-      rootMargin: '50px',
-      threshold: 1.0,
+      rootMargin: '0px 0px 0px 0px',
+      threshold: 0.5,
     };
 
     const observer = new IntersectionObserver(handleObserver, options);
@@ -45,10 +49,7 @@ const InfiniteLoading: React.FC<InfiniteLoadingProps> = ({ fetchMoreData, isLoad
         </div>
       )}
 
-      {!isLoading && hasMoreData && (
-        <div ref={loaderRef}>
-        </div>
-      )}
+      {!isLoading && hasMoreData && <div id="loading" ref={loaderRef}></div>}
     </div>
   );
 };

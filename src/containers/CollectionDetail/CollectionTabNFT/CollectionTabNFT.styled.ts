@@ -10,7 +10,7 @@ export const Wrapper = styled.div`
 
     .nav-link {
       font-weight: 500;
-      font-size: ${px2rem(16)};
+      font-size: ${px2rem(14)};
       line-height: 1.4;
       opacity: 0.4;
       color: #fff;

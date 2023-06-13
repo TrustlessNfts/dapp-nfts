@@ -14,6 +14,7 @@ export const StyledFilterMinMax = styled.div`
       transition: all 0.2s;
       cursor: pointer;
       background-color: #1e1e22;
+      font-size: ${px2rem(12)};
 
       &:hover {
         border-color: #898989;
@@ -33,8 +34,11 @@ export const StyledFilterMinMax = styled.div`
       top: ${px2rem(60)};
       left: 0;
       padding: ${px2rem(14)};
-      box-shadow: 35px 15px 120px 0 #00000026;
-      background-color: #1e1e22;
+      box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
+      border-radius: 8px;
+      background-color: black;
+      border: 1px solid #5b5b5b;
+
       flex-direction: column;
       gap: ${px2rem(10)};
       display: none;
@@ -50,6 +54,7 @@ export const StyledFilterMinMax = styled.div`
         gap: ${px2rem(16)};
         padding: ${px2rem(11)} ${px2rem(14)};
         border: 1px solid #353945;
+        font-size: ${px2rem(12)};
 
         .label {
           min-width: ${px2rem(40)};

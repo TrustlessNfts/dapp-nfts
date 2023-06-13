@@ -51,4 +51,12 @@ export const Container = styled.div`
       position: relative;
     }
   }
+
+  .tabs {
+    .nav-link {
+      font-weight: 500;
+      font-size: ${px2rem(14)};
+      line-height: 1.4;
+    }
+  }
 `;

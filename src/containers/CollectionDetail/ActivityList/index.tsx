@@ -101,6 +101,12 @@ const ActivityList: React.FC<IProps> = () => {
 
     return {
       id: index.toString(),
+      config: {
+        onClick: () =>
+          router.push(
+            `${ROUTE_PATH.COLLECTION}/${contract}/token/${activity.tokenId}`,
+          ),
+      },
       render: {
         info: (
           <div className="info-wrapper">
