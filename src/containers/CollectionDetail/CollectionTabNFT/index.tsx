@@ -7,6 +7,7 @@ import { ICollection } from '@/interfaces/api/marketplace';
 
 interface IProps {
   collection: ICollection | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   query?: any;
 }
 

@@ -74,7 +74,7 @@ const ModalAcceptOffer = ({ show, handleClose, inscription }: IProps) => {
         operatorAddress: TC_MARKETPLACE_CONTRACT,
       });
       const hasApprovalCache = checkCacheApprovalPermission(
-        `${TC_MARKETPLACE_CONTRACT}_${inscription.collectionContract}`,
+        `${user.walletAddress}_${TC_MARKETPLACE_CONTRACT}_${inscription.collectionContract}`
       );
       if (!isApproved && !hasApprovalCache) {
         logger.debug(TC_MARKETPLACE_CONTRACT);
@@ -86,7 +86,7 @@ const ModalAcceptOffer = ({ show, handleClose, inscription }: IProps) => {
         });
 
         setCacheApprovalPermission(
-          `${TC_MARKETPLACE_CONTRACT}_${inscription.collectionContract}`,
+          `${user.walletAddress}_${TC_MARKETPLACE_CONTRACT}_${inscription.collectionContract}`
         );
       }
 

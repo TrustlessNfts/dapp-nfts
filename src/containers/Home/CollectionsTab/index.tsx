@@ -4,11 +4,10 @@ import SearchInput from '../SearchInput';
 import { getCollectionList } from '@/services/marketplace';
 import logger from '@/services/logger';
 import { ICollection } from '@/interfaces/api/marketplace';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import Spinner from '@/components/Spinner';
 import DataTable from '../DataTable';
 import uniqBy from 'lodash/uniqBy';
 import debounce from 'lodash/debounce';
+import InfiniteLoading from '@/components/InfiniteLoading';
 
 const FETCH_LIMIT = 32;
 
@@ -60,23 +59,8 @@ const CollectionsTab: React.FC = (): React.ReactElement => {
   return (
     <Wrapper>
       <SearchInput onChange={handleSearch} />
-      <InfiniteScroll
-        className="collection-list"
-        dataLength={collections.length}
-        loader={
-          loading ? (
-            <div className="loading-wrapper">
-              <Spinner />
-            </div>
-          ) : (
-            <></>
-          )
-        }
-        next={fetchCollections}
-        hasMore={hasMore}
-      >
-        <DataTable collections={collections} />
-      </InfiniteScroll>
+      <DataTable collections={collections} />
+      <InfiniteLoading fetchMoreData={fetchCollections} isLoading={loading} hasMoreData={hasMore} />
     </Wrapper>
   );
 };

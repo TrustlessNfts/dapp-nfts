@@ -27,7 +27,7 @@ export interface ICollectionContext {
   setQuery: Dispatch<
     SetStateAction<Omit<IGetCollectionNFTListParams, 'contract_address'>>
   >;
-  loadingNfts?: boolean;
+  loadingNfts: boolean;
   fetchNFTList: (p?: number) => void;
 }
 
@@ -63,7 +63,6 @@ export const CollectionProvider: React.FC<PropsWithChildren> = ({
 }: PropsWithChildren): React.ReactElement => {
   const router = useRouter();
   const { contract } = router.query as { contract: string };
-
   const [nfts, setNfts] = React.useState<Array<IToken>>([]);
   const [collectionAttrs, setCollectionAttrs] = useState<TraitStats[]>([]);
   const [query, setQuery] = React.useState<
@@ -96,7 +95,7 @@ export const CollectionProvider: React.FC<PropsWithChildren> = ({
         setLoadingNfts(false);
       }
     },
-    [contract, query, nfts.length],
+    [contract, query, setNfts, nfts.length],
   );
 
   const fetchCollectionAttrs = useCallback(async (): Promise<void> => {

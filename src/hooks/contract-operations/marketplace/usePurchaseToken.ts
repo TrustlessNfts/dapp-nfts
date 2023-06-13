@@ -47,13 +47,13 @@ const usePurchaseToken: ContractOperationHook<
         });
 
         const balanceInBN = new BigNumber(btcBalance);
-        // if (balanceInBN.isLessThan(estimatedFee.totalFee)) {
-        //   throw Error(
-        //     `Your balance is insufficient. Please top up at least ${formatBTCPrice(
-        //       estimatedFee.totalFee.toString(),
-        //     )} BTC to pay network fee.`,
-        //   );
-        // }
+        if (balanceInBN.isLessThan(estimatedFee.totalFee)) {
+          throw Error(
+            `Your balance is insufficient. Please top up at least ${formatBTCPrice(
+              estimatedFee.totalFee.toString(),
+            )} BTC to pay network fee.`,
+          );
+        }
 
         const offerIdBytes32 = '0x' + offerId;
         const transaction = await contract

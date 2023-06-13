@@ -21,7 +21,6 @@ const CollectionDetail = () => {
     contract: string;
   };
   const user = useSelector(getUserSelector);
-
   const [collection, setCollection] = useState<ICollection | null>(null);
   const [showModalEdit, setShowModalEdit] = useState(false);
   const [showEditButton, setShowEditButton] = useState(false);

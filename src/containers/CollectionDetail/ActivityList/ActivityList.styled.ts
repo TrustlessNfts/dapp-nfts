@@ -68,7 +68,8 @@ export const StyledActivityList = styled(StyledTableList)`
 
 export const Wrapper = styled.div`
   .data-list {
-    max-height: 600px;
+    max-height: calc(100vh - 276px);
+    overflow: hidden auto;
   }
 
   .loading-wrapper {

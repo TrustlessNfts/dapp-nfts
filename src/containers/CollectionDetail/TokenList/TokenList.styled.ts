@@ -2,8 +2,8 @@ import styled from 'styled-components';
 import px2rem from '@/utils/px2rem';
 
 export const Wrapper = styled.div`
-  max-height: calc(100vh - 400px);
-  overflow: auto;
+  height: calc(100vh - 276px);
+  overflow: hidden auto;
 
   .loading-wrapper {
     padding: ${px2rem(48)};

@@ -52,7 +52,6 @@
     "react-dom": "18.2.0",
     "react-drag-drop-files": "^2.3.9",
     "react-hot-toast": "^2.4.0",
-    "react-infinite-scroll-component": "^6.1.0",
     "react-inlinesvg": "^3.0.2",
     "react-jazzicon": "^1.0.4",
     "react-pdf": "^6.2.2",

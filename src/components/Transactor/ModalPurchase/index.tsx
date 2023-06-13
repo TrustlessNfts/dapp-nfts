@@ -127,7 +127,7 @@ const ModalPurchase = ({ show, handleClose, inscription }: IProps) => {
       });
       const allowanceAmountBN = new BigNumber(allowanceAmount);
       const hasApprovalCache = checkCacheApprovalTokenPermission(
-        `${TC_MARKETPLACE_CONTRACT}_${listingInfo.erc20Token}`,
+        `${user.walletAddress}_${TC_MARKETPLACE_CONTRACT}_${listingInfo.erc20Token}`,
       );
 
       logger.debug('allowanceAmountBN', allowanceAmountBN.toString());
@@ -144,7 +144,7 @@ const ModalPurchase = ({ show, handleClose, inscription }: IProps) => {
         });
 
         setCacheApprovalTokenPermission(
-          `${TC_MARKETPLACE_CONTRACT}_${listingInfo.erc20Token}`,
+          `${user.walletAddress}_${TC_MARKETPLACE_CONTRACT}_${listingInfo.erc20Token}`,
         );
       }
 

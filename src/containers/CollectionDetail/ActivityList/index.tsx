@@ -12,11 +12,10 @@ import BigNumber from 'bignumber.js';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
-import { Spinner } from 'react-bootstrap';
-import InfiniteScroll from 'react-infinite-scroll-component';
 import Select, { SingleValue } from 'react-select';
 import { StyledActivityList, Wrapper } from './ActivityList.styled';
 import { StyledSelect } from '@/components/global/Select.styled';
+import InfiniteLoading from '@/components/InfiniteLoading';
 
 interface IProps {
   collection: ICollection | null;
@@ -202,31 +201,14 @@ const ActivityList: React.FC<IProps> = () => {
         </StyledSelect>
       </div>
       <div className="data-list">
-        <InfiniteScroll
-          className="disable-scrollbar"
-          dataLength={activities.length}
-          next={fetchActivities}
-          hasMore={hasMore}
-          height={600}
-          style={{ overflow: 'hidden auto' }}
-          loader={
-            loading ? (
-              <div className="loading-wrapper">
-                <Spinner variant="light" />
-              </div>
-            ) : (
-              <></>
-            )
-          }
-        >
-          <StyledActivityList>
-            <Table
-              tableHead={[`Items`, 'price', 'from', 'to', 'event']}
-              data={tableData}
-              className="activity-table"
-            />
-          </StyledActivityList>
-        </InfiniteScroll>
+        <StyledActivityList>
+          <Table
+            tableHead={[`Items`, 'price', 'from', 'to', 'event']}
+            data={tableData}
+            className="activity-table"
+          />
+          <InfiniteLoading fetchMoreData={fetchActivities} isLoading={loading} hasMoreData={hasMore} />
+        </StyledActivityList>
       </div>
     </Wrapper>
   );
