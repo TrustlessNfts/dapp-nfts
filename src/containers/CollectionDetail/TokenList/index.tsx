@@ -88,7 +88,11 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
                           >
                             <ImageWrapper
                               className="token-thumbnail"
-                              src={token.image}
+                              src={
+                                token?.imageCapture
+                                  ? token.imageCapture
+                                  : token.image
+                              }
                               alt={collection?.name}
                             />
                           </Link>
