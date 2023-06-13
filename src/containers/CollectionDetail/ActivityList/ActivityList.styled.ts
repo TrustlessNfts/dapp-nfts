@@ -107,4 +107,8 @@ export const Wrapper = styled.div`
     border-radius: 4px;
     object-fit: contain;
   }
+
+  .tableData_item {
+    background: transparent;
+  }
 `;
