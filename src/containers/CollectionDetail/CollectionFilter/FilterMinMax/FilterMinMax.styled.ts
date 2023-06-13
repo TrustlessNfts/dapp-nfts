@@ -1,4 +1,3 @@
-import { colors } from '@/theme/colors';
 import px2rem from '@/utils/px2rem';
 import styled from 'styled-components';
 
@@ -17,14 +16,14 @@ export const StyledFilterMinMax = styled.div`
       background-color: #1e1e22;
 
       &:hover {
-        border-color: ${colors.black[40]};
+        border-color: #898989;
       }
     }
 
     .icon {
       svg,
       path {
-        stroke: ${colors.black[20]};
+        stroke: #b6b6b6;
       }
     }
 

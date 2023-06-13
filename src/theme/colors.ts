@@ -1,6 +1,6 @@
 export const colors = {
   white: '#FFFFFF',
-  black: { 20: '#B6B6B6', 40: '#898989', 60: '#5b5b5b', 80: '#2e2e2e' },
+  black: '#000000',
 };
 
 export type ColorsTheme = typeof darkTheme;
@@ -18,7 +18,7 @@ export const commonTheme = {
   },
 
   purple: {
-    primary: '#C6C7F8',
+    primary: '#E5ECF6',
     50: '#F2F5FA',
     a: '#95A4FC',
     b: '#C6C7F8',

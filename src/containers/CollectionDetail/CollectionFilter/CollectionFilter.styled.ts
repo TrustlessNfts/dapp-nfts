@@ -1,4 +1,3 @@
-import { colors } from '@/theme/colors';
 import px2rem from '@/utils/px2rem';
 import styled from 'styled-components';
 
@@ -61,8 +60,7 @@ export const StyledCollectionFilter = styled.div`
       }
 
       &::-webkit-scrollbar-thumb {
-        background-color: ${colors
-          .black[80]}; /* Set to your desired color or remove to use the default */
+        background-color: #2e2e2e; /* Set to your desired color or remove to use the default */
       }
     }
 
