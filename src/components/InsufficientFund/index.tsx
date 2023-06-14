@@ -34,9 +34,9 @@ const InsufficientFund = ({ estTCFee, estBTCFee, erc20Token, price }: Props) => 
     inscribeable: false,
   });
 
-  const [insufficientTC, setInsufficientTC] = useState(true);
-  const [insufficientBTC, setInsufficientBTC] = useState(true);
-  const [insufficientBalance, setInsufficientBalance] = useState(true);
+  const [insufficientTC, setInsufficientTC] = useState(false);
+  const [insufficientBTC, setInsufficientBTC] = useState(false);
+  const [insufficientBalance, setInsufficientBalance] = useState(false);
 
   const fetchTokenBalance = useCallback(async () => {
     if (!erc20Token) return;
@@ -71,6 +71,10 @@ const InsufficientFund = ({ estTCFee, estBTCFee, erc20Token, price }: Props) => 
       fetchTokenBalance();
     }
   }, [erc20Token, fetchTokenBalance]);
+
+  if (!insufficientBTC && !insufficientTC && !insufficientBalance) {
+    return <></>;
+  }
 
   return (
     <StyledInsufficientFund className="noti-wrapper">

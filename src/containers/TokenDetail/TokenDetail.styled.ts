@@ -18,8 +18,13 @@ const Container = styled.div`
   }
 
   .left-container {
-    /* width: 40%; */
     flex: 1;
+
+    .thumbnail-wrapper {
+      position: sticky;
+      top: ${px2rem(20)};
+    }
+
     .thumbnail {
       width: 100%;
       aspect-ratio: 1 / 1;
@@ -41,8 +46,21 @@ const Container = styled.div`
 
       .creator {
         color: ${commonTheme.text['black-20']};
+        font-size: ${px2rem(16)};
+        line-height: ${px2rem(28)};
+
+        span {
+          color: #C6C7F8;
+        }
+      }
+
+      .collection-index {
+        font-weight: 400;
         font-size: ${px2rem(20)};
-        line-height: ${px2rem(32)};
+        line-height: ${px2rem(30)};
+        color: #C6C7F8;
+        letter-spacing: -0.03em;
+        margin-bottom: ${px2rem(12)};
       }
 
       .title {
@@ -122,7 +140,7 @@ const Container = styled.div`
     }
 
     .properties-trait-type {
-      font-weight: 400;
+      font-weight: 300;
       font-size: 13px;
       letter-spacing: 0.05em;
       text-transform: uppercase;
