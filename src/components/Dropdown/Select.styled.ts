@@ -8,6 +8,8 @@ export const StyledSelect = styled.div`
     color: white;
     outline: none;
     box-shadow: none;
+    font-size: ${px2rem(14)};
+    line-height: 26px;
 
     .select__single-value {
       color: white;
@@ -24,14 +26,14 @@ export const StyledSelect = styled.div`
     .select__multi-value__label {
       color: white;
       font-weight: 500;
-      font-size: 16px;
+      font-size: ${px2rem(12)};
       line-height: 26px;
     }
 
     .select__input-container {
       color: white;
       font-weight: 500;
-      font-size: 16px;
+      font-size: ${px2rem(12)};
       line-height: 26px;
     }
   }
@@ -59,7 +61,9 @@ export const StyledSelect = styled.div`
   .select__option {
     padding: ${px2rem(10)} ${px2rem(16)};
     font-weight: 400;
-    line-height: (26/16);
+    line-height: (26/14);
+    font-size: ${px2rem(14)};
+
     color: white;
 
     &:hover {
