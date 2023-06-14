@@ -1,6 +1,6 @@
 import LineChart from '@/components/Chart/LineChart';
 import { IChartData } from '@/interfaces/chart';
-import { formatBTCPrice } from '@/utils/format';
+import { formatEthPrice } from '@/utils/format';
 import cs from 'classnames';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
@@ -38,7 +38,7 @@ const CollectionChart: React.FC<IProps> = ({ collection }: IProps): React.ReactE
           dayjs(item.volumeCreatedAtDate).format('DD MMM')
         );
         const data = res.map(item => {
-          return formatBTCPrice(item.btc);
+          return formatEthPrice(item.btc);
         });
 
         setChartData({
@@ -74,7 +74,7 @@ const CollectionChart: React.FC<IProps> = ({ collection }: IProps): React.ReactE
     <Wrapper>
       <div className='section-header'>
         <h3 className='section-title'>
-          Volume
+          Floor price
         </h3>
         <div className='chart-filter-wrapper'>
           <button

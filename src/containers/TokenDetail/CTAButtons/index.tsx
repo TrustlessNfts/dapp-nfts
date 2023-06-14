@@ -1,11 +1,10 @@
 import Button from '@/components/Button';
-import Text from '@/components/Text';
 import { StyledCTAButtons } from './CTAButtons.styled';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import ModalListTokenForSale from '@/components/Transactor/ModalListTokenForSale';
 import { IInscription } from '@/interfaces/api/inscription';
 import ModalMakeOffer from '@/components/Transactor/ModalMakeOffer';
-import { formatEthPrice, mappingERC20ToSymbol } from '@/utils/format';
+import { formatEthPrice, mappingERC20ToIcon } from '@/utils/format';
 import ModalCancelListing from '@/components/Transactor/ModalCancelListing';
 import ModalPurchase from '@/components/Transactor/ModalPurchase';
 
@@ -20,9 +19,6 @@ const CTAButtons = ({ isOwner, inscription }: Props) => {
   const [showListForSale, setShowListForSale] = useState(false);
   const [showCancelListing, setShowCancelListing] = useState(false);
 
-  if (!inscription) {
-    return <></>;
-  }
   const showBuyButton =
     inscription?.listingForSales &&
     inscription?.listingForSales?.length > 0 &&
@@ -30,80 +26,80 @@ const CTAButtons = ({ isOwner, inscription }: Props) => {
 
   const listingInfo = inscription?.listingForSales?.[0];
 
+  const bestOffer = useMemo(() => {
+    if (!inscription?.makeOffers || inscription?.makeOffers.length === 0) {
+      return null;
+    }
+
+    return inscription?.makeOffers?.sort((a, b) => a.price - b.price)[0];
+  }, [inscription]);
+
+  if (!inscription) {
+    return <></>;
+  }
+
   return (
     <>
       <StyledCTAButtons>
         {showBuyButton && listingInfo && (
-          <Button
-            background={'white'}
-            bg="white"
-            className="cta-btn"
-            onClick={() => setShowPurchase(true)}
-          >
-            <Text
-              size="medium"
-              color="bg1"
-              className="button-text"
-              fontWeight="medium"
-            >
-              Buy {formatEthPrice(listingInfo?.price)}{' '}
-              {mappingERC20ToSymbol(listingInfo?.erc20Token)}
-            </Text>
-          </Button>
+          <div className='current-price-wrapper'>
+            <p className='current-price-label'>Current price</p>
+            <p className='current-price-value'>{formatEthPrice(listingInfo?.price)}{' '}<img className='token-icon' src={mappingERC20ToIcon(listingInfo?.erc20Token)} alt='icon' /></p>
+          </div>
         )}
-        {!isOwner && (
-          <>
+        {!showBuyButton && (
+          <div className='current-price-wrapper'>
+            <p className='current-price-label'>Best offer</p>
+            {bestOffer ? (
+              <p className='current-price-value'>{formatEthPrice(bestOffer?.price)}{' '}<img className='token-icon' src={mappingERC20ToIcon(bestOffer?.erc20Token)} alt='icon' /></p>
+            ) : (
+              <p className='current-price-value'>-</p>
+            )}
+          </div>
+        )}
+        <div className='action-wrapper'>
+          {showBuyButton && listingInfo && (
             <Button
               background={'white'}
               bg="white"
-              className="cta-btn"
-              onClick={() => setShowMakeOffer(true)}
+              className="cta-btn buy-btn"
+              onClick={() => setShowPurchase(true)}
             >
-              <Text
-                size="medium"
-                color="bg1"
-                className="button-text"
-                fontWeight="medium"
+              Buy now
+            </Button>
+          )}
+          {!isOwner && (
+            <>
+              <Button
+                bg="white"
+                className="cta-btn make-offer-btn"
+                onClick={() => setShowMakeOffer(true)}
               >
                 Make Offer
-              </Text>
-            </Button>
-          </>
-        )}
-        {isOwner && !listingInfo && (
-          <Button
-            onClick={() => setShowListForSale(true)}
-            background={'white'}
-            bg="white"
-            className="cta-btn"
-          >
-            <Text
-              size="medium"
-              color="bg1"
-              className="button-text"
-              fontWeight="medium"
+              </Button>
+            </>
+          )}
+          {isOwner && !listingInfo && (
+            <Button
+              onClick={() => setShowListForSale(true)}
+              background={'white'}
+              bg="white"
+              className="cta-btn make-offer-btn"
             >
               List for Sale
-            </Text>
-          </Button>
-        )}
-        {isOwner && listingInfo && (
-          <Button
-            onClick={() => setShowCancelListing(true)}
-            background={'white'}
-            bg="white"
-            className="cta-btn"
-          >
-            <Text
-              size="medium"
-              color="bg1"
-              className="button-text"
-              fontWeight="medium"
+            </Button>
+          )}
+          {isOwner && listingInfo && (
+            <Button
+              onClick={() => setShowCancelListing(true)}
+              background={'white'}
+              bg="white"
+              className="cta-btn make-offer-btn"
             >
               Cancel Listing
-            </Text>
-          </Button>
-        )}
+            </Button>
+          )}
+        </div>
       </StyledCTAButtons>
 
       <ModalListTokenForSale

@@ -1,6 +1,6 @@
 import EstimatedFee from '@/components/EstimatedFee';
 import { TC_MARKETPLACE_CONTRACT } from '@/configs';
-import { TOKEN_OPTIONS, WETH_ADDRESS } from '@/constants/marketplace';
+import { TOKEN_OPTIONS, WBTC_ADDRESS } from '@/constants/marketplace';
 import useListTokenForSale, {
   IListTokenForSaleParams,
 } from '@/hooks/contract-operations/marketplace/useListTokenForSale';
@@ -150,7 +150,7 @@ const ModalListTokenForSale: React.FC<IProps> = ({
       <Formik
         key="listTokenForSale"
         initialValues={{
-          erc20Token: WETH_ADDRESS,
+          erc20Token: WBTC_ADDRESS,
           price: '0',
         }}
         validate={validateForm}
