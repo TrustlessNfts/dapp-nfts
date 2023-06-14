@@ -1,22 +1,22 @@
 import Empty from '@/components/Empty';
-import ImageWrapper from '@/components/ImageWrapper';
+import IconSVG from '@/components/IconSVG';
 import InfiniteLoading from '@/components/InfiniteLoading';
 import ModalPurchase from '@/components/Transactor/ModalPurchase';
+import { CDN_URL } from '@/configs';
 import { ROUTE_PATH } from '@/constants/route-path';
-import { TC_EXPLORER } from '@/constants/url';
 import { CollectionContext } from '@/contexts/collection-context';
 import { IInscription } from '@/interfaces/api/inscription';
 import { ICollection, IToken } from '@/interfaces/api/marketplace';
 import { getUserSelector } from '@/state/user/selector';
-import { formatEthPrice, mappingERC20ToIcon } from '@/utils/format';
 import { showToastError } from '@/utils/toast';
-import { shortenAddress } from '@trustless-computer/dapp-core';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useContext, useState } from 'react';
 import { Spinner } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
-import { Wrapper } from './TokenList.styled';
+import TokenGridView from './Grid';
+import TokenListView from './Table';
+import { ViewOptions, Wrapper } from './TokenList.styled';
+import { debounce } from 'lodash';
 
 interface IProps {
   collection: ICollection | null;
@@ -32,10 +32,13 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
     fetchNFTList,
     totalNfts,
     filterLoading,
+    query,
+    setQuery,
   } = useContext(CollectionContext);
 
   const [showPurchase, setShowPurchase] = useState(false);
   const [selectedToken, setSelectedToken] = useState<IToken | null>(null);
+  const [isGridView, setIsGridView] = useState(false);
 
   const handleOpenPurchase = (data: IToken) => {
     if (!user.walletAddress) {
@@ -58,8 +61,66 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
 
   const hasMore = !!collection && nftList.length < totalNfts;
 
+  const renderView = () => {
+    if (!isGridView) {
+      return (
+        <TokenListView
+          nftList={nftList}
+          handleOpenPurchase={handleOpenPurchase}
+          collection={collection}
+        />
+      );
+    }
+    return (
+      <TokenGridView
+        nftList={nftList}
+        handleOpenPurchase={handleOpenPurchase}
+        collection={collection}
+      />
+    );
+  };
+
   return (
     <>
+      <ViewOptions>
+        <div className={'searchInput_wrapper'}>
+          <input
+            className={'input'}
+            onChange={debounce((e) => {
+              setQuery({
+                ...query,
+                token_id: e.target.value,
+              });
+            }, 300)}
+            placeholder="Token ID"
+            type="text"
+          />
+          <div className={'search-icon'}>
+            <IconSVG
+              maxWidth={'16'}
+              src={`${CDN_URL}/pages/nfts/icons/ic-search.svg`}
+            />
+          </div>
+        </div>
+        <div className="view-options-wrapper">
+          <IconSVG
+            src={`${CDN_URL}/pages/nfts/icons/ic-list.svg`}
+            maxWidth="16"
+            color="white"
+            type="stroke"
+            className={`${isGridView ? '' : 'opacity-100'}`}
+            onClick={() => setIsGridView(false)}
+          />
+          <IconSVG
+            src={`${CDN_URL}/pages/nfts/icons/ic-layout-grid.svg`}
+            maxWidth="16"
+            color="white"
+            type="stroke"
+            className={`${isGridView ? 'opacity-100' : ''}`}
+            onClick={() => setIsGridView(true)}
+          />
+        </div>
+      </ViewOptions>
       <Wrapper className="disable-scrollbar">
         {!loading && nftList.length === 0 && <Empty />}
         {filterLoading && (
@@ -67,116 +128,15 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
             <Spinner variant="light" />
           </div>
         )}
-        {nftList.length > 0 && (
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>{`Items`}</th>
-                <th>Owner</th>
-                <th>Best offer</th>
-                {/* <th>Last Sale</th> */}
-                <th>Buy now</th>
-              </tr>
-            </thead>
-            <tbody>
-              {nftList.map((token: IToken) => {
-                const bestOffer = () => {
-                  if (!token.makeOffers || token.makeOffers.length === 0)
-                    return null;
-                  //get largest price from makeOffers array
-                  const largestPrice = token.makeOffers.reduce((prev, current) =>
-                    prev.price > current.price ? prev : current,
-                  );
-                  return (
-                    <div className="token-price">
-                      <span>{formatEthPrice(largestPrice.price)}</span>
-                      <img
-                        className="token-icon"
-                        src={mappingERC20ToIcon(largestPrice.erc20Token)}
-                        alt="token icon"
-                      />
-                    </div>
-                  );
-                };
-
-                return (
-                  <tr
-                    key={token.tokenId}
-                    onClick={() =>
-                      router.push(
-                        `${ROUTE_PATH.COLLECTION}/${token.collectionAddress}/token/${token.tokenId}`,
-                      )
-                    }
-                  >
-                    <td className="token-info">
-                      <div className="token-info-wrapper">
-                        <div className="thumbnail-wrapper">
-                          <ImageWrapper
-                            className="token-thumbnail"
-                            src={
-                              token?.imageCapture ? token.imageCapture : token.image
-                            }
-                            alt={collection?.name}
-                          />
-                        </div>
-                        <div className="token-info">
-                          <Link
-                            href={`${ROUTE_PATH.COLLECTION}/${token.collectionAddress}/token/${token.tokenId}`}
-                            className="token-id"
-                          >{`#${token.tokenId}`}</Link>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="token-owner">
-                      <Link
-                        href={`${TC_EXPLORER}/address/${token.owner}`}
-                        target="_blank"
-                        className="token-owner-link"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {shortenAddress(token.owner)}
-                      </Link>
-                    </td>
-                    <td className="token-offer">{bestOffer() || '-'}</td>
-                    {/* <td className="token-last-sale"></td> */}
-                    <td className="buy-now">
-                      {token.buyable &&
-                        token.priceErc20.price &&
-                        token.priceErc20.erc20Token &&
-                        token.priceErc20.offeringId &&
-                        user?.walletAddress?.toLowerCase() !==
-                          token.owner.toLowerCase() && (
-                          <button
-                            className="purchase-btn"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleOpenPurchase(token);
-                            }}
-                          >
-                            <span>{`${formatEthPrice(
-                              token.priceErc20.price,
-                            )}`}</span>
-                            <img
-                              className="token-icon"
-                              src={mappingERC20ToIcon(token.priceErc20.erc20Token)}
-                              alt="coin-ic"
-                            />
-                          </button>
-                        )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+        {nftList.length > 0 && renderView()}
+        {hasMore && (
+          <InfiniteLoading
+            fetchMoreData={fetchNFTList}
+            isLoading={loading}
+            hasMoreData={hasMore}
+          />
         )}
-        <InfiniteLoading
-          fetchMoreData={fetchNFTList}
-          isLoading={loading}
-          hasMoreData={hasMore}
-        />
       </Wrapper>
-
       <ModalPurchase
         show={showPurchase}
         inscription={selectedToken as unknown as IInscription}

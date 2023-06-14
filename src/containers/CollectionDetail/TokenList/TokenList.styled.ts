@@ -24,7 +24,7 @@ export const Wrapper = styled.div`
 
   .filter-loading {
     position: absolute;
-    top: 0;
+    top: 80px;
     left: 0;
     z-index: 100;
     width: 100%;
@@ -80,9 +80,9 @@ export const Wrapper = styled.div`
         font-weight: 500;
         font-size: ${px2rem(12)};
         line-height: ${px2rem(22)};
-        text-transform: uppercase;
         color: #ffffff;
         vertical-align: middle;
+        opacity: 0.7;
       }
     }
 
@@ -168,6 +168,44 @@ export const Wrapper = styled.div`
       font-size: ${px2rem(14)};
       line-height: ${px2rem(26)};
       color: #fff;
+    }
+  }
+`;
+
+export const ViewOptions = styled.div`
+  position: absolute;
+  top: ${px2rem(20)};
+  right: ${px2rem(24)};
+  display: flex;
+  align-items: center;
+  gap: ${px2rem(24)};
+
+  .searchInput_wrapper {
+    display: flex;
+    align-items: center;
+    font-size: ${px2rem(12)};
+    padding: ${px2rem(6)} ${px2rem(10)};
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    line-height: 1;
+
+    input {
+      color: white;
+    }
+  }
+
+  .view-options-wrapper {
+    display: flex;
+    align-items: center;
+    gap: ${px2rem(8)};
+
+    > div {
+      opacity: 0.3;
+      cursor: pointer;
+
+      &:hover {
+        opacity: 1;
+      }
     }
   }
 `;

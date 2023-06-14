@@ -314,7 +314,6 @@ const StyledDetailList = styled.div`
 const StyledTableList = styled.div`
   .table {
     .tableHead {
-      text-transform: uppercase;
       background-color: #1e1e22;
 
       .tableHead_item {
