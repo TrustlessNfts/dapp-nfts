@@ -81,10 +81,10 @@ export const StyledModalUpload = styled(Modal)`
 
   .divider {
     width: 100%;
-    background-color: #cecece;
+    background-color: #e7e7e7;
     height: 1px;
-    margin-top: ${px2rem(20)};
-    margin-bottom: ${px2rem(20)};
+    margin-top: ${px2rem(12)};
+    margin-bottom: ${px2rem(12)};
   }
 
   .confirm {

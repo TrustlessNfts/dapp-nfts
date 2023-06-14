@@ -37,6 +37,38 @@ export const StyledModalUpload = styled(Modal)`
     .confirm-text {
       padding-top: ${px2rem(11)};
       padding-bottom: ${px2rem(11)};
+      color: #1c1c1c;
+    }
+  }
+
+  .collection-detail {
+    display: flex;
+    align-items: center;
+    gap: ${px2rem(16)};
+    padding: ${px2rem(12)};
+    margin-bottom: ${px2rem(20)};
+    background: #fafafa;
+    border-radius: 8px;
+
+    .collection-thumbnail {
+      width: ${px2rem(48)};
+      height: ${px2rem(48)};
+      object-fit: contain;
+    }
+
+    .collection-name {
+      font-weight: 600;
+      font-size: ${px2rem(16)};
+      line-height: 1.4;
+      color: #333;
+    }
+
+    .collection-index {
+      font-weight: 400;
+      font-size: ${px2rem(12)};
+      line-height: ${px2rem(18)};
+      letter-spacing: -0.01em;
+      color: #333;
     }
   }
 `;
@@ -82,6 +114,6 @@ export const WrapInput = styled.div`
 `;
 
 export const Title = styled.h5`
-  margin-bottom: ${px2rem(24)};
+  margin-bottom: ${px2rem(20)};
   font-weight: 600;
 `;

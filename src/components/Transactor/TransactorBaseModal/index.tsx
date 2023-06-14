@@ -3,12 +3,13 @@ import { StyledOfferModal } from './TransactorBaseModal.styled';
 import { Modal } from 'react-bootstrap';
 import IconSVG from '@/components/IconSVG';
 import { CDN_URL } from '@/configs';
+import InsufficientFund from '@/components/InsufficientFund';
 
 interface IProps extends PropsWithChildren {
   show: boolean;
   title: string;
   handleClose: () => void;
-};
+}
 
 const TransactorBaseModal: React.FC<IProps> = (props: IProps) => {
   const { show = false, handleClose, children, title } = props;
@@ -23,9 +24,10 @@ const TransactorBaseModal: React.FC<IProps> = (props: IProps) => {
           maxWidth={'16'}
         />
       </Modal.Header>
-      <Modal.Body className='modal-body'>
+      <Modal.Body className="modal-body">
         <h3 className="font-medium modal-title">{title}</h3>
         {children}
+        <InsufficientFund />
       </Modal.Body>
     </StyledOfferModal>
   );

@@ -19,6 +19,8 @@ import ToastConfirm from '@/components/ToastConfirm';
 import { showToastError } from '@/utils/toast';
 import logger from '@/services/logger';
 import EstimatedFee from '@/components/EstimatedFee';
+import InsufficientFund from '@/components/InsufficientFund';
+import ImageWrapper from '@/components/ImageWrapper';
 
 type Props = {
   collection: ICollection;
@@ -112,6 +114,20 @@ const ModalTransfer = (props: Props) => {
       </Modal.Header>
       <Modal.Body>
         <Title className="font-medium">Transfer collection</Title>
+
+        <div className="collection-detail">
+          <div className="thumbnail-wrapper">
+            <ImageWrapper
+              className="collection-thumbnail"
+              src={collection.thumbnail}
+              alt={collection.name}
+            />
+          </div>
+          <div className="collection-info">
+            <h1 className="collection-name">{collection.name}</h1>
+            <p className="collection-index">{`Collection #${collection.index}`}</p>
+          </div>
+        </div>
         <Formik
           key="create"
           initialValues={{
@@ -123,7 +139,7 @@ const ModalTransfer = (props: Props) => {
           {({ values, errors, touched, handleChange, handleBlur, handleSubmit }) => (
             <form onSubmit={handleSubmit}>
               <WrapInput>
-                <p className="title-input">Receiver&apos;s address</p>
+                <p className="title-input">TRANSFER COLLECTION TO</p>
                 <input
                   id="receiverAddress"
                   type="text"
@@ -132,7 +148,7 @@ const ModalTransfer = (props: Props) => {
                   onBlur={handleBlur}
                   value={values.receiverAddress}
                   className="input"
-                  placeholder={`Enter receiver's address`}
+                  placeholder={`Paste TC wallet address here`}
                   disabled={isProcessing}
                 />
                 {errors.receiverAddress && touched.receiverAddress && (
@@ -154,8 +170,8 @@ const ModalTransfer = (props: Props) => {
             </form>
           )}
         </Formik>
+        <InsufficientFund />
       </Modal.Body>
-      <Modal.Footer></Modal.Footer>
     </StyledModalUpload>
   );
 };

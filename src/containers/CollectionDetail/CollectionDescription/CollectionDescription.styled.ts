@@ -3,6 +3,7 @@ import px2rem from '@/utils/px2rem';
 
 export const Wrapper = styled.div`
   .description {
+    word-break: break-word;
     font-size: ${px2rem(14)};
     line-height: ${px2rem(24)};
     color: #fff;
@@ -57,8 +58,8 @@ export const Wrapper = styled.div`
 
   .edit-btn {
     padding: ${px2rem(8)};
-    background: #2E2E2E;
-    border: 1px solid #5B5B5B;
+    background: #2e2e2e;
+    border: 1px solid #5b5b5b;
     border-radius: 4px;
     line-height: 1;
   }
@@ -101,7 +102,7 @@ export const Wrapper = styled.div`
     display: inline-flex;
     align-items: center;
     gap: ${px2rem(8)};
-    background: #3385FF;
+    background: #3385ff;
     border-radius: 8px;
     padding: ${px2rem(8)} ${px2rem(16)};
 
@@ -110,6 +111,5 @@ export const Wrapper = styled.div`
       line-height: ${px2rem(24)};
       color: #fff;
     }
-
   }
 `;

@@ -8,6 +8,9 @@ import useApproveTokenAmount, {
 import useGetAllowanceAmount, {
   IGetAllowanceAmountParams,
 } from '@/hooks/contract-operations/erc20/useGetAllowanceAmount';
+import useTokenBalance, {
+  IGetTokenBalanceParams,
+} from '@/hooks/contract-operations/erc20/useTokenBalance';
 import usePurchaseToken, {
   IPurchaseTokenParams,
 } from '@/hooks/contract-operations/marketplace/usePurchaseToken';
@@ -28,9 +31,6 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import TransactorBaseModal from '../TransactorBaseModal';
 import { SubmitButton } from '../TransactorBaseModal/TransactorBaseModal.styled';
-import useTokenBalance, {
-  IGetTokenBalanceParams,
-} from '@/hooks/contract-operations/erc20/useTokenBalance';
 
 interface IProps {
   show: boolean;

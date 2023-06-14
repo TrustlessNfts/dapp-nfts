@@ -17,6 +17,7 @@ import useMakeTokenOffer, {
 import useContractOperation from '@/hooks/contract-operations/useContractOperation';
 import { IInscription } from '@/interfaces/api/inscription';
 import logger from '@/services/logger';
+import { getUserSelector } from '@/state/user/selector';
 import { exponentialToDecimal, mappingERC20ToSymbol } from '@/utils/format';
 import {
   checkCacheApprovalTokenPermission,
@@ -29,11 +30,10 @@ import { Formik } from 'formik';
 import isNaN from 'lodash/isNaN';
 import React, { useState } from 'react';
 import Form from 'react-bootstrap/Form';
+import { useSelector } from 'react-redux';
 import Web3 from 'web3';
 import TransactorBaseModal from '../TransactorBaseModal';
 import { SubmitButton } from '../TransactorBaseModal/TransactorBaseModal.styled';
-import { useSelector } from 'react-redux';
-import { getUserSelector } from '@/state/user/selector';
 
 interface IProps {
   show: boolean;
@@ -114,9 +114,7 @@ const ModalMakeOffer: React.FC<IProps> = ({
 
       logger.debug(
         'Price',
-        `${priceBN.dividedBy(1e18).toString()} ${mappingERC20ToSymbol(
-          erc20Token,
-        )}`,
+        `${priceBN.dividedBy(1e18).toString()} ${mappingERC20ToSymbol(erc20Token)}`,
       );
 
       logger.debug(
@@ -146,7 +144,7 @@ const ModalMakeOffer: React.FC<IProps> = ({
       });
       const allowanceAmountBN = new BigNumber(allowanceAmount);
       const hasApprovalCache = checkCacheApprovalTokenPermission(
-        `${user.walletAddress}_${TC_MARKETPLACE_CONTRACT}_${erc20Token}`
+        `${user.walletAddress}_${TC_MARKETPLACE_CONTRACT}_${erc20Token}`,
       );
 
       logger.debug('allowanceAmountBN', allowanceAmountBN.toString());
@@ -163,7 +161,7 @@ const ModalMakeOffer: React.FC<IProps> = ({
         });
 
         setCacheApprovalTokenPermission(
-          `${user.walletAddress}_${TC_MARKETPLACE_CONTRACT}_${erc20Token}`
+          `${user.walletAddress}_${TC_MARKETPLACE_CONTRACT}_${erc20Token}`,
         );
       }
 
