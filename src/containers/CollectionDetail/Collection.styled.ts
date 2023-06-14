@@ -6,7 +6,7 @@ export const Container = styled.div`
 
   .collection-trading-info-wrapper {
     display: grid;
-    grid-template-columns: minmax(0, 2fr) minmax(0, 6fr) minmax(0, 4fr);
+    grid-template-columns: minmax(0, 2fr) minmax(0, 7fr) minmax(0, 3fr);
     gap: ${px2rem(24)};
     border-bottom: 1px solid #353945;
 

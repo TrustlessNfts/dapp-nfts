@@ -70,7 +70,7 @@ const TokenGridView = (props: Props) => {
                     }}
                   >
                     <span>Buy now</span>
-                    <p>
+                    <p className='inscription-price'>
                       <span>{`${formatEthPrice(token.priceErc20.price)}`}</span>
                       <img
                         className="token-icon"
