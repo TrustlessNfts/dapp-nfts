@@ -1,7 +1,7 @@
 import EstimatedFee from '@/components/EstimatedFee';
 import { TC_MARKETPLACE_CONTRACT } from '@/configs';
 import { MAX_HEX_VALUE } from '@/constants/common';
-import { TOKEN_OPTIONS, WETH_ADDRESS } from '@/constants/marketplace';
+import { TOKEN_OPTIONS, WBTC_ADDRESS } from '@/constants/marketplace';
 import useApproveTokenAmount, {
   IApproveTokenAmountParams,
 } from '@/hooks/contract-operations/erc20/useApproveTokenAmount';
@@ -201,7 +201,7 @@ const ModalMakeOffer: React.FC<IProps> = ({
       <Formik
         key="makeOffer"
         initialValues={{
-          erc20Token: WETH_ADDRESS,
+          erc20Token: WBTC_ADDRESS,
           price: '0',
         }}
         validate={validateForm}

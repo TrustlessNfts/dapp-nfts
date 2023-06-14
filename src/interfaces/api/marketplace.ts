@@ -136,3 +136,22 @@ export type TraitStats = {
     rarity: number;
   }[];
 };
+
+export enum ChartFilter {
+  SEVEN_DAY = '7D',
+  ONE_MONTH = 'month',
+}
+
+export interface IGetCollectionChartParams {
+  contract_address: string;
+  date_range: ChartFilter;
+}
+
+export interface ICollectionChartItem {
+  contract: string;
+  volumeCreatedAt: string;
+  volumeType: string;
+  volumeCreatedAtDate: string;
+  usdt: number;
+  btc: number;
+}

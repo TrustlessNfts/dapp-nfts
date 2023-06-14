@@ -10,6 +10,8 @@ import {
   IGetCollectionListParams,
   IGetCollectionNFTListParams,
   IGetCollectionNFTListResponse,
+  IGetCollectionChartParams,
+  ICollectionChartItem,
 } from '@/interfaces/api/marketplace';
 
 const API_PATH = '/marketplace';
@@ -58,6 +60,17 @@ export const getCollectionAttributes = async (
   const qs = queryString.stringify(rest);
   const res = await apiClient.get(
     `${API_PATH}/collections/${contract_address}/attributes?${qs}`,
+  );
+  return Object(camelCaseKeys(res));
+};
+
+export const getCollectionChart = async (
+  params: IGetCollectionChartParams,
+): Promise<Array<ICollectionChartItem>> => {
+  const { contract_address, ...rest } = params;
+  const qs = queryString.stringify(rest);
+  const res = await apiClient.get(
+    `${API_PATH}/collections/${contract_address}/chart?${qs}`,
   );
   return Object(camelCaseKeys(res));
 };

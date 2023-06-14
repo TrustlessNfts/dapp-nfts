@@ -14,6 +14,7 @@ import { CDN_URL } from '@/configs';
 import ModalEdit from './ModalEdit';
 import { useSelector } from 'react-redux';
 import { getUserSelector } from '@/state/user/selector';
+import CollectionChart from './CollectionChart';
 
 const CollectionDetail = () => {
   const router = useRouter();
@@ -81,8 +82,13 @@ const CollectionDetail = () => {
         <div className="item-list-wrapper">
           <CollectionTabNFT collection={collection} />
         </div>
-        <div className="item-activities-wrapper">
-          <ActivityList collection={collection} />
+        <div className="item-stats-wrapper">
+          <div className="activity-list-wrapper">
+            <ActivityList collection={collection} />
+          </div>
+          <div className="collection-chart-wrapper">
+            <CollectionChart collection={collection} />
+          </div>
         </div>
       </div>
       {collection && showModalEdit && (
