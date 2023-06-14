@@ -1,10 +1,10 @@
 import React, { useRef } from 'react';
-import { Chart as ChartJS, LineController, LineElement, PointElement, LinearScale, Title, ChartOptions } from 'chart.js';
+import { Chart as ChartJS, LineController, LineElement, PointElement, LinearScale, Title, ChartOptions, CategoryScale } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { IChartData } from '@/interfaces/chart';
 import dayjs from 'dayjs';
 
-ChartJS.register(LineController, LineElement, PointElement, LinearScale, Title);
+ChartJS.register(LineController, LineElement, PointElement, LinearScale, Title, CategoryScale);
 
 interface IProps {
   chartData: IChartData;
@@ -21,11 +21,14 @@ const LineChart: React.FC<IProps> = ({ chartData }: IProps) => {
           text: 'Time',
         },
         grid: {
-          display: false,
+          display: false
         },
         ticks: {
           color: '#fff',
         },
+        border: {
+          color: "#333"
+        }
       },
       y: {
         title: {
@@ -37,6 +40,12 @@ const LineChart: React.FC<IProps> = ({ chartData }: IProps) => {
           mirror: true,
           color: '#fff',
         },
+        grid: {
+          color: "#333"
+        },
+        border: {
+          color: "#333"
+        }
       },
     },
     plugins: {
@@ -53,9 +62,8 @@ const LineChart: React.FC<IProps> = ({ chartData }: IProps) => {
         borderWidth: 1,
         callbacks: {
           label: function (context) {
-            const currentYear = new Date().getFullYear();
             const date = new Date(context.label);
-            return dayjs(date).format(`M-DD-${currentYear}`);
+            return dayjs(date).format('DD MMM YYYY');
           },
           title(tooltipItems) {
             return `${tooltipItems[0].formattedValue} ${'BTC'}`;
@@ -63,10 +71,10 @@ const LineChart: React.FC<IProps> = ({ chartData }: IProps) => {
         },
       },
     },
-
     elements: {
       point: {
         backgroundColor: '#4F43E2',
+        borderColor: '#4F43E2',
       },
     },
   };

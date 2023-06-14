@@ -100,7 +100,7 @@ const Inscription = () => {
           <span>Content type</span>
           <span>{contentType}</span>
         </div>
-        {inscription?.mintedAt && (
+        {!!inscription?.mintedAt && (
           <div className="list-item">
             <span>Timestamp</span>
             <span>{formatTimeStamp(mintedAt * 1000)}</span>

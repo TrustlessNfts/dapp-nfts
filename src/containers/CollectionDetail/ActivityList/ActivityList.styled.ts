@@ -66,9 +66,9 @@ export const StyledActivityList = styled(StyledTableList)`
   }
 `;
 
-export const Wrapper = styled.div`
+export const Wrapper = styled.div`  
   .data-list {
-    max-height: calc(100vh - 276px);
+    max-height: calc(100vh - 566px);
     overflow: hidden auto;
   }
 
