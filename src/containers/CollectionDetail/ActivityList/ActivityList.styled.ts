@@ -22,11 +22,12 @@ export const StyledActivityList = styled(StyledTableList)`
 
       .tableHead_item {
         padding: ${px2rem(12)};
+        text-transform: capitalize;
         font-weight: 500;
         font-size: ${px2rem(10)};
         line-height: 1.2;
-        text-transform: uppercase;
         color: #ffffff;
+        opacity: 0.7;
         vertical-align: middle;
       }
     }
@@ -66,9 +67,9 @@ export const StyledActivityList = styled(StyledTableList)`
   }
 `;
 
-export const Wrapper = styled.div`
+export const Wrapper = styled.div`  
   .data-list {
-    max-height: calc(100vh - 276px);
+    max-height: calc(100vh - 566px);
     overflow: hidden auto;
   }
 
@@ -89,7 +90,6 @@ export const Wrapper = styled.div`
     font-size: ${px2rem(14)};
     line-height: 1.4;
     color: #fff;
-    text-transform: uppercase;
     padding: ${px2rem(20)} 0;
     border-bottom: 1px solid #fff;
     display: inline-block;

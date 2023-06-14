@@ -7,12 +7,13 @@ const Container = styled.div`
   flex: 1;
   flex-direction: column;
   align-items: center;
+  padding-top: ${px2rem(60)};
+  padding-bottom: ${px2rem(60)};
 
   .content {
     display: flex;
     flex-direction: row;
     gap: ${px2rem(120)};
-    margin-top: ${px2rem(60)};
     width: 100%;
   }
 
@@ -314,7 +315,6 @@ const StyledDetailList = styled.div`
 const StyledTableList = styled.div`
   .table {
     .tableHead {
-      text-transform: uppercase;
       background-color: #1e1e22;
 
       .tableHead_item {

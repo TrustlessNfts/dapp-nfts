@@ -1,14 +1,19 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
 import Text from '@/components/Text';
-import { formatBTCPrice, formatEthPrice } from '@/utils/format';
-import { Wrapper } from './EstimatedFee.styled';
-import EllipsisLoading from '../EllipsisLoading';
-import { AssetsContext } from '@/contexts/assets-context';
-import web3Provider from '@/connection/custom-web3-provider';
-import BigNumber from 'bignumber.js';
-import logger from '@/services/logger';
 import { TRANSFER_TX_SIZE } from '@/configs';
+import web3Provider from '@/connection/custom-web3-provider';
+import { AssetsContext } from '@/contexts/assets-context';
+import logger from '@/services/logger';
+import {
+  updateDefaultBTCGasFee,
+  updateDefaultTCGasFee,
+} from '@/state/gasFee/reducer';
+import { useAppDispatch } from '@/state/hooks';
+import { formatBTCPrice, formatEthPrice } from '@/utils/format';
+import BigNumber from 'bignumber.js';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import * as TC_SDK from 'trustless-computer-sdk';
+import EllipsisLoading from '../EllipsisLoading';
+import { Wrapper } from './EstimatedFee.styled';
 
 interface IProps {
   estimateBTCGas?: string | null;
@@ -25,10 +30,11 @@ const EstimatedFee: React.FC<IProps> = ({
   uploadModal = false,
   classNames, // isBigFile = false,
 }: // uploadView = false,
-  IProps): React.ReactElement => {
+IProps): React.ReactElement => {
   const [estBTCFee, setEstBTCFee] = useState<string | null>(null);
   const [estTCFee, setEstTCFee] = useState<string | null>(null);
   const { feeRate } = useContext(AssetsContext);
+  const dispatch = useAppDispatch();
 
   const calculateEstBtcFee = useCallback(async () => {
     try {
@@ -38,7 +44,7 @@ const EstimatedFee: React.FC<IProps> = ({
         tcTxSizeByte: TRANSFER_TX_SIZE,
         feeRatePerByte: feeRate.hourFee,
       });
-
+      dispatch(updateDefaultBTCGasFee(estimatedEconomyFee.totalFee.toString()));
       setEstBTCFee(estimatedEconomyFee.totalFee.toString());
     } catch (err: unknown) {
       logger.error(err);
@@ -55,6 +61,7 @@ const EstimatedFee: React.FC<IProps> = ({
       const tcGas = gasLimitBN.times(gasPriceBN);
       logger.debug('TC Gas', tcGas.toString());
       setEstTCFee(tcGas.toString());
+      dispatch(updateDefaultTCGasFee(tcGas.toString()));
     } catch (err: unknown) {
       logger.error(err);
     }
@@ -108,11 +115,18 @@ const EstimatedFee: React.FC<IProps> = ({
               )}
             </p>
           </div>
+          <div className="divider"></div>
+          <Text
+            className="est-fee-title"
+            size="regular"
+            fontWeight="medium"
+            color="bg1"
+          >
+            Other fee
+          </Text>
           <div className={`est-fee-item`}>
             <p className="est-fee-item-title">Platform fee</p>
-            <p className="est-fee-item-value">
-              2.5%
-            </p>
+            <p className="est-fee-item-value">2.5%</p>
           </div>
         </div>
       </div>

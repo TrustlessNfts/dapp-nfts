@@ -24,7 +24,6 @@ export const Container = styled.div`
           border: none;
           opacity: 0.5;
           padding: ${px2rem(20)} 0;
-          text-transform: uppercase;
         }
 
         .nav-link.active {
@@ -49,6 +48,11 @@ export const Container = styled.div`
       border-left: 1px solid #353945;
       border-right: 1px solid #353945;
       position: relative;
+    }
+
+    .activity-list-wrapper {
+      border-bottom: 1px solid #353945;
+      margin-bottom: 20px;
     }
   }
 

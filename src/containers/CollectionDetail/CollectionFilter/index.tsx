@@ -1,6 +1,6 @@
 import RadioGroups from '@/components/RadioGroups';
 import Text from '@/components/Text';
-import { StyledSelect } from '@/components/global/Select.styled';
+import { StyledSelect } from '@/components/Dropdown/Select.styled';
 import { CollectionContext } from '@/contexts/collection-context';
 import { useWindowSize } from '@trustless-computer/dapp-core';
 import { useContext, useEffect, useState } from 'react';

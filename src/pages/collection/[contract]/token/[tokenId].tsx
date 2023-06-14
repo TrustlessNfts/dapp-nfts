@@ -8,7 +8,7 @@ import { GetServerSidePropsContext, NextPage } from 'next';
 
 const TokenDetailPage: NextPage = () => {
   return (
-    <Layout>
+    <Layout hideFooter>
       <TokenDetail />
     </Layout>
   );

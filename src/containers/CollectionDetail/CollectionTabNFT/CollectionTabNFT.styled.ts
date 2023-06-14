@@ -8,13 +8,16 @@ export const Wrapper = styled.div`
   .tabs {
     border-bottom: none;
 
+    .tab-content {
+      margin-top: ${px2rem(24)};
+    }
+
     .nav-link {
       font-weight: 500;
       font-size: ${px2rem(14)};
       line-height: 1.4;
       opacity: 0.4;
       color: #fff;
-      text-transform: uppercase;
       padding: ${px2rem(20)} 0;
       border-radius: 0;
       border: none;

@@ -7,9 +7,11 @@
 }
 
 .divider {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: #e7e7e7;
   height: 1px;
   width: 100%;
+  margin-top: 12px;
+  margin-bottom: 12px;
 }
 
 .mb-4 {
@@ -77,4 +79,16 @@
 
 #loading {
   height: 50px;
+}
+
+.text-underline {
+  text-decoration: underline;
+}
+
+.opacity-100 {
+  opacity: 1;
+}
+
+.aspect-square {
+  aspect-ratio: 1/1;
 }

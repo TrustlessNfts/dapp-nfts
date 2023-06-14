@@ -2,7 +2,7 @@ import px2rem from '@/utils/px2rem';
 import styled from 'styled-components';
 
 export const Wrapper = styled.div`
-  padding: ${px2rem(16)} ${px2rem(28)};
+  padding: ${px2rem(12)};
   background: #fafafa;
   border-radius: 8px;
   margin-bottom: ${px2rem(28)};

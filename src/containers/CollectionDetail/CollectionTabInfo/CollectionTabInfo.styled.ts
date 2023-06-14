@@ -11,7 +11,6 @@ export const Wrapper = styled.div`
       line-height: 1.4;
       opacity: 0.4;
       color: #fff;
-      text-transform: uppercase;
       padding: ${px2rem(20)} 0;
       border-radius: 0;
       border: none;
@@ -26,4 +25,4 @@ export const Wrapper = styled.div`
       }
     }
   }
-`
+`;

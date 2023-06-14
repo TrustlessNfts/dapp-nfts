@@ -14,7 +14,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
 import Select, { SingleValue } from 'react-select';
 import { StyledActivityList, Wrapper } from './ActivityList.styled';
-import { StyledSelect } from '@/components/global/Select.styled';
+import { StyledSelect } from '@/components/Dropdown/Select.styled';
 import InfiniteLoading from '@/components/InfiniteLoading';
 
 interface IProps {

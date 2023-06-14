@@ -37,6 +37,7 @@ import {
   Title,
   WrapInput,
 } from './ModalCreate.styled';
+import InsufficientFund from '@/components/InsufficientFund';
 
 interface IFormValue {
   name: string;
@@ -434,6 +435,7 @@ const ModalCreate = (props: Props) => {
             </form>
           )}
         </Formik>
+        <InsufficientFund estTCFee={estTCFee} estBTCFee={estBTCFee} />
       </Modal.Body>
     </StyledModalUpload>
   );
