@@ -24,7 +24,6 @@ export const Container = styled.div`
           border: none;
           opacity: 0.5;
           padding: ${px2rem(20)} 0;
-          text-transform: uppercase;
         }
 
         .nav-link.active {
