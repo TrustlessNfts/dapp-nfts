@@ -50,6 +50,11 @@ export const Container = styled.div`
       border-right: 1px solid #353945;
       position: relative;
     }
+
+    .activity-list-wrapper {
+      border-bottom: 1px solid #353945;
+      margin-bottom: 20px;
+    }
   }
 
   .tabs {
