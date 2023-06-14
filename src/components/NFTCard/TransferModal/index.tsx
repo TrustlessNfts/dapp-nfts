@@ -10,6 +10,7 @@ import useTransferERC721Token from '@/hooks/contract-operations/nft/useTransferE
 import { CDN_URL } from '@/configs';
 import { showToastError, showToastSuccess } from '@/utils/toast';
 import logger from '@/services/logger';
+import InsufficientFund from '@/components/InsufficientFund';
 
 type Props = {
   show: boolean;
@@ -57,7 +58,7 @@ const TransferModal = (props: Props) => {
         contractAddress: contractAddress,
       });
       showToastSuccess({
-        message: 'Transaction has been created. Please wait for few minutes.'
+        message: 'Transaction has been created. Please wait for few minutes.',
       });
       handleClose();
     } catch (err: unknown) {
@@ -112,7 +113,12 @@ const TransferModal = (props: Props) => {
                 )}
               </WrapInput>
 
-              <Button background='#1c1c1c' disabled={isProcessing} type="submit" className="confirm-btn">
+              <Button
+                background="#1c1c1c"
+                disabled={isProcessing}
+                type="submit"
+                className="confirm-btn"
+              >
                 <Text size="medium" fontWeight="medium" className="confirm-text">
                   {isProcessing ? 'Processing...' : 'Transfer'}
                 </Text>
@@ -120,6 +126,7 @@ const TransferModal = (props: Props) => {
             </form>
           )}
         </Formik>
+        <InsufficientFund />
       </Modal.Body>
     </StyledModalUpload>
   );

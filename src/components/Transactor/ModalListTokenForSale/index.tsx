@@ -13,6 +13,7 @@ import useIsApprovedForAll, {
 import useContractOperation from '@/hooks/contract-operations/useContractOperation';
 import { IInscription } from '@/interfaces/api/inscription';
 import logger from '@/services/logger';
+import { getUserSelector } from '@/state/user/selector';
 import { exponentialToDecimal } from '@/utils/format';
 import {
   checkCacheApprovalPermission,
@@ -25,10 +26,9 @@ import { Formik } from 'formik';
 import isNaN from 'lodash/isNaN';
 import React, { useState } from 'react';
 import Form from 'react-bootstrap/Form';
+import { useSelector } from 'react-redux';
 import TransactorBaseModal from '../TransactorBaseModal';
 import { SubmitButton } from '../TransactorBaseModal/TransactorBaseModal.styled';
-import { useSelector } from 'react-redux';
-import { getUserSelector } from '@/state/user/selector';
 
 interface IProps {
   show: boolean;

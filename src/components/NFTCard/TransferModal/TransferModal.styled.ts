@@ -35,6 +35,7 @@ export const StyledModalUpload = styled(Modal)`
     .confirm-text {
       padding-top: ${px2rem(11)};
       padding-bottom: ${px2rem(11)};
+      color: #1c1c1c;
     }
   }
 `;

@@ -40,6 +40,7 @@ import { Modal } from 'react-bootstrap';
 import toast from 'react-hot-toast';
 import * as TC_SDK from 'trustless-computer-sdk';
 import BigNumber from 'bignumber.js';
+import InsufficientFund from '@/components/InsufficientFund';
 
 type Props = {
   show: boolean;
@@ -96,8 +97,9 @@ const ModalMint = (props: Props) => {
       const chunksSizeInKb = Buffer.byteLength(chunks) / 1000;
       if (chunksSizeInKb > BLOCK_CHAIN_FILE_LIMIT * 1000) {
         showToastError({
-          message: `File size error, maximum file size is ${BLOCK_CHAIN_FILE_LIMIT * 1000
-            }kb.`,
+          message: `File size error, maximum file size is ${
+            BLOCK_CHAIN_FILE_LIMIT * 1000
+          }kb.`,
         });
         return [];
       }
@@ -147,7 +149,7 @@ const ModalMint = (props: Props) => {
         const tcGas = gasLimitBN.times(gasPriceBN);
         logger.debug('TC Gas', tcGas.toString());
         setEstTCFee(tcGas.toString());
-        return tcGas.toString()
+        return tcGas.toString();
       } catch (err: unknown) {
         logger.error(err);
         return '0';
@@ -156,36 +158,39 @@ const ModalMint = (props: Props) => {
     [setEstTCFee, estimateChunksGas, collection.contract],
   );
 
-  const calculateEstTcFeeMintBatch = useCallback(async (listOfChunks: Array<Array<Buffer>>) => {
-    let totalFee = new BigNumber(0);
+  const calculateEstTcFeeMintBatch = useCallback(
+    async (listOfChunks: Array<Array<Buffer>>) => {
+      let totalFee = new BigNumber(0);
 
-    if (!estimateBatchChunksGas) return '0';
+      if (!estimateBatchChunksGas) return '0';
 
-    setEstTCFee(null);
-    let payload: IMintChunksParams | IMintBatchChunksParams;
-    for (let i = 0; i < listOfChunks.length; i++) {
-      const batch = listOfChunks[i];
-      try {
-        payload = {
-          contractAddress: collection.contract,
-          listOfChunks: batch,
-        };
+      setEstTCFee(null);
+      let payload: IMintChunksParams | IMintBatchChunksParams;
+      for (let i = 0; i < listOfChunks.length; i++) {
+        const batch = listOfChunks[i];
+        try {
+          payload = {
+            contractAddress: collection.contract,
+            listOfChunks: batch,
+          };
 
-        const gasLimit = await estimateBatchChunksGas(payload);
-        const gasPrice = await web3Provider.getGasPrice();
-        const gasLimitBN = new BigNumber(gasLimit);
-        const gasPriceBN = new BigNumber(gasPrice);
-        const tcGas = gasLimitBN.times(gasPriceBN);
-        logger.debug('TC Gas', tcGas.toString());
-        totalFee = totalFee.plus(tcGas);
-      } catch (err: unknown) {
-        logger.error(err);
-        setEstTCFee(null);
+          const gasLimit = await estimateBatchChunksGas(payload);
+          const gasPrice = await web3Provider.getGasPrice();
+          const gasLimitBN = new BigNumber(gasLimit);
+          const gasPriceBN = new BigNumber(gasPrice);
+          const tcGas = gasLimitBN.times(gasPriceBN);
+          logger.debug('TC Gas', tcGas.toString());
+          totalFee = totalFee.plus(tcGas);
+        } catch (err: unknown) {
+          logger.error(err);
+          setEstTCFee(null);
+        }
       }
-    }
-    console.log('totalFee', totalFee.toString())
-    setEstTCFee(totalFee.toString());
-  }, [setEstTCFee, estimateBatchChunksGas, collection.contract]);
+      console.log('totalFee', totalFee.toString());
+      setEstTCFee(totalFee.toString());
+    },
+    [setEstTCFee, estimateBatchChunksGas, collection.contract],
+  );
 
   const handleEstFee = useCallback(async (): Promise<void> => {
     if (!file) {
@@ -214,7 +219,12 @@ const ModalMint = (props: Props) => {
       calculateEstBtcFee(Buffer.byteLength(chunks));
       calculateEstTcFeeMintSingle(chunks);
     }
-  }, [calculateEstBtcFee, calculateEstTcFeeMintBatch, calculateEstTcFeeMintSingle, file]);
+  }, [
+    calculateEstBtcFee,
+    calculateEstTcFeeMintBatch,
+    calculateEstTcFeeMintSingle,
+    file,
+  ]);
 
   const handleMintSingle = async (file: File): Promise<void> => {
     if (!collection?.contract) {
@@ -292,8 +302,9 @@ const ModalMint = (props: Props) => {
       const fileSizeInKb = file.size / 1000;
       if (fileSizeInKb > BLOCK_CHAIN_FILE_LIMIT * 1000) {
         showToastError({
-          message: `File size error, maximum file size is ${BLOCK_CHAIN_FILE_LIMIT * 1000
-            }kb.`,
+          message: `File size error, maximum file size is ${
+            BLOCK_CHAIN_FILE_LIMIT * 1000
+          }kb.`,
         });
         return;
       }
@@ -318,8 +329,6 @@ const ModalMint = (props: Props) => {
       </Modal.Header>
       <Modal.Body>
         <Title className="font-medium">Mint BRC-721</Title>
-        {/* <Formik key="mint" onSubmit={handleMintFile}>
-          {({ values, errors, touched, handleChange, handleBlur, handleSubmit }) => ( */}
         <form>
           <div className="upload">
             <Text size="regular" fontWeight="medium" className="mb-4" color="bg1">
@@ -411,8 +420,7 @@ const ModalMint = (props: Props) => {
             </Button>
           </div>
         </form>
-        {/* )} */}
-        {/* </Formik> */}
+        <InsufficientFund estTCFee={estTCFee} estBTCFee={estBTCFee} />
       </Modal.Body>
     </StyledModalUpload>
   );
