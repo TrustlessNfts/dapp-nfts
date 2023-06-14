@@ -10,7 +10,7 @@ import { ICollection, IToken } from '@/interfaces/api/marketplace';
 import { getUserSelector } from '@/state/user/selector';
 import { showToastError } from '@/utils/toast';
 import { useRouter } from 'next/router';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Spinner } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import TokenGridView from './Grid';
@@ -25,6 +25,9 @@ interface IProps {
 
 const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement => {
   const router = useRouter();
+
+  const { mode } = router.query as { mode: string };
+
   const user = useSelector(getUserSelector);
   const {
     nfts: nftList,
@@ -56,6 +59,10 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
     setShowPurchase(false);
     setSelectedToken(null);
   };
+
+  useEffect(() => {
+    setIsGridView(mode === 'gallery');
+  }, [mode]);
 
   if (!nftList) return <> </>;
 
