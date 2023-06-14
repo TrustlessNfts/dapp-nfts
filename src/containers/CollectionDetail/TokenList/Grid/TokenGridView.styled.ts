@@ -3,13 +3,12 @@ import styled from 'styled-components';
 
 export const StyledTokenGridView = styled.div`
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: ${px2rem(24)};
   padding-top: ${px2rem(24)};
   color: white;
 
   .token-item {
-    /* border: 1px solid transparent; */
     border-radius: ${px2rem(4)};
     overflow: hidden;
     cursor: pointer;
@@ -59,14 +58,16 @@ export const StyledTokenGridView = styled.div`
     background: rgba(255, 255, 255, 0.1);
     color: white;
     font-size: ${px2rem(12)};
-    padding: ${px2rem(5)} ${px2rem(16)};
+    padding: ${px2rem(5)} ${px2rem(20)};
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-radius: ${px2rem(4)};
+    border-radius: ${px2rem(4)};  
 
-    img {
-      margin-left: ${px2rem(4)};
+    .inscription-price {
+      display: inline-flex;
+      align-items: center;
+      gap: ${px2rem(4)}
     }
   }
 `;
