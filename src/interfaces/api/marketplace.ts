@@ -1,4 +1,4 @@
-import { IInscriptionOffer } from './inscription';
+import { IInscriptionOffer, IOwnedBNS } from './inscription';
 import { IPagingParams } from './query';
 
 export interface ICollectionSocial {
@@ -71,6 +71,7 @@ export interface IToken {
   collection: ICollection;
   size: number;
   imageCapture?: string;
+  bnsData?: IOwnedBNS[];
 }
 
 export interface IGetCollectionNFTListResponse {
