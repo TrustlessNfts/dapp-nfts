@@ -85,7 +85,9 @@ const TokenListView = (props: Props) => {
                   className="token-owner-link"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  {shortenAddress(token.owner)}
+                  {token?.bnsData?.[0]?.name
+                    ? token?.bnsData?.[0]?.name
+                    : shortenAddress(token.owner)}
                 </Link>
               </td>
               <td className="token-offer">{bestOffer() || '-'}</td>
