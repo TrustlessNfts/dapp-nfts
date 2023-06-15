@@ -54,6 +54,20 @@ export const Container = styled.div`
       border-bottom: 1px solid #353945;
       margin-bottom: 20px;
     }
+
+    @media screen and (max-width: 500px) {
+      display: flex;
+      flex-direction: column;
+      gap: ${px2rem(24)};
+
+      .item-list-wrapper {
+        border-left: none;
+        border-right: none;
+        > div {
+          padding: 0;
+        }
+      }
+    }
   }
 
   .tabs {

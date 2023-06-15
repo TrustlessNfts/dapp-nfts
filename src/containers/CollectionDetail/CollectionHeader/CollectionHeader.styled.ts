@@ -41,6 +41,7 @@ export const Wrapper = styled.div`
     justify-content: flex-end;
     align-items: center;
     gap: ${px2rem(68)};
+    flex-wrap: wrap;
 
     .trading-info-item {
       display: flex;
@@ -64,6 +65,20 @@ export const Wrapper = styled.div`
       color: #ffffff;
       span img {
         margin-left: ${px2rem(4)};
+      }
+    }
+  }
+
+  @media screen and (max-width: 500px) {
+    flex-direction: column;
+    align-items: flex-start;
+    row-gap: ${px2rem(24)};
+
+    .right-content {
+      justify-content: flex-start;
+
+      .trading-info-item {
+        align-items: flex-start;
       }
     }
   }
