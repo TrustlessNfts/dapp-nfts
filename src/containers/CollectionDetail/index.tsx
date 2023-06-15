@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Container } from './Collection.styled';
 import { ICollection } from '@/interfaces/api/marketplace';
 import logger from '@/services/logger';
@@ -15,6 +15,7 @@ import ModalEdit from './ModalEdit';
 import { useSelector } from 'react-redux';
 import { getUserSelector } from '@/state/user/selector';
 import CollectionChart from './CollectionChart';
+import { CollectionContext } from '@/contexts/collection-context';
 
 const CollectionDetail = () => {
   const router = useRouter();
@@ -22,9 +23,13 @@ const CollectionDetail = () => {
     contract: string;
   };
   const user = useSelector(getUserSelector);
+  const { activeTokenTab } = useContext(CollectionContext);
+  console.log('🚀 ~ CollectionDetail ~ activeTokenTab:', activeTokenTab);
+
   const [collection, setCollection] = useState<ICollection | null>(null);
   const [showModalEdit, setShowModalEdit] = useState(false);
   const [showEditButton, setShowEditButton] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>('description');
 
   const isOwner =
     user?.walletAddress?.toLowerCase() === collection?.creator.toLowerCase();
@@ -49,6 +54,12 @@ const CollectionDetail = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contract]);
 
+  useEffect(() => {
+    if (activeTokenTab === 'owners') {
+      setActiveTab('description');
+    }
+  }, [activeTokenTab]);
+
   if (!collection) return <></>;
 
   return (
@@ -59,14 +70,22 @@ const CollectionDetail = () => {
       <div className="collection-trading-info-wrapper">
         <div className="item-info-wrapper">
           <Tabs
-            defaultActiveKey="description"
+            activeKey={activeTab}
+            defaultActiveKey={activeTab}
             id="collection-info"
             className="tabs"
             onSelect={(key) => {
+              if (!key) return;
               setShowEditButton(key === 'description');
+              setActiveTab(key);
             }}
           >
-            <Tab mountOnEnter eventKey="filter" title={`Filter`}>
+            <Tab
+              mountOnEnter
+              eventKey="filter"
+              title={`Filter`}
+              disabled={activeTokenTab === 'owners'}
+            >
               <CollectionFilter floorPrice={collection?.floorPrice} />
             </Tab>
             <Tab mountOnEnter eventKey="description" title={`Description`}>

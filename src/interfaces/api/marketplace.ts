@@ -155,3 +155,9 @@ export interface ICollectionChartItem {
   usdt: number;
   btc: number;
 }
+export interface IOwnerAnalytic {
+  address: string;
+  name?: string;
+  avatar?: string;
+  count: number;
+}

@@ -31,6 +31,8 @@ export interface ICollectionContext {
   fetchNFTList: (p?: number) => void;
   totalNfts: number;
   filterLoading: boolean;
+  activeTokenTab: string;
+  setActiveTokenTab: Dispatch<SetStateAction<string>>;
 }
 
 const initialValue: ICollectionContext = {
@@ -55,6 +57,10 @@ const initialValue: ICollectionContext = {
   },
   totalNfts: 0,
   filterLoading: false,
+  activeTokenTab: 'items',
+  setActiveTokenTab: (_) => {
+    return;
+  },
 };
 
 const FETCH_LIMIT = 32;
@@ -70,6 +76,7 @@ export const CollectionProvider: React.FC<PropsWithChildren> = ({
   const [nfts, setNfts] = React.useState<Array<IToken>>([]);
   const [totalNfts, setTotalNfts] = useState(0);
   const [collectionAttrs, setCollectionAttrs] = useState<TraitStats[]>([]);
+  const [activeTokenTab, setActiveTokenTab] = useState('items');
   const [query, setQuery] = React.useState<
     Omit<IGetCollectionNFTListParams, 'contract_address'>
   >({});
@@ -141,6 +148,8 @@ export const CollectionProvider: React.FC<PropsWithChildren> = ({
       fetchNFTList,
       totalNfts,
       filterLoading,
+      activeTokenTab,
+      setActiveTokenTab,
     };
   }, [
     nfts,
@@ -151,6 +160,8 @@ export const CollectionProvider: React.FC<PropsWithChildren> = ({
     collectionAttrs,
     totalNfts,
     filterLoading,
+    activeTokenTab,
+    setActiveTokenTab,
   ]);
 
   return (

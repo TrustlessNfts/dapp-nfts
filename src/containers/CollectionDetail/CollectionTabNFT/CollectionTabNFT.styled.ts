@@ -7,6 +7,7 @@ export const Wrapper = styled.div`
 
   .tabs {
     border-bottom: none;
+    gap: ${px2rem(24)};
 
     .tab-content {
       margin-top: ${px2rem(24)};
