@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 export const StyledTokenGridView = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(${px2rem(220)}, 1fr));
   gap: ${px2rem(24)};
   padding-top: ${px2rem(24)};
   color: white;
@@ -65,12 +65,12 @@ export const StyledTokenGridView = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-radius: ${px2rem(4)};  
+    border-radius: ${px2rem(4)};
 
     .inscription-price {
       display: inline-flex;
       align-items: center;
-      gap: ${px2rem(4)}
+      gap: ${px2rem(4)};
     }
   }
 `;
