@@ -3,7 +3,8 @@ import styled from 'styled-components';
 
 export const StyledTokenGridView = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(${px2rem(220)}, 1fr));
+
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: ${px2rem(24)};
   padding-top: ${px2rem(24)};
   color: white;
@@ -72,5 +73,9 @@ export const StyledTokenGridView = styled.div`
       align-items: center;
       gap: ${px2rem(4)};
     }
+  }
+
+  @media screen and (max-width: 1280.98px) {
+    grid-template-columns: repeat(auto-fit, minmax(${px2rem(220)}, 1fr));
   }
 `;
