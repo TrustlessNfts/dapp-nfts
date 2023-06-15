@@ -38,7 +38,7 @@ export const StyledActivityList = styled(StyledTableList)`
         font-weight: 500;
         font-size: ${px2rem(10)};
         line-height: 1.2;
-        text-transform: uppercase;
+        /* text-transform: uppercase; */
         color: #ffffff;
         vertical-align: middle;
       }
@@ -67,7 +67,7 @@ export const StyledActivityList = styled(StyledTableList)`
   }
 `;
 
-export const Wrapper = styled.div`  
+export const Wrapper = styled.div`
   .data-list {
     max-height: calc(100vh - 566px);
     overflow: hidden auto;
@@ -102,10 +102,14 @@ export const Wrapper = styled.div`
   }
 
   .token-thumbnail {
-    width: ${px2rem(28)};
-    height: ${px2rem(28)};
     border-radius: 4px;
     object-fit: contain;
+    flex: 1;
+  }
+
+  .thumbnail-wrapper {
+    width: ${px2rem(28)};
+    height: ${px2rem(28)};
   }
 
   .tableData_item {
