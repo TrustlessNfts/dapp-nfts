@@ -11,7 +11,7 @@ import InfiniteLoading from '@/components/InfiniteLoading';
 
 const FETCH_LIMIT = 32;
 
-const CollectionsTab: React.FC = (): React.ReactElement => {
+const AllCollectionsTab: React.FC = (): React.ReactElement => {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [collections, setCollections] = useState<Array<ICollection>>([]);
@@ -65,4 +65,4 @@ const CollectionsTab: React.FC = (): React.ReactElement => {
   );
 };
 
-export default CollectionsTab;
+export default AllCollectionsTab;

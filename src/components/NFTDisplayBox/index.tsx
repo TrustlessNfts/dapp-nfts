@@ -197,6 +197,7 @@ const NFTDisplayBox = ({
     } else {
       setHTMLContentRender(renderEmpty());
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collectionID, tokenID, src, isErrorLinkHttp]);
 
   return <div className={cs(s.wrapper, className)}>{HTMLContentRender && HTMLContentRender}</div>;
