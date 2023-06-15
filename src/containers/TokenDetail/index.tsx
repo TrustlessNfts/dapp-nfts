@@ -39,8 +39,6 @@ const Inscription = () => {
     [inscription],
   );
 
-  console.log(inscription);
-
   const fetchInscriptionDetail = useCallback(async () => {
     if (!contract || !tokenId) return;
 
