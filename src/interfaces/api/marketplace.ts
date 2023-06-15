@@ -156,3 +156,20 @@ export interface ICollectionChartItem {
   usdt: number;
   btc: number;
 }
+export interface IOwnerAnalytic {
+  address: string;
+  name?: string;
+  avatar?: string;
+  count: number;
+}
+
+export interface IGetOwnersAnalyticsResponse {
+  items: IOwnerAnalytic[];
+  totalItems: number;
+}
+
+export interface IGetOwnersAnalyticsParams extends IPagingParams {
+  contract_address: string;
+  sort_by?: string;
+  sort?: string;
+}
