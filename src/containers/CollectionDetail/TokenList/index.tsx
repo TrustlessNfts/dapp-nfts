@@ -41,7 +41,7 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
 
   const [showPurchase, setShowPurchase] = useState(false);
   const [selectedToken, setSelectedToken] = useState<IToken | null>(null);
-  const [isGridView, setIsGridView] = useState(false);
+  const [isGridView, setIsGridView] = useState(true);
 
   const handleOpenPurchase = (data: IToken) => {
     if (!user.walletAddress) {
@@ -61,7 +61,7 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
   };
 
   useEffect(() => {
-    setIsGridView(mode === 'gallery');
+    setIsGridView(mode !== 'list');
   }, [mode]);
 
   if (!nftList) return <> </>;
