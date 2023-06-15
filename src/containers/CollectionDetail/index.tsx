@@ -5,7 +5,7 @@ import logger from '@/services/logger';
 import { getCollectionDetail } from '@/services/marketplace';
 import { getUserSelector } from '@/state/user/selector';
 import { useRouter } from 'next/router';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { Tab, Tabs } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import ActivityList from './ActivityList';
@@ -29,8 +29,9 @@ const CollectionDetail = () => {
   const [showEditButton, setShowEditButton] = useState(false);
   const [activeTab, setActiveTab] = useState<string>('description');
 
-  const isOwner =
-    user?.walletAddress?.toLowerCase() === collection?.creator.toLowerCase();
+  const isOwner = useMemo(() => {
+    return user?.walletAddress?.toLowerCase() === collection?.creator.toLowerCase();
+  }, [user, collection]);
 
   const fetchCollectionInfo = async (): Promise<void> => {
     if (!contract) return;
