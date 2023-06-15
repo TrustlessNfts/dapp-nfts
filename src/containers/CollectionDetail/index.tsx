@@ -1,21 +1,21 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Container } from './Collection.styled';
+import { CDN_URL } from '@/configs';
+import { CollectionContext } from '@/contexts/collection-context';
 import { ICollection } from '@/interfaces/api/marketplace';
 import logger from '@/services/logger';
 import { getCollectionDetail } from '@/services/marketplace';
+import { getUserSelector } from '@/state/user/selector';
 import { useRouter } from 'next/router';
+import React, { useContext, useEffect, useState } from 'react';
+import { Tab, Tabs } from 'react-bootstrap';
+import { useSelector } from 'react-redux';
 import ActivityList from './ActivityList';
+import { Container } from './Collection.styled';
+import CollectionChart from './CollectionChart';
 import CollectionDescription from './CollectionDescription';
+import CollectionFilter from './CollectionFilter';
 import CollectionHeader from './CollectionHeader';
 import CollectionTabNFT from './CollectionTabNFT';
-import CollectionFilter from './CollectionFilter';
-import { Tabs, Tab } from 'react-bootstrap';
-import { CDN_URL } from '@/configs';
 import ModalEdit from './ModalEdit';
-import { useSelector } from 'react-redux';
-import { getUserSelector } from '@/state/user/selector';
-import CollectionChart from './CollectionChart';
-import { CollectionContext } from '@/contexts/collection-context';
 
 const CollectionDetail = () => {
   const router = useRouter();
@@ -24,8 +24,6 @@ const CollectionDetail = () => {
   };
   const user = useSelector(getUserSelector);
   const { activeTokenTab } = useContext(CollectionContext);
-  console.log('🚀 ~ CollectionDetail ~ activeTokenTab:', activeTokenTab);
-
   const [collection, setCollection] = useState<ICollection | null>(null);
   const [showModalEdit, setShowModalEdit] = useState(false);
   const [showEditButton, setShowEditButton] = useState(false);

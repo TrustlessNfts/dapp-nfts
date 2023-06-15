@@ -1,6 +1,6 @@
 import { TC_EXPLORER } from '@/constants/url';
 import { IOwnerAnalytic } from '@/interfaces/api/marketplace';
-import { formatAddress } from '@/utils';
+import { shortenAddress } from '@/utils';
 import { useRouter } from 'next/router';
 import { jsNumberForAddress } from 'react-jazzicon';
 import Jazzicon from 'react-jazzicon/dist/Jazzicon';
@@ -36,13 +36,11 @@ const OwnersList = ({ list }: Props) => {
                     ) : (
                       <Jazzicon
                         diameter={32}
-                        seed={jsNumberForAddress(
-                          '0xda08dd1c849d8dec0da09ec541506cefad6d8f5c',
-                        )}
+                        seed={jsNumberForAddress(owner.address)}
                       />
                     )}
                   </div>
-                  {formatAddress(owner.address)}
+                  {!!owner.name ? owner.name : shortenAddress(owner.address)}
                 </div>
               </td>
               <td className="owner-items">{owner.count}</td>

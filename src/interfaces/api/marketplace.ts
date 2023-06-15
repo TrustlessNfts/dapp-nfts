@@ -162,3 +162,14 @@ export interface IOwnerAnalytic {
   avatar?: string;
   count: number;
 }
+
+export interface IGetOwnersAnalyticsResponse {
+  items: IOwnerAnalytic[];
+  totalItems: number;
+}
+
+export interface IGetOwnersAnalyticsParams extends IPagingParams {
+  contract_address: string;
+  sort_by?: string;
+  sort?: string;
+}

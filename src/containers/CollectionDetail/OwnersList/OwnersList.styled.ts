@@ -43,7 +43,7 @@ export const StyledOwnersList = styled.table`
       .owner-info-wrapper {
         display: flex;
         align-items: center;
-        gap: ${px2rem(4)};
+        gap: ${px2rem(8)};
 
         .owner-avatar {
           width: ${px2rem(32)};
