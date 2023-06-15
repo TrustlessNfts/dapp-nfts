@@ -46,8 +46,8 @@ export const StyledOwnersList = styled.table`
         gap: ${px2rem(8)};
 
         .owner-avatar {
-          width: ${px2rem(32)};
-          height: ${px2rem(32)};
+          width: ${px2rem(28)};
+          height: ${px2rem(28)};
           border-radius: 50%;
           overflow: hidden;
 

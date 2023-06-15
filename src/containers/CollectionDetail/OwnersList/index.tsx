@@ -35,7 +35,7 @@ const OwnersList = ({ list }: Props) => {
                       <img src={owner.avatar} alt="avatar" />
                     ) : (
                       <Jazzicon
-                        diameter={32}
+                        diameter={28}
                         seed={jsNumberForAddress(owner.address)}
                       />
                     )}
