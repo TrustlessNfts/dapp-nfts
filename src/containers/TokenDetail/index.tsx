@@ -81,8 +81,8 @@ const Inscription = () => {
               {isOwner
                 ? 'You'
                 : bnsData?.[0]?.name
-                ? bnsData?.[0]?.name
-                : shortenAddress(owner)}
+                  ? bnsData?.[0]?.name
+                  : shortenAddress(owner)}
             </Link>
             <IconSVG
               onClick={() => onClickCopy(owner)}
@@ -173,14 +173,14 @@ const Inscription = () => {
               </Link>
               <Link href={`${ROUTE_PATH.COLLECTION}/${contract}`} className="title">
                 {contract.toLocaleLowerCase() ===
-                ARTIFACT_CONTRACT.toLocaleLowerCase()
+                  ARTIFACT_CONTRACT.toLocaleLowerCase()
                   ? `Artifact #${inscription?.tokenId}`
                   : collectionName}
               </Link>
-              {inscription?.collection?.creator && (
+              {inscription?.owner && (
                 <p className="creator">
                   Owned by{' '}
-                  <span>{shortenAddress(inscription?.collection?.creator)}</span>
+                  <span>{shortenAddress(inscription.owner)}</span>
                 </p>
               )}
               {inscription?.name !== collectionName && (

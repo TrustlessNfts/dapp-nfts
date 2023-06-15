@@ -50,16 +50,6 @@ const FeatureList = () => {
                 <Text size="large" fontWeight="bold">
                   {item.name}
                 </Text>
-                {/* <Text>
-                  <span>Floor: </span>
-                  <p className="display-inline">
-                    {floor[index].floorPrice.toLocaleString('en-US', {
-                      style: 'currency',
-                      currency: 'USD',
-                      maximumFractionDigits: 6,
-                    })}
-                  </p>
-                </Text> */}
               </div>
               <div>
                 <Button
