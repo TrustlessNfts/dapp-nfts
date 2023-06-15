@@ -16,6 +16,7 @@ const logger = {
     if (levelIndex >= currentLevelIndex) {
       // eslint-disable-next-line no-console
       console.log(`logLevel: [${level.toUpperCase()}]`);
+      // eslint-disable-next-line no-console
       console.log(...args);
 
       if (level === 'error') {

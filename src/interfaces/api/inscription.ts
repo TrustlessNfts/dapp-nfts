@@ -1,6 +1,21 @@
 import { IMAGE_TYPE } from '@/components/NFTDisplayBox/constant';
 import { ICollection } from './collection';
 
+export interface IOwnedBNS {
+  id: string;
+  tokenId: string;
+  tokenIdInt: number;
+  name: string;
+  owner: string;
+  collectionAddress: string;
+  resolver: string;
+  pfp?: string;
+  pfpData?: {
+    gcsUrl?: string;
+    filename?: string;
+  };
+}
+
 export interface IInscription {
   id: string;
   collection: ICollection;
@@ -20,6 +35,7 @@ export interface IInscription {
   listingForSales?: IInscriptionLisftingForSale[];
   makeOffers?: IInscriptionOffer[];
   buyable: boolean;
+  bnsData?: IOwnedBNS[];
 }
 
 export interface IInscriptionActivity {

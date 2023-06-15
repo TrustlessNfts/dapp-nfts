@@ -36,7 +36,7 @@ const ConnectWallet: React.FC = (): React.ReactElement => {
     if (isAuthenticated) {
       router.push(ROUTE_PATH.HOME);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, router]);
 
   return (
     <Container>
