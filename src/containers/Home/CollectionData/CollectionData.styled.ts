@@ -4,6 +4,7 @@ import styled from 'styled-components';
 export const Wrapper = styled.div`
   .tabs {
     border-bottom: none;
+    gap: ${px2rem(24)};
 
     .nav-link {
       font-weight: 500;
@@ -13,7 +14,7 @@ export const Wrapper = styled.div`
       color: #fff;
       text-transform: uppercase;
       padding: ${px2rem(20)} 0;
-      min-width: ${px2rem(142)};    
+      /* min-width: ${px2rem(142)};     */
       border-radius: 0;
       border: none;
 
