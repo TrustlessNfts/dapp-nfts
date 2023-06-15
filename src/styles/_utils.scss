@@ -92,3 +92,8 @@
 .aspect-square {
   aspect-ratio: 1/1;
 }
+
+.disable-input {
+  pointer-events: none;
+  cursor: not-allowed;
+}

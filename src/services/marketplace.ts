@@ -1,18 +1,21 @@
-import queryString from 'query-string';
-import { apiClient } from '.';
-import { camelCaseKeys } from '@/utils';
 import {
-  TraitStats,
   ICollection,
-  IGetCollectionAttributesParams,
   ICollectionActivity,
+  ICollectionChartItem,
   IGetCollectionActivityListParams,
+  IGetCollectionAttributesParams,
+  IGetCollectionChartParams,
   IGetCollectionListParams,
   IGetCollectionNFTListParams,
   IGetCollectionNFTListResponse,
-  IGetCollectionChartParams,
-  ICollectionChartItem,
+  IGetOwnersAnalyticsResponse,
+  IGetOwnersAnalyticsParams,
+  TraitStats,
 } from '@/interfaces/api/marketplace';
+import { camelCaseKeys } from '@/utils';
+import queryString from 'query-string';
+
+import { apiClient } from '.';
 
 const API_PATH = '/marketplace';
 
@@ -71,6 +74,18 @@ export const getCollectionChart = async (
   const qs = queryString.stringify(rest);
   const res = await apiClient.get(
     `${API_PATH}/collections/${contract_address}/chart?${qs}`,
+  );
+  return Object(camelCaseKeys(res));
+};
+
+export const getOwnersAnalytics = async (
+  // contractAddress: string,
+  params: IGetOwnersAnalyticsParams,
+): Promise<IGetOwnersAnalyticsResponse> => {
+  const { contract_address, ...rest } = params;
+  const qs = queryString.stringify(rest);
+  const res = await apiClient.get(
+    `${API_PATH}/collections/${contract_address}/nft-owners?${qs}`,
   );
   return Object(camelCaseKeys(res));
 };
