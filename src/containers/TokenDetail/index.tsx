@@ -39,7 +39,7 @@ const Inscription = () => {
     [inscription],
   );
 
-  console.log(inscription)
+  console.log(inscription);
 
   const fetchInscriptionDetail = useCallback(async () => {
     if (!contract || !tokenId) return;
@@ -63,7 +63,13 @@ const Inscription = () => {
   const renderDetailsList = useMemo(() => {
     if (!inscription) return <></>;
 
-    const { owner, collectionAddress, contentType, mintedAt } = inscription;
+    const {
+      owner,
+      collectionAddress,
+      contentType,
+      mintedAt,
+      bnsData = [],
+    } = inscription;
 
     return (
       <StyledDetailList>
@@ -74,7 +80,11 @@ const Inscription = () => {
               href={`https://explorer.trustless.computer/address/${owner}`}
               target="_blank"
             >
-              {isOwner ? 'You' : shortenAddress(owner)}
+              {isOwner
+                ? 'You'
+                : bnsData?.[0]?.name
+                ? bnsData?.[0]?.name
+                : shortenAddress(owner)}
             </Link>
             <IconSVG
               onClick={() => onClickCopy(owner)}
@@ -142,8 +152,8 @@ const Inscription = () => {
         <div className="content">
           <div className="left-container">
             {inscription && !isBNS && (
-              <NFTDisplayBox 
-                className='thumbnail-wrapper'
+              <NFTDisplayBox
+                className="thumbnail-wrapper"
                 collectionID={inscription?.collectionAddress}
                 contentClass="thumbnail"
                 src={inscription.image}
@@ -157,18 +167,22 @@ const Inscription = () => {
           </div>
           <div className="right-container">
             <div className="header">
-              <Link href={`${ROUTE_PATH.COLLECTION}/${contract}`} className="collection-index">
+              <Link
+                href={`${ROUTE_PATH.COLLECTION}/${contract}`}
+                className="collection-index"
+              >
                 {`Collection #${inscription.collection.index}`}
               </Link>
               <Link href={`${ROUTE_PATH.COLLECTION}/${contract}`} className="title">
                 {contract.toLocaleLowerCase() ===
-                  ARTIFACT_CONTRACT.toLocaleLowerCase()
+                ARTIFACT_CONTRACT.toLocaleLowerCase()
                   ? `Artifact #${inscription?.tokenId}`
                   : collectionName}
               </Link>
               {inscription?.collection?.creator && (
                 <p className="creator">
-                  Owned by <span>{shortenAddress(inscription?.collection?.creator)}</span>
+                  Owned by{' '}
+                  <span>{shortenAddress(inscription?.collection?.creator)}</span>
                 </p>
               )}
               {inscription?.name !== collectionName && (
