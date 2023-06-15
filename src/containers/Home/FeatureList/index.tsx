@@ -2,12 +2,18 @@ import Button from '@/components/Button';
 import Text from '@/components/Text';
 import { CDN_URL } from '@/configs';
 import { ROUTE_PATH } from '@/constants/route-path';
+import logger from '@/services/logger';
+import { getCollectionDetail } from '@/services/marketplace';
+import { ceilPrecised } from '@trustless-computer/dapp-core';
 import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 import { Carousel } from 'react-responsive-carousel';
 import { StyledFeatureList } from './FeatureList.styled';
 
 const FeatureList = () => {
   const router = useRouter();
+
+  const [floorPrices, setFloorPrices] = useState<number[]>([]);
 
   const listThumbs = [
     {
@@ -37,6 +43,34 @@ const FeatureList = () => {
     },
   ];
 
+  const getCollectionFloorPrice = async () => {
+    try {
+      const list = await Promise.allSettled(
+        listThumbs.map(async (item) => {
+          const { btcFloorPrice } = await getCollectionDetail(
+            item.collectionAddress,
+          );
+          return btcFloorPrice;
+        }),
+      ).then((res) =>
+        res.map((item) => {
+          if (item.status === 'fulfilled') {
+            return item.value;
+          } else {
+            return 0;
+          }
+        }),
+      );
+      setFloorPrices(list);
+    } catch (err: unknown) {
+      logger.debug('failed to get floor price');
+    }
+  };
+
+  useEffect(() => {
+    getCollectionFloorPrice();
+  }, []);
+
   return (
     <StyledFeatureList>
       <Carousel autoPlay showArrows={false} showStatus={false} showThumbs={false}>
@@ -49,6 +83,22 @@ const FeatureList = () => {
               <div className="collection-detail">
                 <Text size="large" fontWeight="bold">
                   {item.name}
+                </Text>
+                <Text className="collection-floor">
+                  {/* {item.name} */}
+                  <span>Floor: </span>
+                  {!!floorPrices[index] ? (
+                    <>
+                      {ceilPrecised(floorPrices[index])}
+                      <img
+                        className="token-icon"
+                        src={`${CDN_URL}/icons/ic-btc-24.svg`}
+                        alt="token icon"
+                      />
+                    </>
+                  ) : (
+                    '--'
+                  )}
                 </Text>
               </div>
               <div>

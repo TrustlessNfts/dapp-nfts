@@ -51,6 +51,16 @@ export const StyledFeatureList = styled.div`
     }
   }
 
+  .collection-floor {
+    display: flex;
+    align-items: center;
+    gap: ${px2rem(4)};
+
+    img {
+      width: ${px2rem(14)};
+    }
+  }
+
   .carousel.carousel-slider {
     overflow: visible;
   }
