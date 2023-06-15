@@ -30,15 +30,17 @@ const InfiniteLoading: React.FC<InfiniteLoadingProps> = ({
     };
 
     const observer = new IntersectionObserver(handleObserver, options);
-    if (loaderRef.current) {
-      observer.observe(loaderRef.current);
+    const loaderCurrent = loaderRef.current;
+    if (loaderCurrent) {
+      observer.observe(loaderCurrent);
     }
 
     return () => {
-      if (loaderRef.current) {
-        observer.unobserve(loaderRef.current);
+      if (loaderCurrent) {
+        observer.unobserve(loaderCurrent);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading, hasMoreData, fetchMoreData]);
 
   return (

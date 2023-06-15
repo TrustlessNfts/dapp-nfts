@@ -31,7 +31,6 @@ const CollectionChart: React.FC<IProps> = ({ collection }: IProps): React.ReactE
         contract_address: collection.contract,
         date_range: range,
       });
-      console.log(res);
 
       if (res && Array.isArray(res)) {
         const labels = res.map(item =>
@@ -64,6 +63,7 @@ const CollectionChart: React.FC<IProps> = ({ collection }: IProps): React.ReactE
 
   useEffect(() => {
     handleFetchChartData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collection, range]);
 
   if (!collection) {

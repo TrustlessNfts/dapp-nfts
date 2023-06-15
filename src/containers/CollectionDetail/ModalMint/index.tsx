@@ -186,7 +186,6 @@ const ModalMint = (props: Props) => {
           setEstTCFee(null);
         }
       }
-      console.log('totalFee', totalFee.toString());
       setEstTCFee(totalFee.toString());
     },
     [setEstTCFee, estimateBatchChunksGas, collection.contract],

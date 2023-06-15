@@ -21,6 +21,25 @@ interface IProps {
   collection: ICollection | null;
 }
 
+const SORT_OPTIONS: Array<{ value: string; label: string }> = [
+  {
+    value: '1,2,5,6,7,8',
+    label: 'All',
+  },
+  {
+    value: '8',
+    label: 'Purchases',
+  },
+  {
+    value: '1',
+    label: 'Listing',
+  },
+  {
+    value: '5,6,7',
+    label: 'Offers',
+  },
+];
+
 const FETCH_LIMIT = 32;
 
 const ActivityList: React.FC<IProps> = () => {
@@ -31,26 +50,6 @@ const ActivityList: React.FC<IProps> = () => {
   const [loading, setLoading] = useState(true);
   const [activities, setActivities] = useState<Array<ICollectionActivity>>([]);
   const [hasMore, setHasMore] = useState(true);
-
-  const SORT_OPTIONS: Array<{ value: string; label: string }> = [
-    {
-      value: '1,2,5,6,7,8',
-      label: 'All',
-    },
-    {
-      value: '8',
-      label: 'Purchases',
-    },
-    {
-      value: '1',
-      label: 'Listing',
-    },
-    {
-      value: '5,6,7',
-      label: 'Offers',
-    },
-  ];
-
   const [sort, setSort] = useState<string | null>('');
 
   const selectedOption = useMemo(() => {

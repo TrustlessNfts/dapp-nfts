@@ -1,3 +1,4 @@
+import logger from '@/services/logger';
 import { getContract } from '@/utils';
 import { Contract } from '@ethersproject/contracts';
 import { useWeb3React } from '@web3-react/core';
@@ -16,7 +17,7 @@ export function useContract<T extends Contract = Contract>(
     try {
       return getContract(contractAddress, ABI, provider, withSignerIfPossible && account ? account : undefined);
     } catch (error) {
-      console.error('Failed to get contract', error);
+      logger.error('Failed to get contract', error);
       return null;
     }
   }, [contractAddress, ABI, provider, chainId, withSignerIfPossible, account]) as T;

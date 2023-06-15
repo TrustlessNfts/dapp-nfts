@@ -20,16 +20,14 @@ interface IProps {
   estimateTCGas?: string | null;
   classNames?: string;
   uploadModal?: boolean;
-  // isBigFile?: boolean;
-  // uploadView?: boolean;
 }
 
 const EstimatedFee: React.FC<IProps> = ({
   estimateBTCGas,
   estimateTCGas,
   uploadModal = false,
-  classNames, // isBigFile = false,
-}: // uploadView = false,
+  classNames,
+}:
 IProps): React.ReactElement => {
   const [estBTCFee, setEstBTCFee] = useState<string | null>(null);
   const [estTCFee, setEstTCFee] = useState<string | null>(null);
@@ -49,7 +47,7 @@ IProps): React.ReactElement => {
     } catch (err: unknown) {
       logger.error(err);
     }
-  }, [setEstBTCFee, feeRate.hourFee]);
+  }, [setEstBTCFee, feeRate.hourFee, dispatch]);
 
   const calculateEstTcFee = useCallback(async () => {
     setEstTCFee(null);
@@ -65,7 +63,7 @@ IProps): React.ReactElement => {
     } catch (err: unknown) {
       logger.error(err);
     }
-  }, [setEstTCFee]);
+  }, [setEstTCFee, dispatch]);
 
   useEffect(() => {
     if (!estimateBTCGas) {

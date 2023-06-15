@@ -35,29 +35,29 @@ const CollectionFilter = ({ floorPrice }: IProps) => {
   ];
 
   useEffect(() => {
-    setQuery({
-      ...query,
+    setQuery(prev => ({
+      ...prev,
       attributes: filterTraits,
-    });
-  }, [filterTraits]);
+    }));
+  }, [filterTraits, setQuery]);
 
   useEffect(() => {
-    setQuery({
-      ...query,
+    setQuery(prev => ({
+      ...prev,
       rarity: `${filterRarity.from ? filterRarity.from : 0},${
         filterRarity.to || 100
       }`,
-    });
-  }, [filterRarity]);
+    }));
+  }, [filterRarity, setQuery]);
 
   useEffect(() => {
-    setQuery({
-      ...query,
+    setQuery(prev => ({
+      ...prev,
       price: `${filterPrice.from ? filterPrice.from : 0},${
         filterPrice.to ? filterPrice.to : -1
       }`,
-    });
-  }, [filterPrice]);
+    }));
+  }, [filterPrice, setQuery]);
 
   useEffect(() => {
     setFilterTraits(qsAttrs || '');

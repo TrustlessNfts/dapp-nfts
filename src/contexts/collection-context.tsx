@@ -129,6 +129,7 @@ export const CollectionProvider: React.FC<PropsWithChildren> = ({
 
   useEffect(() => {
     fetchNFTList(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
 
   const contextValues = useMemo((): ICollectionContext => {
