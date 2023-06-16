@@ -10,7 +10,7 @@ export const StyledGetStarted = styled.div`
 
   h2 {
     text-transform: capitalize;
-    font-size: ${px2rem(48)};
+    font-size: ${px2rem(42)};
     line-height: 52/48;
     text-align: center;
     margin: ${px2rem(60)} 0;
