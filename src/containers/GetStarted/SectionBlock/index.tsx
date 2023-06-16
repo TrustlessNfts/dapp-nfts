@@ -9,7 +9,7 @@ type Props = {
 const SectionBlock = ({ title = '', children }: PropsWithChildren<Props>) => {
   return (
     <StyledSectionBlock className="block-wrapper">
-      <div className="content">{title}</div>
+      {!!title && <div className="content">{title}</div>}
       {children}
     </StyledSectionBlock>
   );

@@ -9,6 +9,7 @@ export const StyledGetStarted = styled.div`
   padding-bottom: ${px2rem(40)};
 
   h2 {
+    text-transform: capitalize;
     font-size: ${px2rem(48)};
     line-height: 52/48;
     text-align: center;
@@ -84,9 +85,14 @@ export const StepBlock = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    max-width: ${px2rem(700)};
+    overflow: hidden;
+    border-radius: 20px;
+    margin-left: auto;
+    margin-right: auto;
 
     img {
-      max-width: ${px2rem(700)};
+      transform: scale(1.01);
 
       @media screen and (max-width: 500px) {
         width: 100%;
