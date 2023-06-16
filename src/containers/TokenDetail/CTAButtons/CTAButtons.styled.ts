@@ -29,6 +29,7 @@ export const StyledCTAButtons = styled.div`
         width: ${px2rem(24)};
         height: ${px2rem(24)};
         object-fit: contain;
+        border-radius: 50%;
       }
     }
   }
