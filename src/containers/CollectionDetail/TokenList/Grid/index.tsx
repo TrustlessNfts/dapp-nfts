@@ -12,13 +12,15 @@ import { shortenAddress } from '@/utils';
 import { formatEthPrice, mappingERC20ToIcon } from '@/utils/format';
 import Skeleton from '@/components/Skeleton';
 
-type Props = {
+interface IProps {
   nftList: IToken[];
   collection: ICollection | null;
   handleOpenPurchase: (data: IToken) => void;
+  selectedTokens: Array<IToken>;
+  onChangeSelectedToken: (_v: Array<IToken>) => void;
 };
 
-const TokenGridView = (props: Props) => {
+const TokenGridView: React.FC<IProps> = (props: IProps): React.ReactElement => {
   const user = useSelector(getUserSelector);
   const { nftList, collection, handleOpenPurchase } = props;
   const router = useRouter();

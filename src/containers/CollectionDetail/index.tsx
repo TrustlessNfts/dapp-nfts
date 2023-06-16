@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Container } from './Collection.styled';
 import { ICollection } from '@/interfaces/api/marketplace';
 import logger from '@/services/logger';
@@ -26,8 +26,9 @@ const CollectionDetail = () => {
   const [showModalEdit, setShowModalEdit] = useState(false);
   const [showEditButton, setShowEditButton] = useState(false);
 
-  const isOwner =
-    user?.walletAddress?.toLowerCase() === collection?.creator.toLowerCase();
+  const isOwner = useMemo(() => {
+    return user?.walletAddress?.toLowerCase() === collection?.creator.toLowerCase();
+  }, [user, collection])
 
   const fetchCollectionInfo = async (): Promise<void> => {
     if (!contract) return;

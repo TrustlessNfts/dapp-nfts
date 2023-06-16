@@ -10,13 +10,14 @@ import { ICollection, IToken } from '@/interfaces/api/marketplace';
 import { getUserSelector } from '@/state/user/selector';
 import { showToastError } from '@/utils/toast';
 import { useRouter } from 'next/router';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Spinner } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import TokenGridView from './Grid';
 import TokenListView from './Table';
 import { ViewOptions, Wrapper } from './TokenList.styled';
 import { debounce } from 'lodash';
+import SweepTokens from './SweepTokens';
 
 interface IProps {
   collection: ICollection | null;
@@ -38,9 +39,9 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
     query,
     setQuery,
   } = useContext(CollectionContext);
-
   const [showPurchase, setShowPurchase] = useState(false);
-  const [selectedToken, setSelectedToken] = useState<IToken | null>(null);
+  const [currentToken, setCurrentToken] = useState<IToken | null>(null);
+  const [selectedTokens, setSelectedTokens] = useState<Array<IToken>>([]);
   const [isGridView, setIsGridView] = useState(false);
 
   const handleOpenPurchase = (data: IToken) => {
@@ -52,13 +53,17 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
       return;
     }
     setShowPurchase(true);
-    setSelectedToken(data);
+    setCurrentToken(data);
   };
 
   const handleClosePurchase = () => {
     setShowPurchase(false);
-    setSelectedToken(null);
+    setCurrentToken(null);
   };
+
+  const handleChangeSelectedToken = useCallback((val: Array<IToken>) => {
+    setSelectedTokens(val);
+  }, [setSelectedTokens]);
 
   useEffect(() => {
     setIsGridView(mode === 'gallery');
@@ -75,6 +80,8 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
           nftList={nftList}
           handleOpenPurchase={handleOpenPurchase}
           collection={collection}
+          selectedTokens={selectedTokens}
+          onChangeSelectedToken={handleChangeSelectedToken}
         />
       );
     }
@@ -83,6 +90,8 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
         nftList={nftList}
         handleOpenPurchase={handleOpenPurchase}
         collection={collection}
+        selectedTokens={selectedTokens}
+        onChangeSelectedToken={handleChangeSelectedToken}
       />
     );
   };
@@ -144,9 +153,13 @@ const TokenList: React.FC<IProps> = ({ collection }: IProps): React.ReactElement
           />
         )}
       </Wrapper>
+      <SweepTokens
+        selectedTokens={selectedTokens}
+        onChangeSelectedToken={handleChangeSelectedToken}
+      />
       <ModalPurchase
         show={showPurchase}
-        inscription={selectedToken as unknown as IInscription}
+        inscription={currentToken as unknown as IInscription}
         handleClose={handleClosePurchase}
       />
     </>

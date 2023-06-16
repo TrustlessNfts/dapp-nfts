@@ -10,21 +10,28 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-type Props = {
+interface IProps {
   nftList: IToken[];
   collection: ICollection | null;
   handleOpenPurchase: (data: IToken) => void;
+  selectedTokens: Array<IToken>;
+  onChangeSelectedToken: (_v: Array<IToken>) => void;
 };
 
-const TokenListView = (props: Props) => {
+const TokenListView: React.FC<IProps> = (props: IProps): React.ReactElement => {
   const user = useSelector(getUserSelector);
   const { nftList, collection, handleOpenPurchase } = props;
   const router = useRouter();
+
+  const showCheckboxCol = nftList.some((item: IToken) => item.buyable);
 
   return (
     <table className="data-table">
       <thead>
         <tr>
+          {showCheckboxCol && (
+            <th></th>
+          )}
           <th>{`Items`}</th>
           <th>Owner</th>
           <th>Best offer</th>
@@ -61,6 +68,9 @@ const TokenListView = (props: Props) => {
                 )
               }
             >
+              {showCheckboxCol && (
+                <td className='token-select'></td>
+              )}
               <td className="token-info">
                 <div className="token-info-wrapper">
                   <div className="thumbnail-wrapper">
@@ -97,7 +107,7 @@ const TokenListView = (props: Props) => {
                   token.priceErc20.erc20Token &&
                   token.priceErc20.offeringId &&
                   user?.walletAddress?.toLowerCase() !==
-                    token.owner.toLowerCase() && (
+                  token.owner.toLowerCase() && (
                     <button
                       className="purchase-btn"
                       onClick={(e) => {
@@ -122,4 +132,4 @@ const TokenListView = (props: Props) => {
   );
 };
 
-export default TokenListView;
+export default React.memo(TokenListView);
