@@ -120,6 +120,7 @@ const ModalMint = (props: Props) => {
 
   const calculateEstBtcFee = useCallback(
     (fileSize: number) => {
+      if (!show) return;
       const estimatedEconomyFee = TC_SDK.estimateInscribeFee({
         tcTxSizeByte: fileSize,
         feeRatePerByte: feeRate.hourFee,
@@ -127,12 +128,12 @@ const ModalMint = (props: Props) => {
 
       setEstBTCFee(estimatedEconomyFee.totalFee.toString());
     },
-    [feeRate, setEstBTCFee],
+    [feeRate, setEstBTCFee, show],
   );
 
   const calculateEstTcFeeMintSingle = useCallback(
     async (fileBuffer: Buffer) => {
-      if (!estimateChunksGas) return '0';
+      if (!estimateChunksGas || !show) return '0';
 
       setEstTCFee(null);
       let payload: IMintChunksParams | IMintBatchChunksParams;
@@ -155,7 +156,7 @@ const ModalMint = (props: Props) => {
         return '0';
       }
     },
-    [setEstTCFee, estimateChunksGas, collection.contract],
+    [setEstTCFee, estimateChunksGas, collection.contract, show],
   );
 
   const calculateEstTcFeeMintBatch = useCallback(

@@ -188,6 +188,8 @@ const ModalCreate = (props: Props) => {
   }, [listFiles]);
 
   const calculateEstBtcFee = useCallback(async () => {
+    if (!show) return;
+
     try {
       setEstBTCFee(null);
 
@@ -202,10 +204,10 @@ const ModalCreate = (props: Props) => {
     } catch (err: unknown) {
       logger.error(err);
     }
-  }, [setEstBTCFee, feeRate.hourFee, totalFileSize]);
+  }, [setEstBTCFee, feeRate.hourFee, totalFileSize, show]);
 
   const calculateEstTcFee = useCallback(async () => {
-    if (!estimateGas) return;
+    if (!estimateGas || !show) return;
 
     setEstTCFee(null);
     let payload: ICreateNFTCollectionParams;
@@ -232,7 +234,7 @@ const ModalCreate = (props: Props) => {
     } catch (err: unknown) {
       logger.error(err);
     }
-  }, [setEstTCFee, estimateGas, listFiles, preSubmitName]);
+  }, [setEstTCFee, estimateGas, listFiles, preSubmitName, show]);
 
   useEffect(() => {
     if (file) {

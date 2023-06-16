@@ -54,20 +54,6 @@ const Banner: React.FC = (): React.ReactElement => {
             utilities now.
           </p>
           <div className="upload-wrapper" ref={uploadRef}>
-            {/* <Button
-              className="create-btn"
-              background={'linear-gradient(90deg, #9796f0,#fbc7d4)'}
-              onClick={handleOpenModal}
-            >
-              <Text
-                size="medium"
-                color="bg1"
-                className="button-text"
-                fontWeight="medium"
-              >
-                Create BRC-721
-              </Text>
-            </Button> */}
           </div>
         </div>
         <FeatureList />
