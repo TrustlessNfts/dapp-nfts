@@ -145,9 +145,11 @@ export const WalletProvider: React.FC<PropsWithChildren> = ({
         if (res && res.pfpData?.gcsUrl) {
           payload.avatar = res.pfpData?.gcsUrl;
         }
+
         if (res && res.name) {
           payload.name = res.name;
         }
+        
         dispatch(updateWalletInfo({ ...payload }));
         dispatch(updateEVMWallet(walletAddress));
         dispatch(updateSelectedWallet({ wallet: 'METAMASK' }));
