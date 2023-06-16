@@ -1,10 +1,15 @@
 import IconSVG from '@/components/IconSVG';
+import Text from '@/components/Text';
 import { CDN_URL, TC_BRIDGE_URL, TC_WEB_URL } from '@/configs';
+import { ROUTE_PATH } from '@/constants/route-path';
 import { AssetsContext } from '@/contexts/assets-context';
+import { WalletContext } from '@/contexts/wallet-context';
+import { DappsTabs } from '@/enums/tabs';
 import { getIsAuthenticatedSelector, getUserSelector } from '@/state/user/selector';
 import { formatEthPrice } from '@/utils/format';
 import { formatBTCPrice, formatLongAddress } from '@trustless-computer/dapp-core';
 import copy from 'copy-to-clipboard';
+import { useRouter } from 'next/router';
 import { useContext, useRef, useState } from 'react';
 import { OverlayTrigger } from 'react-bootstrap';
 import { toast } from 'react-hot-toast';
@@ -12,11 +17,6 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useSelector } from 'react-redux';
 import { ConnectWalletButton, WalletBalance } from '../Header.styled';
 import { WalletPopover } from './Wallet.styled';
-import Text from '@/components/Text';
-import { WalletContext } from '@/contexts/wallet-context';
-import { DappsTabs } from '@/enums/tabs';
-import { useRouter } from 'next/router';
-import { ROUTE_PATH } from '@/constants/route-path';
 
 const WalletHeader = () => {
   const router = useRouter();
@@ -69,7 +69,7 @@ const WalletHeader = () => {
             src={`${CDN_URL}/icons/ic-copy.svg`}
             color="white"
             maxWidth="16"
-          // type="stroke"
+            // type="stroke"
           ></IconSVG>
         </div>
       </div>
@@ -153,7 +153,14 @@ const WalletHeader = () => {
                   <p>{formatEthPrice(tcBalance)} TC</p>
                 </div>
                 <div className="avatar">
-                  <Jazzicon diameter={32} seed={jsNumberForAddress(user.walletAddress)} />
+                  {!!user.avatar ? (
+                    <img src={user.avatar} alt="user avatar" />
+                  ) : (
+                    <Jazzicon
+                      diameter={32}
+                      seed={jsNumberForAddress(user.walletAddress)}
+                    />
+                  )}
                 </div>
               </WalletBalance>
             </div>
