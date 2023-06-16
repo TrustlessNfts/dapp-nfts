@@ -9,7 +9,7 @@ export const getWalletBNSInfo = async ({
   walletAddress,
 }: {
   walletAddress: string;
-}): Promise<IGetWalletBNSInfoResponse> => {
+}): Promise<IGetWalletBNSInfoResponse | null> => {
   try {
     const res = await apiClient.get<
       {
@@ -19,7 +19,7 @@ export const getWalletBNSInfo = async ({
     >(`${API_PATH}/names?resolver=${walletAddress}`);
     return Object(camelCaseKeys(res[0]));
   } catch (err: unknown) {
-    logger.error(err);
-    throw Error('Profile not found');
+    logger.error('Failed to get wallet bns info');
+    return null;
   }
 };
