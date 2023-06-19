@@ -15,12 +15,19 @@ const Header = ({ height }: { height: number }) => {
   return (
     <Wrapper style={{ height }}>
       <div className="indicator" />
-      <Link className="logo" href={ROUTE_PATH.HOME}>
-        {mobileScreen && <img alt="logo" src={`${CDN_URL}/images/nfts-logo.svg`} />}
-        {!mobileScreen && (
-          <img alt="logo" src={`${CDN_URL}/images/logo-nft-3.svg`} />
-        )}
-      </Link>
+      <div className="leftContainer">
+        <Link className="logo" href={ROUTE_PATH.HOME}>
+          {mobileScreen && (
+            <img alt="logo" src={`${CDN_URL}/images/nfts-logo.svg`} />
+          )}
+          {!mobileScreen && (
+            <img alt="logo" src={`${CDN_URL}/images/logo-nft-3.svg`} />
+          )}
+        </Link>
+        <Link className="logo" href={ROUTE_PATH.GET_STARTED}>
+          Get Started
+        </Link>
+      </div>
       <MenuMobile isOpen={isOpenMenu} onCloseMenu={() => setIsOpenMenu(false)} />
       <div className="rightContainer">
         <div className="external-link hideMobile">

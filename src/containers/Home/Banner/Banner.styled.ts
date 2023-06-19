@@ -54,7 +54,7 @@ export const TopBar = styled.div`
   color: white;
   padding: ${px2rem(8)} 0;
   font-size: ${px2rem(12)};
-  width: 100vw;
+  width: calc(100vw - ${px2rem(16)});
   position: absolute;
   top: 0;
   left: ${px2rem(-32)};
@@ -64,9 +64,4 @@ export const TopBar = styled.div`
     color: #95a4fc;
     cursor: pointer;
   }
-
-  /* @media screen and (max-width: 1920.98px) {
-    width: 100vw;
-    margin-left: ${px2rem(-32)};
-  } */
 `;

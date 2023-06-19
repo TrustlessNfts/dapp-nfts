@@ -26,6 +26,13 @@ const Wrapper = styled.div`
     }
   }
 
+  .leftContainer {
+    display: flex;
+    align-items: center;
+    gap: ${px2rem(40)};
+    color: white;
+  }
+
   .logo {
     z-index: 999;
   }
