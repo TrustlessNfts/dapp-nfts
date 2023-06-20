@@ -54,7 +54,9 @@ const TokenGridView = (props: Props) => {
               className="token-owner-link"
               onClick={(e) => e.stopPropagation()}
             >
-              {shortenAddress(token.owner)}
+              {token?.bnsData?.[0]?.name
+                ? token?.bnsData?.[0]?.name
+                : shortenAddress(token.owner)}
             </Link>
             <div className="buy-now">
               {token.buyable &&
@@ -70,7 +72,7 @@ const TokenGridView = (props: Props) => {
                     }}
                   >
                     <span>Buy now</span>
-                    <p className='inscription-price'>
+                    <p className="inscription-price">
                       <span>{`${formatEthPrice(token.priceErc20.price)}`}</span>
                       <img
                         className="token-icon"
