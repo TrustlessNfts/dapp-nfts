@@ -35,23 +35,23 @@ const CollectionFilter = ({ floorPrice }: IProps) => {
   ];
 
   useEffect(() => {
-    setQuery(prev => ({
+    setQuery((prev) => ({
       ...prev,
       attributes: filterTraits,
     }));
   }, [filterTraits, setQuery]);
 
   useEffect(() => {
-    setQuery(prev => ({
+    const qsRarity = `${filterRarity.from || -1},${filterRarity.to || -1}`;
+
+    setQuery((prev) => ({
       ...prev,
-      rarity: `${filterRarity.from ? filterRarity.from : 0},${
-        filterRarity.to || 100
-      }`,
+      rarity: qsRarity,
     }));
   }, [filterRarity, setQuery]);
 
   useEffect(() => {
-    setQuery(prev => ({
+    setQuery((prev) => ({
       ...prev,
       price: `${filterPrice.from ? filterPrice.from : 0},${
         filterPrice.to ? filterPrice.to : -1
